@@ -123,3 +123,78 @@ export const VALUE_GROWTH_BANDS: readonly ValueGrowthBand[] = [
 
 /** Share of the annual value growth rate applied per window transition. */
 export const TRANSITION_RATE_FACTOR = 0.5;
+
+/* -------------------------------------------------------------------------
+ * Scoring (weights agreed with Sam, 10/07/2026; sub-curves M6 tunable)
+ * ---------------------------------------------------------------------- */
+
+/** Component weights of the final rating; must sum to 1. */
+export const SCORING_WEIGHTS = {
+  squadQuality: 0.35,
+  balance: 0.25,
+  ageProfile: 0.2,
+  contractHealth: 0.15,
+  valueCreated: 0.05,
+} as const;
+
+/** Inside Squad Quality: the XI / depth split. */
+export const SQUAD_QUALITY_XI_WEIGHT = 0.7;
+export const SQUAD_QUALITY_DEPTH_WEIGHT = 0.3;
+
+/**
+ * Depth counts the best N players outside the XI; missing bodies score
+ * zero, so a threadbare squad cannot hide behind a strong first eleven.
+ */
+export const DEPTH_PLAYER_COUNT = 10;
+
+/**
+ * Balance template: the healthy-squad headcount per position. Each position
+ * scores min(count, required) / required; extras earn nothing.
+ */
+export const BALANCE_TEMPLATE: Readonly<Record<string, number>> = {
+  GK: 3,
+  RB: 2,
+  LB: 2,
+  CB: 4,
+  CM: 4,
+  AM: 2,
+  RW: 2,
+  LW: 2,
+  ST: 2,
+};
+
+/**
+ * Age profile scores per player: peak years score full, a young pipeline
+ * nearly full, veterans decay hard. Ordered by maxAge ascending.
+ */
+export const AGE_SCORE_BANDS: readonly { maxAge: number; score: number }[] = [
+  { maxAge: 20, score: 0.9 },
+  { maxAge: 28, score: 1 },
+  { maxAge: 30, score: 0.7 },
+  { maxAge: 32, score: 0.4 },
+  { maxAge: Number.POSITIVE_INFINITY, score: 0.2 },
+];
+
+/**
+ * Contract health scores by remaining months at game end. Ordered by
+ * minMonths descending; the first matching row wins.
+ */
+export const CONTRACT_HEALTH_BY_MONTHS: readonly {
+  minMonths: number;
+  score: number;
+}[] = [
+  { minMonths: 36, score: 1 },
+  { minMonths: 30, score: 0.9 },
+  { minMonths: 24, score: 0.75 },
+  { minMonths: 18, score: 0.5 },
+  { minMonths: 12, score: 0.3 },
+  { minMonths: 0, score: 0.1 },
+];
+
+/**
+ * Value created scoring: break-even scores the base; every 1% of value
+ * created or destroyed moves the score by slope/100 points. +20% reaches
+ * 100, -20% reaches 0.
+ */
+export const VALUE_CREATED_BASE = 50;
+export const VALUE_CREATED_SLOPE = 250;

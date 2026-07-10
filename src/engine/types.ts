@@ -201,6 +201,15 @@ export interface GameConfig {
  * record of a playthrough: replaying it through the reducers must always
  * reproduce the same final state (the determinism contract).
  */
+/**
+ * The starting eleven chosen in the final phase. playerIds are index-aligned
+ * with the formation's slots.
+ */
+export interface XISelection {
+  formationId: import('./formations').FormationId;
+  playerIds: readonly string[];
+}
+
 export type Action =
   | { type: 'BUY'; playerId: string }
   | { type: 'UNDO_BUY'; playerId: string }
@@ -212,7 +221,12 @@ export type Action =
    * Submits the current window and opens the next. One-way: earlier windows
    * cannot be reopened. Rejected while soft-constraint violations remain.
    */
-  | { type: 'ADVANCE_WINDOW' };
+  | { type: 'ADVANCE_WINDOW' }
+  /**
+   * Chooses the starting eleven. Final window only; re-picking overwrites.
+   * Part of the action log so a replay can recompute the score.
+   */
+  | { type: 'PICK_XI'; selection: XISelection };
 
 /**
  * The complete game state at any point in a playthrough.
@@ -231,6 +245,8 @@ export interface GameState {
   /** Players still available to buy in the current window. */
   market: readonly MarketPlayer[];
   departed: readonly DepartedPlayer[];
+  /** The chosen starting eleven; set by PICK_XI in the final window. */
+  xi?: XISelection;
   /** Append-only record of every action applied so far. */
   actionLog: readonly Action[];
 }
