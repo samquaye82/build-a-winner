@@ -161,6 +161,12 @@ export interface WindowConfig {
    * here: a five-year deal signed in a window expires seasonStartYear + 5.
    */
   seasonStartYear: number;
+  /**
+   * True for January windows. Mid-season, every contract is six months
+   * closer to expiry than whole-year arithmetic suggests, which matters to
+   * the sale-value discount curve.
+   */
+  midSeason: boolean;
   /** Fresh transfer budget (EUR m) granted by the board for this window. */
   budget: number;
 }

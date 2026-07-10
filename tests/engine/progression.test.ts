@@ -70,10 +70,11 @@ describe('Summer 2026 -> January 2027 (same season)', () => {
     expect(byId.get('gk2')?.baseValue).toBe(2.8);
     // am1: age 19, quality 78 -> +12%/yr -> +6%: 30 -> 31.8.
     expect(byId.get('am1')?.baseValue).toBe(31.8);
-    // cm1: quality 80 -> +8%/yr -> +4%: 35 -> 36.4; still one year left
-    // so the sale value keeps its 0.7 discount: 25.5.
+    // cm1: quality 80 -> +8%/yr -> +4%: 35 -> 36.4. In January his 2027
+    // contract has only 6 months left: discount 0.25 -> 9.1. Sell now and
+    // get pennies, renew, or lose him free in the summer.
     expect(byId.get('cm1')?.baseValue).toBe(36.4);
-    expect(byId.get('cm1')?.saleValue).toBe(25.5);
+    expect(byId.get('cm1')?.saleValue).toBe(9.1);
   });
 
   it('opens_the_new_market_minus_players_already_at_the_club', () => {
