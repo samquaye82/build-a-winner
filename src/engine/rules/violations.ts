@@ -14,7 +14,8 @@ export type ViolationCode =
   | 'NON_HOMEGROWN_LIMIT_EXCEEDED'
   | 'SQUAD_TOO_SMALL'
   | 'NOT_ENOUGH_GOALKEEPERS'
-  | 'BUDGET_EXCEEDED';
+  | 'BUDGET_EXCEEDED'
+  | 'SCR_EXCEEDED';
 
 /** A single soft-constraint breach, ready for display. */
 export interface Violation {

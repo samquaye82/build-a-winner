@@ -63,3 +63,52 @@ export const PER_YEAR_ADDED_UPLIFT = 0.02;
  */
 export const RENEWAL_QUALITY_FACTOR_BASE = 0.8;
 export const RENEWAL_QUALITY_FACTOR_DIVISOR = 250;
+
+/**
+ * Squad cost ratio (real Premier League concept): squad cost (annual wages
+ * plus annual transfer-fee amortisation) may not exceed this share of the
+ * club's cap basis (GameConfig.squadCostCapBase).
+ */
+export const SCR_LIMIT = 0.85;
+
+/**
+ * Contract-length discounts on sale value (M6 tuning candidates). A player
+ * running down their deal sells cheap; renewing restores their price. Three
+ * or more remaining years carry no discount.
+ */
+export const CONTRACT_DISCOUNT_TWO_YEARS = 0.9;
+export const CONTRACT_DISCOUNT_FINAL_YEAR = 0.7;
+
+/**
+ * Deterministic value progression (M6 tuning candidates).
+ *
+ * Annual growth rates by age band, split into three quality tiers. Each
+ * window transition applies half the annual rate (the three windows are six
+ * months apart). Young, elite players appreciate fastest; everyone declines
+ * from 28.
+ */
+export const VALUE_QUALITY_ELITE = 80;
+export const VALUE_QUALITY_GOOD = 70;
+
+/** One age band of the value curve; `maxAge` is inclusive. */
+export interface ValueGrowthBand {
+  maxAge: number;
+  /** Annual rate for quality >= VALUE_QUALITY_ELITE. */
+  elite: number;
+  /** Annual rate for quality >= VALUE_QUALITY_GOOD. */
+  good: number;
+  /** Annual rate for everyone else. */
+  base: number;
+}
+
+/** The value curve, ordered by age; the last band catches all older ages. */
+export const VALUE_GROWTH_BANDS: readonly ValueGrowthBand[] = [
+  { maxAge: 23, elite: 0.2, good: 0.12, base: 0.06 },
+  { maxAge: 27, elite: 0.08, good: 0.04, base: 0 },
+  { maxAge: 29, elite: -0.05, good: -0.05, base: -0.05 },
+  { maxAge: 32, elite: -0.12, good: -0.12, base: -0.12 },
+  { maxAge: Number.POSITIVE_INFINITY, elite: -0.2, good: -0.2, base: -0.2 },
+];
+
+/** Share of the annual value growth rate applied per window transition. */
+export const TRANSITION_RATE_FACTOR = 0.5;

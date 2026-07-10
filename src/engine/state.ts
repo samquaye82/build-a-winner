@@ -2,6 +2,7 @@
  * Game state construction and lookup helpers.
  */
 import { EngineError } from './errors';
+import { computeSaleValue } from './rules/value';
 import type {
   GameConfig,
   GameState,
@@ -31,11 +32,22 @@ export function createGame(config: GameConfig): GameState {
     );
   }
 
+  // Derive runtime squad players from authored seeds: sale values are
+  // computed, never authored, so the contract-length discount is always
+  // consistent with the value model.
+  const squad: SquadPlayer[] = config.initialSquad.map((seed) => ({
+    ...seed,
+    saleValue: computeSaleValue(
+      seed.baseValue,
+      seed.contract.expiryYear - firstWindow.seasonStartYear,
+    ),
+  }));
+
   return {
     config,
     windowIndex: 0,
     funds: firstWindow.budget,
-    squad: config.initialSquad,
+    squad,
     market: config.marketByWindow[0] ?? [],
     departed: [],
     actionLog: [],

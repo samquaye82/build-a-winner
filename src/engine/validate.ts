@@ -7,6 +7,7 @@
  */
 import { validateBudget } from './rules/budget';
 import { validateRegistration } from './rules/registration';
+import { validateScr } from './rules/scr';
 import type { Violation } from './rules/violations';
 import type { GameState } from './types';
 
@@ -17,7 +18,11 @@ import type { GameState } from './types';
  * @returns All current violations; empty when the plan is submittable.
  */
 export function validateState(state: GameState): Violation[] {
-  return [...validateBudget(state), ...validateRegistration(state.squad)];
+  return [
+    ...validateBudget(state),
+    ...validateRegistration(state.squad),
+    ...validateScr(state),
+  ];
 }
 
 /**

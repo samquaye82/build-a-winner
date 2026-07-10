@@ -17,7 +17,9 @@ export type EngineErrorCode =
   | 'PLAYER_NOT_SOLD_THIS_WINDOW'
   | 'ALREADY_RENEWED'
   | 'NOT_RENEWED_THIS_WINDOW'
-  | 'INVALID_EXPIRY_YEAR';
+  | 'INVALID_EXPIRY_YEAR'
+  | 'NO_NEXT_WINDOW'
+  | 'WINDOW_NOT_SUBMITTABLE';
 
 /**
  * Error thrown by reducers for structurally invalid actions.

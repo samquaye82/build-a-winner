@@ -91,17 +91,34 @@ export interface Renewal {
 }
 
 /**
- * A player currently registered at the club.
+ * Authored form of a squad player, as written in the data files. The engine
+ * derives the runtime SquadPlayer from this at game start.
  */
-export interface SquadPlayer extends PlayerCore {
-  /** Pre-agreed fee (EUR m) received if the player is sold this window. */
-  saleValue: number;
+export interface SquadPlayerSeed extends PlayerCore {
+  /**
+   * Underlying market value in EUR m, before the contract-length discount.
+   * Drifts deterministically between windows with age and quality.
+   */
+  baseValue: number;
   /** True when the board refuses to sanction a sale. */
   locked: boolean;
   contract: Contract;
+}
+
+/**
+ * A player currently registered at the club.
+ */
+export interface SquadPlayer extends SquadPlayerSeed {
+  /**
+   * Pre-agreed fee (EUR m) received if the player is sold this window.
+   * Derived, never authored: baseValue discounted by remaining contract
+   * length (a player running down their deal sells cheap). Recomputed on
+   * renewal and on every window transition.
+   */
+  saleValue: number;
   /** Present only for players bought during the game. */
   acquisition?: Acquisition;
-  /** Present only when renewed in the current window; enables undo. */
+  /** Present only once renewed; a player renews at most once per game. */
   renewal?: Renewal;
 }
 
@@ -150,13 +167,27 @@ export interface WindowConfig {
 
 /**
  * Immutable configuration for an entire playthrough: the windows, the
- * starting squad and the market pool for each window.
+ * starting squad, the market pool for each window, and the club's squad
+ * cost ratio (SCR) baseline.
  */
 export interface GameConfig {
   windows: readonly WindowConfig[];
-  initialSquad: readonly SquadPlayer[];
+  initialSquad: readonly SquadPlayerSeed[];
   /** One market pool per window, index-aligned with `windows`. */
   marketByWindow: readonly (readonly MarketPlayer[])[];
+  /**
+   * Annual transfer-fee amortisation (EUR m) already on the club's books at
+   * game start, from pre-game signings. A club-level total: starting squad
+   * players carry no individual book values, so selling one removes their
+   * wage from the SCR but never touches this baseline.
+   */
+  baselineAmortisation: number;
+  /**
+   * The club's squad cost cap basis (EUR m), representing the revenue
+   * figure the SCR is measured against. Squad cost (wages + amortisation)
+   * must stay within SCR_LIMIT of this number in every window.
+   */
+  squadCostCapBase: number;
 }
 
 /**
@@ -170,7 +201,12 @@ export type Action =
   | { type: 'SELL'; playerId: string }
   | { type: 'UNDO_SELL'; playerId: string }
   | { type: 'RENEW'; playerId: string; newExpiryYear: number }
-  | { type: 'UNDO_RENEW'; playerId: string };
+  | { type: 'UNDO_RENEW'; playerId: string }
+  /**
+   * Submits the current window and opens the next. One-way: earlier windows
+   * cannot be reopened. Rejected while soft-constraint violations remain.
+   */
+  | { type: 'ADVANCE_WINDOW' };
 
 /**
  * The complete game state at any point in a playthrough.
