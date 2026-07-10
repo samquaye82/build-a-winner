@@ -8,7 +8,7 @@
 import type {
   GameConfig,
   MarketPlayer,
-  SquadPlayer,
+  SquadPlayerSeed,
   WindowConfig,
 } from '../../src/engine';
 
@@ -20,22 +20,29 @@ export const testWindow: WindowConfig = {
   budget: 100,
 };
 
+/** The three real windows of a full playthrough, with test budgets. */
+export const threeTestWindows: readonly WindowConfig[] = [
+  testWindow,
+  { id: 'january-2027', label: 'January 2027', seasonStartYear: 2026, budget: 30 },
+  { id: 'summer-2027', label: 'Summer 2027', seasonStartYear: 2027, budget: 80 },
+];
+
 /**
- * Builds a squad player with sensible defaults, overridable per test.
+ * Builds a squad player seed with sensible defaults, overridable per test.
  *
- * @param overrides - Fields to override on the default squad player.
- * @returns A complete squad player.
+ * @param overrides - Fields to override on the default seed.
+ * @returns A complete squad player seed.
  */
 export function makeSquadPlayer(
-  overrides: Partial<SquadPlayer> & Pick<SquadPlayer, 'id'>,
-): SquadPlayer {
+  overrides: Partial<SquadPlayerSeed> & Pick<SquadPlayerSeed, 'id'>,
+): SquadPlayerSeed {
   return {
     name: `Player ${overrides.id}`,
     position: 'CM',
     age: 26,
     homegrown: false,
     quality: 70,
-    saleValue: 20,
+    baseValue: 20,
     locked: false,
     contract: { expiryYear: 2029, salary: 5 },
     ...overrides,
@@ -66,29 +73,32 @@ export function makeMarketPlayer(
 
 /**
  * Standard fixture squad, 12 players:
- * - gk1 (GK, HG), gk2 (GK)
+ * - gk1 (GK, HG), gk2 (GK, 31)
  * - cb1 (locked star), cb2 (expiring 2027), rb1 (HG), lb1
- * - cm1 (HG, expiring 2027), cm2, am1 (U21 age 19, HG)
+ * - cm1 (HG, quality 80, expiring 2027), cm2, am1 (U21 age 19, HG)
  * - rw1, lw1 (U21 age 20), st1 (locked)
+ *
+ * Total wage bill 62. Sale values derive from baseValue: unity discount
+ * everywhere except the two 2027 expiries (cb2 8.4, cm1 24.5).
  */
-export function makeTestSquad(): SquadPlayer[] {
+export function makeTestSquad(): SquadPlayerSeed[] {
   return [
-    makeSquadPlayer({ id: 'gk1', position: 'GK', homegrown: true, saleValue: 15 }),
-    makeSquadPlayer({ id: 'gk2', position: 'GK', age: 31, saleValue: 3 }),
-    makeSquadPlayer({ id: 'cb1', position: 'CB', quality: 90, locked: true, saleValue: 70 }),
-    makeSquadPlayer({ id: 'cb2', position: 'CB', contract: { expiryYear: 2027, salary: 4 }, saleValue: 12 }),
-    makeSquadPlayer({ id: 'rb1', position: 'RB', homegrown: true, saleValue: 25 }),
-    makeSquadPlayer({ id: 'lb1', position: 'LB', saleValue: 18 }),
-    makeSquadPlayer({ id: 'cm1', position: 'CM', homegrown: true, quality: 80, contract: { expiryYear: 2027, salary: 8 }, saleValue: 35 }),
-    makeSquadPlayer({ id: 'cm2', position: 'CM', saleValue: 22 }),
-    makeSquadPlayer({ id: 'am1', position: 'AM', age: 19, homegrown: true, quality: 78, saleValue: 30 }),
-    makeSquadPlayer({ id: 'rw1', position: 'RW', quality: 84, saleValue: 55 }),
-    makeSquadPlayer({ id: 'lw1', position: 'LW', age: 20, saleValue: 28 }),
-    makeSquadPlayer({ id: 'st1', position: 'ST', quality: 88, locked: true, saleValue: 85 }),
+    makeSquadPlayer({ id: 'gk1', position: 'GK', homegrown: true, baseValue: 15 }),
+    makeSquadPlayer({ id: 'gk2', position: 'GK', age: 31, baseValue: 3 }),
+    makeSquadPlayer({ id: 'cb1', position: 'CB', quality: 90, locked: true, baseValue: 70 }),
+    makeSquadPlayer({ id: 'cb2', position: 'CB', contract: { expiryYear: 2027, salary: 4 }, baseValue: 12 }),
+    makeSquadPlayer({ id: 'rb1', position: 'RB', homegrown: true, baseValue: 25 }),
+    makeSquadPlayer({ id: 'lb1', position: 'LB', baseValue: 18 }),
+    makeSquadPlayer({ id: 'cm1', position: 'CM', homegrown: true, quality: 80, contract: { expiryYear: 2027, salary: 8 }, baseValue: 35 }),
+    makeSquadPlayer({ id: 'cm2', position: 'CM', baseValue: 22 }),
+    makeSquadPlayer({ id: 'am1', position: 'AM', age: 19, homegrown: true, quality: 78, baseValue: 30 }),
+    makeSquadPlayer({ id: 'rw1', position: 'RW', quality: 84, baseValue: 55 }),
+    makeSquadPlayer({ id: 'lw1', position: 'LW', age: 20, baseValue: 28 }),
+    makeSquadPlayer({ id: 'st1', position: 'ST', quality: 88, locked: true, baseValue: 85 }),
   ];
 }
 
-/** Standard fixture market, 4 targets. */
+/** Standard fixture market for Summer 2026, 4 targets. */
 export function makeTestMarket(): MarketPlayer[] {
   return [
     makeMarketPlayer({ id: 'buy-st', position: 'ST', fee: 60, wageDemand: 9, quality: 86 }),
@@ -99,7 +109,30 @@ export function makeTestMarket(): MarketPlayer[] {
 }
 
 /**
+ * January 2027 fixture market. Deliberately re-lists buy-st (to prove the
+ * engine filters players already at the club) alongside a fresh target.
+ */
+export function makeJanuaryMarket(): MarketPlayer[] {
+  return [
+    makeMarketPlayer({ id: 'buy-st', position: 'ST', fee: 63, wageDemand: 9, quality: 86 }),
+    makeMarketPlayer({ id: 'jan-cm', position: 'CM', fee: 45, wageDemand: 7, quality: 81 }),
+  ];
+}
+
+/** Summer 2027 fixture market. */
+export function makeSummer27Market(): MarketPlayer[] {
+  return [
+    makeMarketPlayer({ id: 'buy-cb', position: 'CB', fee: 38, wageDemand: 5.5, quality: 79, age: 25 }),
+    makeMarketPlayer({ id: 's27-lw', position: 'LW', fee: 70, wageDemand: 8, quality: 84, age: 22 }),
+  ];
+}
+
+/**
  * Builds a complete single-window game config from the standard fixtures.
+ *
+ * The SCR settings give the fixture squad a starting cost of 122 (wages 62
+ * + baseline 60) against a cap of 170 (200 x 0.85): comfortable, so tests
+ * not aimed at the SCR never trip it.
  *
  * @returns A config using the test window, squad and market.
  */
@@ -108,5 +141,20 @@ export function makeTestConfig(): GameConfig {
     windows: [testWindow],
     initialSquad: makeTestSquad(),
     marketByWindow: [makeTestMarket()],
+    baselineAmortisation: 60,
+    squadCostCapBase: 200,
+  };
+}
+
+/**
+ * Builds a full three-window config from the standard fixtures.
+ *
+ * @returns A config spanning Summer 2026, January 2027 and Summer 2027.
+ */
+export function makeThreeWindowConfig(): GameConfig {
+  return {
+    ...makeTestConfig(),
+    windows: threeTestWindows,
+    marketByWindow: [makeTestMarket(), makeJanuaryMarket(), makeSummer27Market()],
   };
 }
