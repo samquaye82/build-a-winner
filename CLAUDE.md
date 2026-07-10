@@ -32,9 +32,11 @@ Determinism is a hard requirement. Identical action sequences must always produc
 
 ## Game rules being modelled
 
-- **Budgets** are per-window (fresh grant each window; sale proceeds add to funds), but the **squad cost ratio (SCR) rolls across windows**: annual wages plus annual transfer-fee amortisation (fee ÷ contract years, 5-year cap) measured against a fixed cap. A window 1 signing burdens SCR in every later window; selling removes the wage and remaining book value.
-- **Contract renewals** cost a salary increase (scaled by player quality and remaining term) and push back the free-agency cliff. Contract expiry is the game's central tension.
-- Players carry age, position, home-grown status (HGP / non-HG / U21) and contract data.
+- **Budgets** are per-window; unspent funds and sale proceeds roll forward. The **squad cost ratio (SCR) rolls across windows**: wages + amortisation (fee ÷ contract years) vs `squadCostCapBase × SCR_LIMIT`. The starting squad has no per-player book values; a club-level `baselineAmortisation` (GameConfig) provides the starting position and is never reduced by sales. No amortisation re-spreading on renewal.
+- **Contract renewals**: salary uplift scaled by urgency (remaining years), years added, and quality. **One renewal per player per game** (undoable within its window). Renewing also restores sale value (running-down discount: ×0.9 at 2 years left, ×0.7 in the final year).
+- **Sale values are derived, never authored**: `saleValue = baseValue × contract discount`. Authored data supplies `baseValue` (see `SquadPlayerSeed`).
+- **Window advancement is one-way** (`ADVANCE_WINDOW`), blocked while violations exist. Progression order between windows: expiry → age tick → value drift → market swap → funds. Expiry and ageing apply only at season boundaries (`seasonStartYear` increases); value drift applies at every transition at half the annual age/quality curve rate. Market pools are authored per window; the engine filters out players already at the club (buy-backs of sold players are allowed).
+- Players carry age, position, home-grown status (U21 derived from age ≤ 21) and contract data.
 
 ## Project conventions
 

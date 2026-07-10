@@ -10,7 +10,7 @@ import {
   isU21,
   validateState,
   type GameState,
-  type SquadPlayer,
+  type SquadPlayerSeed,
 } from '../../src/engine';
 import { validateRegistration } from '../../src/engine/rules/registration';
 import { makeSquadPlayer, makeTestConfig } from './fixtures';
@@ -19,8 +19,8 @@ import { makeSquadPlayer, makeTestConfig } from './fixtures';
  * Builds a squad of `count` over-21 players plus a goalkeeper, with a given
  * number of them non-home-grown.
  */
-function squadOf(count: number, nonHomegrown: number): SquadPlayer[] {
-  const players: SquadPlayer[] = [
+function squadOf(count: number, nonHomegrown: number): SquadPlayerSeed[] {
+  const players: SquadPlayerSeed[] = [
     makeSquadPlayer({ id: 'gk', position: 'GK', homegrown: true }),
   ];
   for (let i = 1; i < count; i += 1) {

@@ -12,7 +12,9 @@
  */
 import { EngineError } from './errors';
 import { roundMoney } from './money';
+import { advanceWindow } from './progression';
 import { priceRenewal } from './rules/renewal';
+import { computeSaleValue } from './rules/value';
 import {
   createGame,
   currentWindow,
@@ -78,6 +80,8 @@ function reduce(state: GameState, action: Action): GameState {
       return renew(state, action.playerId, action.newExpiryYear);
     case 'UNDO_RENEW':
       return undoRenew(state, action.playerId);
+    case 'ADVANCE_WINDOW':
+      return advanceWindow(state);
   }
 }
 
@@ -96,9 +100,11 @@ function buy(state: GameState, playerId: string): GameState {
     age: marketPlayer.age,
     homegrown: marketPlayer.homegrown,
     quality: marketPlayer.quality,
-    // Until values shift between windows (M2), a new signing can be moved
-    // on within the same window for the fee just paid.
-    saleValue: marketPlayer.fee,
+    // A new signing's base value is the fee just paid; the sale value
+    // applies the usual contract-length discount (unity for deals of three
+    // or more years).
+    baseValue: marketPlayer.fee,
+    saleValue: computeSaleValue(marketPlayer.fee, marketPlayer.contractYears),
     locked: false,
     contract: {
       expiryYear: window.seasonStartYear + marketPlayer.contractYears,
@@ -209,8 +215,9 @@ function undoSell(state: GameState, playerId: string): GameState {
 
 /**
  * Renews a squad player's contract to a new expiry year. The engine prices
- * the salary increase (see rules/renewal.ts); the player may be renewed at
- * most once per window.
+ * the salary increase (see rules/renewal.ts); a player may be renewed at
+ * most once per playthrough, so the timing of a renewal is itself a
+ * strategic decision.
  */
 function renew(
   state: GameState,
@@ -218,10 +225,10 @@ function renew(
   newExpiryYear: number,
 ): GameState {
   const player = requireSquadPlayer(state, playerId);
-  if (player.renewal?.windowIndex === state.windowIndex) {
+  if (player.renewal !== undefined) {
     throw new EngineError(
-      'ALREADY_RENEWED_THIS_WINDOW',
-      `${player.name} has already renewed this window`,
+      'ALREADY_RENEWED',
+      `${player.name} has already been renewed this game`,
     );
   }
 
@@ -231,6 +238,12 @@ function renew(
   const renewed: SquadPlayer = {
     ...player,
     contract: newContract,
+    // A longer deal removes the running-down discount, so renewing a
+    // final-year player also restores their sale price.
+    saleValue: computeSaleValue(
+      player.baseValue,
+      newContract.expiryYear - window.seasonStartYear,
+    ),
     renewal: {
       previousContract: player.contract,
       windowIndex: state.windowIndex,
@@ -256,9 +269,16 @@ function undoRenew(state: GameState, playerId: string): GameState {
     );
   }
 
+  const previousContract = player.renewal.previousContract;
   const restored: SquadPlayer = {
     ...player,
-    contract: player.renewal.previousContract,
+    contract: previousContract,
+    // Undo is same-window only, so the pre-renewal sale value can always be
+    // recomputed against the current window.
+    saleValue: computeSaleValue(
+      player.baseValue,
+      previousContract.expiryYear - currentWindow(state).seasonStartYear,
+    ),
   };
   delete restored.renewal;
 

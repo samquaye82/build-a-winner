@@ -13,7 +13,7 @@ import {
   OVER21_REGISTRATION_LIMIT,
   U21_AGE_LIMIT,
 } from '../constants';
-import type { SquadPlayer } from '../types';
+import type { PlayerCore } from '../types';
 import type { Violation } from './violations';
 
 /**
@@ -48,7 +48,7 @@ export interface RegistrationCounts {
  * @returns Counts used by both validation and the UI dashboard.
  */
 export function countRegistration(
-  squad: readonly SquadPlayer[],
+  squad: readonly PlayerCore[],
 ): RegistrationCounts {
   let over21 = 0;
   let nonHomegrownOver21 = 0;
@@ -83,7 +83,7 @@ export function countRegistration(
  * @returns A list of violations; empty when the squad is registrable.
  */
 export function validateRegistration(
-  squad: readonly SquadPlayer[],
+  squad: readonly PlayerCore[],
 ): Violation[] {
   const counts = countRegistration(squad);
   const violations: Violation[] = [];

@@ -216,13 +216,13 @@ describe('RENEW', () => {
     ).toThrowError(/5-year cap/);
   });
 
-  it('rejects_a_second_renewal_in_the_same_window', () => {
+  it('rejects_a_second_renewal_of_the_same_player', () => {
     expect(() =>
       play(
         { type: 'RENEW', playerId: 'cm1', newExpiryYear: 2029 },
         { type: 'RENEW', playerId: 'cm1', newExpiryYear: 2030 },
       ),
-    ).toThrowError(/already renewed this window/);
+    ).toThrowError(/already been renewed this game/);
   });
 });
 

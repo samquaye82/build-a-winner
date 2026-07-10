@@ -11,8 +11,7 @@
  * future verified leaderboard to replay a client's action log server-side
  * and recompute the score independently (see replay in actions.ts).
  *
- * Still to come: progression.ts and the squad cost ratio rule (M2), and
- * scoring.ts (M3).
+ * Still to come: scoring.ts (M3).
  */
 
 /**
@@ -21,7 +20,7 @@
  * Bump whenever a rules change would make scores incomparable with earlier
  * versions; a future leaderboard must only compare like-for-like versions.
  */
-export const ENGINE_VERSION = '0.1.0';
+export const ENGINE_VERSION = '0.2.0';
 
 export type {
   Action,
@@ -36,6 +35,7 @@ export type {
   Position,
   Renewal,
   SquadPlayer,
+  SquadPlayerSeed,
   WindowConfig,
   WindowId,
 } from './types';
@@ -48,4 +48,10 @@ export { createGame, currentWindow } from './state';
 export { validateState, isSubmittable } from './validate';
 export { countRegistration, isU21 } from './rules/registration';
 export { priceRenewal } from './rules/renewal';
+export { computeSquadCost, type SquadCostBreakdown } from './rules/scr';
+export {
+  annualValueGrowthRate,
+  computeSaleValue,
+  contractDiscount,
+} from './rules/value';
 export { roundMoney } from './money';
