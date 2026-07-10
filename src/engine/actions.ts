@@ -209,8 +209,9 @@ function undoSell(state: GameState, playerId: string): GameState {
 
 /**
  * Renews a squad player's contract to a new expiry year. The engine prices
- * the salary increase (see rules/renewal.ts); the player may be renewed at
- * most once per window.
+ * the salary increase (see rules/renewal.ts); a player may be renewed at
+ * most once per playthrough, so the timing of a renewal is itself a
+ * strategic decision.
  */
 function renew(
   state: GameState,
@@ -218,10 +219,10 @@ function renew(
   newExpiryYear: number,
 ): GameState {
   const player = requireSquadPlayer(state, playerId);
-  if (player.renewal?.windowIndex === state.windowIndex) {
+  if (player.renewal !== undefined) {
     throw new EngineError(
-      'ALREADY_RENEWED_THIS_WINDOW',
-      `${player.name} has already renewed this window`,
+      'ALREADY_RENEWED',
+      `${player.name} has already been renewed this game`,
     );
   }
 

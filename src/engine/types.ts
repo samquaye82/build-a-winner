@@ -79,8 +79,9 @@ export interface Acquisition {
 }
 
 /**
- * A record of a contract renewal made in the current window, kept so the
- * renewal can be undone. A player may be renewed at most once per window.
+ * A record of a contract renewal, kept so the renewal can be undone within
+ * the window it was made in. A player may be renewed at most once per
+ * playthrough: renew early and cheap, or late and expensive, but only once.
  */
 export interface Renewal {
   /** The contract as it stood before the renewal. */
