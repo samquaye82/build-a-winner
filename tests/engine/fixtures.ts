@@ -17,14 +17,15 @@ export const testWindow: WindowConfig = {
   id: 'summer-2026',
   label: 'Summer 2026',
   seasonStartYear: 2026,
+  midSeason: false,
   budget: 100,
 };
 
 /** The three real windows of a full playthrough, with test budgets. */
 export const threeTestWindows: readonly WindowConfig[] = [
   testWindow,
-  { id: 'january-2027', label: 'January 2027', seasonStartYear: 2026, budget: 30 },
-  { id: 'summer-2027', label: 'Summer 2027', seasonStartYear: 2027, budget: 80 },
+  { id: 'january-2027', label: 'January 2027', seasonStartYear: 2026, midSeason: true, budget: 30 },
+  { id: 'summer-2027', label: 'Summer 2027', seasonStartYear: 2027, midSeason: false, budget: 80 },
 ];
 
 /**
@@ -79,7 +80,8 @@ export function makeMarketPlayer(
  * - rw1, lw1 (U21 age 20), st1 (locked)
  *
  * Total wage bill 62. Sale values derive from baseValue: unity discount
- * everywhere except the two 2027 expiries (cb2 8.4, cm1 24.5).
+ * everywhere except the two 2027 expiries, 12 months out at Summer 2026
+ * (cb2 6, cm1 17.5).
  */
 export function makeTestSquad(): SquadPlayerSeed[] {
   return [

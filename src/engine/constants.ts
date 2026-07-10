@@ -72,12 +72,23 @@ export const RENEWAL_QUALITY_FACTOR_DIVISOR = 250;
 export const SCR_LIMIT = 0.85;
 
 /**
- * Contract-length discounts on sale value (M6 tuning candidates). A player
- * running down their deal sells cheap; renewing restores their price. Three
- * or more remaining years carry no discount.
+ * Contract-length discounts on sale value, by remaining months (M6 tuning
+ * candidates). A player running down their deal sells cheap; renewing
+ * restores their price. The 24/18/12-month anchors are Sam's; 30 and 6
+ * months continue the same line (only January windows produce them).
+ * Ordered by minMonths descending; the first matching row wins.
  */
-export const CONTRACT_DISCOUNT_TWO_YEARS = 0.9;
-export const CONTRACT_DISCOUNT_FINAL_YEAR = 0.7;
+export const CONTRACT_DISCOUNT_BY_MONTHS: readonly {
+  minMonths: number;
+  discount: number;
+}[] = [
+  { minMonths: 36, discount: 1 },
+  { minMonths: 30, discount: 0.95 },
+  { minMonths: 24, discount: 0.9 },
+  { minMonths: 18, discount: 0.75 },
+  { minMonths: 12, discount: 0.5 },
+  { minMonths: 0, discount: 0.25 },
+];
 
 /**
  * Deterministic value progression (M6 tuning candidates).

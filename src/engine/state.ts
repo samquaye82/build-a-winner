@@ -39,7 +39,8 @@ export function createGame(config: GameConfig): GameState {
     ...seed,
     saleValue: computeSaleValue(
       seed.baseValue,
-      seed.contract.expiryYear - firstWindow.seasonStartYear,
+      seed.contract.expiryYear,
+      firstWindow,
     ),
   }));
 

@@ -104,7 +104,11 @@ function buy(state: GameState, playerId: string): GameState {
     // applies the usual contract-length discount (unity for deals of three
     // or more years).
     baseValue: marketPlayer.fee,
-    saleValue: computeSaleValue(marketPlayer.fee, marketPlayer.contractYears),
+    saleValue: computeSaleValue(
+      marketPlayer.fee,
+      window.seasonStartYear + marketPlayer.contractYears,
+      window,
+    ),
     locked: false,
     contract: {
       expiryYear: window.seasonStartYear + marketPlayer.contractYears,
@@ -240,10 +244,7 @@ function renew(
     contract: newContract,
     // A longer deal removes the running-down discount, so renewing a
     // final-year player also restores their sale price.
-    saleValue: computeSaleValue(
-      player.baseValue,
-      newContract.expiryYear - window.seasonStartYear,
-    ),
+    saleValue: computeSaleValue(player.baseValue, newContract.expiryYear, window),
     renewal: {
       previousContract: player.contract,
       windowIndex: state.windowIndex,
@@ -277,7 +278,8 @@ function undoRenew(state: GameState, playerId: string): GameState {
     // recomputed against the current window.
     saleValue: computeSaleValue(
       player.baseValue,
-      previousContract.expiryYear - currentWindow(state).seasonStartYear,
+      previousContract.expiryYear,
+      currentWindow(state),
     ),
   };
   delete restored.renewal;

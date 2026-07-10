@@ -117,12 +117,11 @@ function progressPlayer(
 ): SquadPlayer {
   const age = seasonBoundary ? player.age + 1 : player.age;
   const baseValue = driftBaseValue(player.baseValue, age, player.quality);
-  const remainingYears = player.contract.expiryYear - nextWindow.seasonStartYear;
 
   return {
     ...player,
     age,
     baseValue,
-    saleValue: computeSaleValue(baseValue, remainingYears),
+    saleValue: computeSaleValue(baseValue, player.contract.expiryYear, nextWindow),
   };
 }
