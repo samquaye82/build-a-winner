@@ -1,0 +1,487 @@
+/**
+ * Application styles for the Sporting Director Game, implementing the
+ * component specs in design.md: red masthead, white page, notched grey
+ * cards, black pill section labels, quiet motion.
+ */
+@import './tokens.css';
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* ---- Masthead ------------------------------------------------------- */
+
+.masthead {
+  background: var(--red);
+  color: var(--white-88);
+  padding: 18px 24px;
+}
+
+.masthead-inner {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.masthead .wordmark {
+  font-family: var(--font-display);
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.masthead .window-context {
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ---- Page scaffold --------------------------------------------------- */
+
+.page {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.intro {
+  color: var(--ink-70);
+  max-width: 70ch;
+  margin: 12px 0 20px;
+}
+
+/* Black pill section label (design.md signature) */
+.pill {
+  display: inline-block;
+  background: var(--ink);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-radius: 999px;
+  padding: 6px 16px;
+  margin: 28px 0 14px;
+}
+
+/* ---- Constraint dashboard ------------------------------------------- */
+
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.tile {
+  background: var(--surface-muted);
+  padding: 14px 16px;
+}
+
+.tile .label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--ink-70);
+}
+
+.tile .value {
+  font-family: var(--font-display);
+  font-size: 26px;
+  margin-top: 4px;
+}
+
+.tile.violating {
+  background: var(--red-tint);
+}
+
+.tile.violating .value,
+.tile.violating .label {
+  color: var(--red);
+}
+
+.tile .sub {
+  font-size: 12px;
+  color: var(--ink-70);
+  margin-top: 2px;
+}
+
+.scr-meter {
+  height: 6px;
+  background: var(--ink-17);
+  margin-top: 8px;
+  position: relative;
+}
+
+.scr-meter > span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  display: block;
+}
+
+.scr-ok > span { background: var(--green); }
+.scr-warn > span { background: var(--gold); }
+.scr-over > span { background: var(--red); }
+
+/* Violations panel */
+.violations {
+  background: var(--red-tint);
+  color: var(--red);
+  font-weight: 700;
+  padding: 12px 16px;
+  margin: 12px 0;
+}
+
+.violations ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.all-clear {
+  background: var(--green-tint);
+  color: var(--green);
+  font-weight: 700;
+  padding: 12px 16px;
+  margin: 12px 0;
+}
+
+/* ---- Tabs & filters --------------------------------------------------- */
+
+.tabs {
+  display: flex;
+  gap: 24px;
+  border-bottom: 1px solid var(--ink-17);
+  margin: 20px 0 8px;
+}
+
+.tabs button {
+  background: none;
+  border: none;
+  padding: 10px 2px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  border-bottom: 3px solid transparent;
+  transition: border-color var(--speed) ease-out;
+}
+
+.tabs button.active {
+  border-bottom-color: var(--red);
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+
+.filters button {
+  background: var(--surface);
+  border: 1px solid var(--ink-17);
+  border-radius: 999px;
+  padding: 4px 14px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.filters button.active {
+  background: var(--ink);
+  color: #fff;
+  border-color: var(--ink);
+}
+
+/* ---- Player cards ----------------------------------------------------- */
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 12px;
+}
+
+.player-card {
+  background: var(--surface-muted);
+  padding: 14px 16px;
+  position: relative;
+  /* The signature diagonal notch clipped from the top-right corner. */
+  clip-path: polygon(0 0, calc(100% - 26px) 0, 100% 26px, 100% 100%, 0 100%);
+  transition: outline-color var(--speed) ease-out;
+  outline: 2px solid transparent;
+  outline-offset: -2px;
+}
+
+.player-card .quality {
+  font-family: var(--font-display);
+  font-size: 30px;
+  line-height: 1;
+}
+
+.player-card .name {
+  font-size: 20px;
+  margin: 6px 0 2px;
+}
+
+.player-card .meta {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--ink-70);
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.player-card .contract {
+  font-size: 13px;
+  color: var(--ink-70);
+  margin-top: 6px;
+}
+
+.player-card .contract strong {
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.player-card .actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.player-card .fee {
+  font-family: var(--font-display);
+  font-size: 16px;
+}
+
+.player-card .fee.in { color: var(--green); }
+
+.action-link {
+  background: none;
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--ink);
+  padding: 5px 0;
+  border-bottom: 2px solid transparent;
+  transition: border-color var(--speed) ease-out;
+}
+
+.action-link:hover { border-bottom-color: var(--red); }
+
+.player-card.selected-sale { outline-color: var(--red); }
+.player-card.selected-buy { outline-color: var(--green); }
+
+.player-card.locked { opacity: 0.6; }
+
+.badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 999px;
+}
+
+.badge.hg { background: var(--green-tint); color: var(--green); }
+.badge.u21 { background: var(--gold); color: var(--ink); }
+.badge.expiring { background: var(--red-tint); color: var(--red); }
+
+/* Renewal options */
+.renew-options {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.renew-options button {
+  border: 1px solid var(--ink-17);
+  background: var(--surface);
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: var(--radius-button);
+}
+
+.renew-options button:hover { border-color: var(--red); }
+
+/* ---- Buttons ---------------------------------------------------------- */
+
+.btn-primary {
+  background: var(--red);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-button);
+  font-size: 15px;
+  font-weight: 700;
+  padding: 12px 26px;
+  transition: background var(--speed) ease-out;
+}
+
+.btn-primary:hover { background: var(--red-deep); }
+
+.btn-primary:disabled {
+  background: var(--surface);
+  color: var(--ink-70);
+  border: 1px solid var(--ink-17);
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  border-radius: var(--radius-button);
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px 20px;
+}
+
+/* ---- Pitch (pick-your-XI) --------------------------------------------- */
+
+.formation-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 14px 0;
+}
+
+.formation-chips button {
+  background: var(--ink);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 16px;
+}
+
+.formation-chips button.active {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+.pitch {
+  position: relative;
+  background: linear-gradient(180deg, #2e8b47 0%, #247a3a 100%);
+  border: 2px solid #ffffff55;
+  aspect-ratio: 3 / 2.6;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.pitch .slot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 76px;
+  text-align: center;
+  background: none;
+  border: none;
+  color: #fff;
+}
+
+.pitch .slot .roundel {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 15px;
+  border: 2px dashed var(--white-40);
+  color: var(--white-88);
+  transition: border-color var(--speed) ease-out;
+}
+
+.pitch .slot:hover .roundel { border-color: #fff; }
+
+.pitch .slot.filled .roundel {
+  background: #fff;
+  border: 2px solid #fff;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 13px;
+}
+
+.pitch .slot .slot-name {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 4px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.slot-picker {
+  margin: 16px auto 0;
+  max-width: 760px;
+}
+
+.slot-picker .options {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.slot-picker button {
+  border: 1px solid var(--ink-17);
+  background: var(--surface-muted);
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: var(--radius-button);
+}
+
+.slot-picker button:hover { border-color: var(--red); }
+
+.xi-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 760px;
+  margin: 18px auto;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.xi-status {
+  font-weight: 700;
+  color: var(--ink-70);
+}
+
+/* ---- Window footer ----------------------------------------------------- */
+
+.window-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin: 26px 0 8px;
+}
+
+/* ---- Responsive -------------------------------------------------------- */
+
+@media (max-width: 640px) {
+  .dashboard { grid-template-columns: repeat(2, 1fr); }
+  .page { padding: 16px; }
+}

@@ -1,22 +1,57 @@
 /**
- * Root application component.
+ * Root application component: wires the game provider to the three UI
+ * phases. The engine owns all rules; this component only decides which
+ * screen is showing.
  *
- * Placeholder shell for M0. The real UI (transfer window screens, constraint
- * dashboard, pick-your-XI phase, end screen) arrives in M4, after the engine
- * is complete and the visual design has been agreed.
+ * Phases: 'window' (the three transfer windows) -> 'xi' (squad selection,
+ * final window only, can return to the window) -> 'end' (rating).
  */
-import { ENGINE_VERSION } from '../engine';
+import { useState } from 'react';
+import { devConfig } from '../data/devConfig';
+import { GameProvider } from './GameContext';
+import { EndScreen } from './components/EndScreen';
+import { Masthead } from './components/Masthead';
+import { WindowScreen } from './components/WindowScreen';
+import { XIScreen } from './components/XIScreen';
+import './styles/app.css';
+
+type Phase = 'window' | 'xi' | 'end';
+
+/** Masthead context labels for the non-window phases. */
+const PHASE_LABELS: Partial<Record<Phase, string>> = {
+  xi: 'Pick your XI',
+  end: 'Final rating',
+};
 
 /**
- * Renders the application shell.
+ * Renders the application.
  *
  * @returns The root React element for the game.
  */
 export function App(): React.JSX.Element {
+  const [phase, setPhase] = useState<Phase>('window');
+
   return (
-    <main>
-      <h1>Sporting Director Game</h1>
-      <p>Engine v{ENGINE_VERSION}. UI under construction.</p>
-    </main>
+    <GameProvider config={devConfig}>
+      <Masthead phaseLabel={PHASE_LABELS[phase]} />
+      {phase === 'window' && (
+        <WindowScreen
+          onEnterXI={() => {
+            setPhase('xi');
+          }}
+        />
+      )}
+      {phase === 'xi' && (
+        <XIScreen
+          onBack={() => {
+            setPhase('window');
+          }}
+          onConfirmed={() => {
+            setPhase('end');
+          }}
+        />
+      )}
+      {phase === 'end' && <EndScreen />}
+    </GameProvider>
   );
 }
