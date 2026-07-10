@@ -1,0 +1,31 @@
+/**
+ * Design tokens, transcribed from design.md (derived from liverpoolfc.com).
+ * Every component styles itself from these variables; no raw colours in
+ * component CSS.
+ */
+:root {
+  /* Palette */
+  --ink: #0c0c0c;
+  --surface: #ffffff;
+  --surface-muted: #f6f6f6;
+  --red: #e31b23;
+  --red-deep: #400000;
+  --ink-70: rgba(12, 12, 12, 0.7);
+  --ink-40: rgba(12, 12, 12, 0.4);
+  --ink-17: rgba(12, 12, 12, 0.17);
+  --gold: #ffd700;
+  --green: #009982;
+  --white-88: rgba(255, 255, 255, 0.88);
+  --white-40: rgba(255, 255, 255, 0.4);
+  --red-tint: rgba(227, 27, 35, 0.08);
+  --green-tint: rgba(0, 153, 130, 0.08);
+
+  /* Typography */
+  --font-ui: 'Figtree', system-ui, -apple-system, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  --font-display: 'Archivo Black', var(--font-ui);
+
+  /* Rhythm */
+  --radius-button: 4px;
+  --speed: 180ms;
+  --page-max: 1200px;
+}
