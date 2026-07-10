@@ -19,7 +19,10 @@ export type EngineErrorCode =
   | 'NOT_RENEWED_THIS_WINDOW'
   | 'INVALID_EXPIRY_YEAR'
   | 'NO_NEXT_WINDOW'
-  | 'WINDOW_NOT_SUBMITTABLE';
+  | 'WINDOW_NOT_SUBMITTABLE'
+  | 'NOT_FINAL_WINDOW'
+  | 'INVALID_XI'
+  | 'XI_NOT_PICKED';
 
 /**
  * Error thrown by reducers for structurally invalid actions.

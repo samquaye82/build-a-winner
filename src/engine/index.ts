@@ -11,7 +11,6 @@
  * future verified leaderboard to replay a client's action log server-side
  * and recompute the score independently (see replay in actions.ts).
  *
- * Still to come: scoring.ts (M3).
  */
 
 /**
@@ -20,7 +19,7 @@
  * Bump whenever a rules change would make scores incomparable with earlier
  * versions; a future leaderboard must only compare like-for-like versions.
  */
-export const ENGINE_VERSION = '0.3.0';
+export const ENGINE_VERSION = '0.4.0';
 
 export type {
   Action,
@@ -38,7 +37,16 @@ export type {
   SquadPlayerSeed,
   WindowConfig,
   WindowId,
+  XISelection,
 } from './types';
+
+export {
+  FORMATIONS,
+  type Formation,
+  type FormationId,
+  type FormationSlot,
+} from './formations';
+export { scoreGame, validateXI, type ScoreBreakdown } from './scoring';
 
 export { EngineError, type EngineErrorCode } from './errors';
 export type { Violation, ViolationCode } from './rules/violations';

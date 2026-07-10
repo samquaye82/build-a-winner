@@ -15,6 +15,7 @@ import { roundMoney } from './money';
 import { advanceWindow } from './progression';
 import { priceRenewal } from './rules/renewal';
 import { computeSaleValue } from './rules/value';
+import { validateXI } from './scoring';
 import {
   createGame,
   currentWindow,
@@ -27,6 +28,7 @@ import type {
   GameState,
   MarketPlayer,
   SquadPlayer,
+  XISelection,
 } from './types';
 
 /**
@@ -82,7 +84,24 @@ function reduce(state: GameState, action: Action): GameState {
       return undoRenew(state, action.playerId);
     case 'ADVANCE_WINDOW':
       return advanceWindow(state);
+    case 'PICK_XI':
+      return pickXI(state, action.selection);
   }
+}
+
+/**
+ * Chooses the starting eleven. Only available in the final window; picking
+ * again simply replaces the previous selection.
+ */
+function pickXI(state: GameState, selection: XISelection): GameState {
+  if (state.windowIndex !== state.config.windows.length - 1) {
+    throw new EngineError(
+      'NOT_FINAL_WINDOW',
+      'The starting eleven is picked after the final window',
+    );
+  }
+  validateXI(state, selection);
+  return { ...state, xi: selection };
 }
 
 /**
