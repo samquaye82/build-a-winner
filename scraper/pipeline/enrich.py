@@ -14,6 +14,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from .corrections import apply_corrections
 from .homegrown import homegrown_table
 from .ratings import join_ratings, load_ratings
 from .value_model import (
@@ -81,6 +82,9 @@ def main() -> int:
         lfc[["name", "age", "country", "hg_months", "hg_basis", "homegrown"]]
         .to_string(index=False)
     )
+
+    # Hand corrections last, so they survive every upstream change.
+    players = apply_corrections(players)
 
     players.to_csv(OUT_CSV, index=False)
     print(f"\nWrote {len(players)} players to {OUT_CSV}")
