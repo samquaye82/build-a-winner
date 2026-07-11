@@ -3,3 +3,10 @@ dist/
 *.local
 .DS_Store
 .playwright-mcp/
+
+# Scraper subproject
+scraper/.venv/
+scraper/cache/
+scraper/output/
+__pycache__/
+.pytest_cache/

@@ -110,8 +110,17 @@ function pickXI(state: GameState, selection: XISelection): GameState {
  */
 function buy(state: GameState, playerId: string): GameState {
   const marketPlayer = requireMarketPlayer(state, playerId);
+  if (marketPlayer.locked === true) {
+    throw new EngineError(
+      'PLAYER_LOCKED',
+      `${marketPlayer.name}'s club refuses to sell`,
+    );
+  }
   const window = currentWindow(state);
 
+  // A signing's book value is the fee paid unless the listing carries an
+  // explicit base value (free agents cost nothing but are worth plenty).
+  const baseValue = marketPlayer.baseValue ?? marketPlayer.fee;
   const signed: SquadPlayer = {
     id: marketPlayer.id,
     name: marketPlayer.name,
@@ -119,12 +128,9 @@ function buy(state: GameState, playerId: string): GameState {
     age: marketPlayer.age,
     homegrown: marketPlayer.homegrown,
     quality: marketPlayer.quality,
-    // A new signing's base value is the fee just paid; the sale value
-    // applies the usual contract-length discount (unity for deals of three
-    // or more years).
-    baseValue: marketPlayer.fee,
+    baseValue,
     saleValue: computeSaleValue(
-      marketPlayer.fee,
+      baseValue,
       window.seasonStartYear + marketPlayer.contractYears,
       window,
     ),

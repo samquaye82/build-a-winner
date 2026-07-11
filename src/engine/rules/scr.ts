@@ -17,6 +17,7 @@
  */
 import { SCR_LIMIT } from '../constants';
 import { roundMoney } from '../money';
+import { currentWindow } from '../state';
 import type { GameState } from '../types';
 import type { Violation } from './violations';
 
@@ -61,14 +62,17 @@ export function computeSquadCost(state: GameState): SquadCostBreakdown {
   const total = roundMoney(
     wageBill + state.config.baselineAmortisation + signingAmortisation,
   );
+  // The cap basis is the CURRENT season's revenue: it rises with each
+  // season the game passes through.
+  const capBase = currentWindow(state).squadCostCapBase;
 
   return {
     wageBill,
     baselineAmortisation: state.config.baselineAmortisation,
     signingAmortisation,
     total,
-    cap: roundMoney(state.config.squadCostCapBase * SCR_LIMIT),
-    ratio: Math.round((total / state.config.squadCostCapBase) * 1000) / 1000,
+    cap: roundMoney(capBase * SCR_LIMIT),
+    ratio: Math.round((total / capBase) * 1000) / 1000,
   };
 }
 

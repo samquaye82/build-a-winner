@@ -17,7 +17,10 @@
     "noEmit": true,
     "isolatedModules": true,
     "skipLibCheck": true,
+    "resolveJsonModule": true,
     "types": ["vite/client"]
   },
+  /* scripts/ is excluded: the generator needs node types (@types/node is
+     not an approved dependency); Vite bundles and runs it regardless. */
   "include": ["src", "tests"]
 }

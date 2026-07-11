@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "generate:data": "vite build --ssr scripts/generate-data.ts --outDir node_modules/.tmp/gen --emptyOutDir && node node_modules/.tmp/gen/generate-data.js"
   },
   "dependencies": {
     "react": "^19.2.7",
