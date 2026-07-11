@@ -13,6 +13,7 @@ import {
   roundMoney,
   type Contract,
   type GameState,
+  type MarketPlayer,
   type Position,
   type ScoreBreakdown,
   type SquadPlayer,
@@ -128,6 +129,108 @@ export function renewalOptions(
  */
 export function isExpiring(player: SquadPlayer, window: WindowConfig): boolean {
   return remainingMonths(player.contract.expiryYear, window) <= 12;
+}
+
+/** Display names for the market browser's league filter. */
+export const LEAGUE_LABELS: Readonly<Record<string, string>> = {
+  'premier-league': 'Premier League',
+  'la-liga': 'La Liga',
+  bundesliga: 'Bundesliga',
+  'serie-a': 'Serie A',
+  'ligue-1': 'Ligue 1',
+  'primeira-liga': 'Primeira Liga',
+  eredivisie: 'Eredivisie',
+  'pro-league': 'Belgian Pro League',
+  'free-agent': 'Free agents',
+};
+
+/** Accent-insensitive lowercase form for search ("Ekitiké" matches "ekitike"). */
+function searchable(text: string): string {
+  return text
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase();
+}
+
+/** The market browser's filter state. */
+export interface MarketFilters {
+  query: string;
+  league: string;
+  club: string;
+  position: Position | 'ALL';
+}
+
+/** An unfiltered browser. */
+export const EMPTY_FILTERS: MarketFilters = {
+  query: '',
+  league: 'ALL',
+  club: 'ALL',
+  position: 'ALL',
+};
+
+/**
+ * Filters and ranks the market for the browser.
+ *
+ * @param market - The current window's market pool.
+ * @param filters - Active filter state.
+ * @param limit - Maximum results to return (the UI shows a refine hint).
+ * @returns The top matches (best quality first) and the total match count.
+ */
+export function filterMarket(
+  market: readonly MarketPlayer[],
+  filters: MarketFilters,
+  limit = 30,
+): { results: MarketPlayer[]; total: number } {
+  const query = searchable(filters.query.trim());
+  const matches = market.filter((player) => {
+    if (filters.league !== 'ALL' && player.league !== filters.league) {
+      return false;
+    }
+    if (filters.club !== 'ALL' && player.club !== filters.club) {
+      return false;
+    }
+    if (filters.position !== 'ALL' && player.position !== filters.position) {
+      return false;
+    }
+    return query === '' || searchable(player.name).includes(query);
+  });
+  const ranked = [...matches].sort(
+    (a, b) => b.quality - a.quality || a.name.localeCompare(b.name),
+  );
+  return { results: ranked.slice(0, limit), total: matches.length };
+}
+
+/**
+ * The league keys present in a market pool, in display order.
+ *
+ * @param market - The market pool.
+ * @returns League keys ordered as in LEAGUE_LABELS.
+ */
+export function leaguesIn(market: readonly MarketPlayer[]): string[] {
+  const present = new Set(
+    market.map((p) => p.league).filter((l): l is string => l !== undefined),
+  );
+  return Object.keys(LEAGUE_LABELS).filter((key) => present.has(key));
+}
+
+/**
+ * The clubs available under the current league filter, alphabetically.
+ *
+ * @param market - The market pool.
+ * @param league - Selected league key, or 'ALL'.
+ * @returns Sorted club names.
+ */
+export function clubsIn(
+  market: readonly MarketPlayer[],
+  league: string,
+): string[] {
+  const clubs = new Set(
+    market
+      .filter((p) => league === 'ALL' || p.league === league)
+      .map((p) => p.club)
+      .filter((c): c is string => c !== undefined),
+  );
+  return [...clubs].sort((a, b) => a.localeCompare(b));
 }
 
 /** The story of a finished playthrough, for the end screen. */

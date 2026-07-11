@@ -8,7 +8,8 @@ import { currentWindow, isSubmittable, type Position } from '../../engine';
 import { useGame } from '../GameContext';
 import { groupByPosition, POSITION_LABELS, POSITION_ORDER } from '../helpers';
 import { Dashboard } from './Dashboard';
-import { MarketCard, RenewalCard, SoldCard, SquadCard } from './PlayerCards';
+import { MarketBrowser } from './MarketBrowser';
+import { RenewalCard, SoldCard, SquadCard } from './PlayerCards';
 
 type Tab = 'squad' | 'market' | 'renewals';
 
@@ -97,38 +98,31 @@ export function WindowScreen({ onEnterXI }: { onEnterXI: () => void }): React.JS
         </button>
       </div>
 
-      <div className="filters">
-        <button
-          type="button"
-          className={filter === 'ALL' ? 'active' : ''}
-          onClick={() => setFilter('ALL')}
-        >
-          All
-        </button>
-        {POSITION_ORDER.map((position) => (
+      {tab !== 'market' && (
+        <div className="filters">
           <button
-            key={position}
             type="button"
-            className={filter === position ? 'active' : ''}
-            onClick={() => setFilter(position)}
+            className={filter === 'ALL' ? 'active' : ''}
+            onClick={() => setFilter('ALL')}
           >
-            {position}
+            All
           </button>
-        ))}
-      </div>
+          {POSITION_ORDER.map((position) => (
+            <button
+              key={position}
+              type="button"
+              className={filter === position ? 'active' : ''}
+              onClick={() => setFilter(position)}
+            >
+              {position}
+            </button>
+          ))}
+        </div>
+      )}
 
       {tab === 'squad' && (
         <>
-          {groupByPosition(byFilter(state.squad)).map(([position, group]) => (
-            <section key={position}>
-              <span className="pill">{POSITION_LABELS[position]}</span>
-              <div className="card-grid">
-                {group.map((player) => (
-                  <SquadCard key={player.id} player={player} />
-                ))}
-              </div>
-            </section>
-          ))}
+          {/* Sales sit above the squad so they are never below the fold. */}
           {soldThisWindow.length > 0 && (
             <section>
               <span className="pill">Sold this window</span>
@@ -139,20 +133,20 @@ export function WindowScreen({ onEnterXI }: { onEnterXI: () => void }): React.JS
               </div>
             </section>
           )}
+          {groupByPosition(byFilter(state.squad)).map(([position, group]) => (
+            <section key={position}>
+              <span className="pill">{POSITION_LABELS[position]}</span>
+              <div className="card-grid">
+                {group.map((player) => (
+                  <SquadCard key={player.id} player={player} />
+                ))}
+              </div>
+            </section>
+          ))}
         </>
       )}
 
-      {tab === 'market' &&
-        groupByPosition(byFilter(state.market)).map(([position, group]) => (
-          <section key={position}>
-            <span className="pill">{POSITION_LABELS[position]}</span>
-            <div className="card-grid">
-              {group.map((player) => (
-                <MarketCard key={player.id} player={player} />
-              ))}
-            </div>
-          </section>
-        ))}
+      {tab === 'market' && <MarketBrowser />}
 
       {tab === 'renewals' &&
         groupByPosition(byFilter(state.squad)).map(([position, group]) => (
