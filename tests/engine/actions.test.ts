@@ -268,3 +268,16 @@ describe('immutability', () => {
     expect(before).toEqual(snapshot);
   });
 });
+
+describe('locked market players', () => {
+  it('rejects_buying_a_player_whose_club_will_not_sell', () => {
+    const config = makeTestConfig();
+    const pools = config.marketByWindow.map((pool) =>
+      pool.map((p) => (p.id === 'buy-st' ? { ...p, locked: true } : p)),
+    );
+    const state = createGame({ ...config, marketByWindow: pools });
+    expect(() =>
+      applyAction(state, { type: 'BUY', playerId: 'buy-st' }),
+    ).toThrowError(/refuses to sell/);
+  });
+});

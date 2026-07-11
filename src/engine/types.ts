@@ -133,6 +133,12 @@ export interface MarketPlayer extends PlayerCore {
   wageDemand: number;
   /** Contract length in years the player demands. */
   contractYears: number;
+  /** True when the player's club refuses to sell: visible, unbuyable. */
+  locked?: boolean;
+  /** Current club, for the market browser. */
+  club?: string;
+  /** League key, for the market browser. */
+  league?: string;
 }
 
 /** Why a player is no longer at the club. 'expired' arrives with M2. */

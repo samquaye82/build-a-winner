@@ -110,6 +110,12 @@ function pickXI(state: GameState, selection: XISelection): GameState {
  */
 function buy(state: GameState, playerId: string): GameState {
   const marketPlayer = requireMarketPlayer(state, playerId);
+  if (marketPlayer.locked === true) {
+    throw new EngineError(
+      'PLAYER_LOCKED',
+      `${marketPlayer.name}'s club refuses to sell`,
+    );
+  }
   const window = currentWindow(state);
 
   const signed: SquadPlayer = {
