@@ -87,39 +87,67 @@ export function SquadCard({ player }: { player: SquadPlayer }): React.JSX.Elemen
 }
 
 /**
- * A transfer-market card with a buy action.
+ * A transfer-market card with a buy action (or a locked notice when the
+ * player's club refuses to sell).
  *
  * @param props.player - The market player to render.
+ * @param props.onBought - Optional callback after a successful purchase.
  * @returns The card element.
  */
-export function MarketCard({ player }: { player: MarketPlayer }): React.JSX.Element {
+export function MarketCard({
+  player,
+  onBought,
+}: {
+  player: MarketPlayer;
+  onBought?: () => void;
+}): React.JSX.Element {
   const { dispatch } = useGame();
+  const isFree = player.fee === 0;
+  const isLocked = player.locked === true;
+
   return (
-    <article className="player-card">
+    <article className={`player-card${isLocked ? ' locked' : ''}`}>
       <div className="quality">{player.quality}</div>
-      <h3 className="name">{player.name}</h3>
+      <h3 className="name">
+        {player.name}
+        {isLocked ? ' 🔒' : ''}
+      </h3>
       <div className="meta">
         <span>{player.position}</span>
         <span>{player.age}</span>
+        {player.club !== undefined && <span>{player.club}</span>}
         {player.age <= 21 ? (
           <span className="badge u21">U21</span>
         ) : player.homegrown ? (
           <span className="badge hg">HG</span>
         ) : null}
+        {isFree && <span className="badge free">Free agent</span>}
       </div>
       <div className="contract">
         Wants <strong>{formatSalary(player.wageDemand)}</strong> ·{' '}
         {player.contractYears}-year deal
       </div>
       <div className="actions">
-        <span className="fee">{formatMoney(player.fee)}</span>
-        <button
-          type="button"
-          className="action-link"
-          onClick={() => dispatch({ type: 'BUY', playerId: player.id })}
-        >
-          Buy
-        </button>
+        {isLocked ? (
+          <span className="fee">Club refuses to sell</span>
+        ) : (
+          <>
+            <span className="fee">
+              {isFree ? 'Free' : formatMoney(player.fee)}
+            </span>
+            <button
+              type="button"
+              className="action-link"
+              onClick={() => {
+                if (dispatch({ type: 'BUY', playerId: player.id })) {
+                  onBought?.();
+                }
+              }}
+            >
+              Buy
+            </button>
+          </>
+        )}
       </div>
     </article>
   );

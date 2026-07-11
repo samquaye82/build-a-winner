@@ -2,7 +2,7 @@
  * The pick-your-XI screen: formation chips, a tap-to-fill pitch, and the
  * confirm action that dispatches PICK_XI (design.md §3, pitch spec).
  */
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   FORMATIONS,
   type FormationId,
@@ -30,6 +30,15 @@ export function XIScreen({
   // picks[slotIndex] = playerId | null, aligned with the formation slots.
   const [picks, setPicks] = useState<(string | null)[]>(Array(11).fill(null));
   const [activeSlot, setActiveSlot] = useState<number | null>(null);
+  const pickerRef = useRef<HTMLDivElement>(null);
+
+  // The picker opens below the pitch; bring it into view when it appears
+  // (Sam's below-the-fold fix).
+  useEffect(() => {
+    if (activeSlot !== null) {
+      pickerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [activeSlot]);
 
   const formation = FORMATIONS[formationId];
   const coords = SLOT_COORDS[formationId];
@@ -121,7 +130,7 @@ export function XIScreen({
       </div>
 
       {activeSlot !== null && (
-        <div className="slot-picker">
+        <div className="slot-picker" ref={pickerRef}>
           <span className="pill">
             Pick a {formation.slots[activeSlot]?.label ?? ''}
           </span>

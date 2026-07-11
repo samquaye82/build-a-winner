@@ -7,7 +7,7 @@
  * final window only, can return to the window) -> 'end' (rating).
  */
 import { useState } from 'react';
-import { devConfig } from '../data/devConfig';
+import { realConfig } from '../data/realConfig';
 import { GameProvider } from './GameContext';
 import { EndScreen } from './components/EndScreen';
 import { Masthead } from './components/Masthead';
@@ -32,7 +32,7 @@ export function App(): React.JSX.Element {
   const [phase, setPhase] = useState<Phase>('window');
 
   return (
-    <GameProvider config={devConfig}>
+    <GameProvider config={realConfig}>
       <Masthead phaseLabel={PHASE_LABELS[phase]} />
       {phase === 'window' && (
         <WindowScreen
