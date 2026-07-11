@@ -10,8 +10,11 @@ import {
   isU21,
   priceRenewal,
   remainingMonths,
+  roundMoney,
   type Contract,
+  type GameState,
   type Position,
+  type ScoreBreakdown,
   type SquadPlayer,
   type WindowConfig,
 } from '../engine';
@@ -125,6 +128,83 @@ export function renewalOptions(
  */
 export function isExpiring(player: SquadPlayer, window: WindowConfig): boolean {
   return remainingMonths(player.contract.expiryYear, window) <= 12;
+}
+
+/** The story of a finished playthrough, for the end screen. */
+export interface EndSummary {
+  /** Players signed in-game (still here or since moved on). */
+  signings: number;
+  /** Total fees paid (EUR m). */
+  spent: number;
+  /** Players sold. */
+  sales: number;
+  /** Total fees banked (EUR m). */
+  raised: number;
+  /** spent - raised (EUR m); negative means a net profit. */
+  netSpend: number;
+  /** Names of players whose contracts expired unrenewed and unsold. */
+  freeExits: string[];
+  /** Final squad value (sum of base values, EUR m). */
+  squadValue: number;
+  /** Funds left unspent (EUR m). */
+  fundsLeft: number;
+}
+
+/**
+ * Summarises a finished playthrough for the end screen.
+ *
+ * @param state - The final game state.
+ * @returns Totals derived from squad acquisitions and departures.
+ */
+export function endSummary(state: GameState): EndSummary {
+  const everyone = [
+    ...state.squad,
+    ...state.departed.map((d) => d.player),
+  ];
+  const signings = everyone.filter((p) => p.acquisition !== undefined);
+  const sold = state.departed.filter((d) => d.reason === 'sold');
+
+  const spent = roundMoney(
+    signings.reduce((sum, p) => sum + (p.acquisition?.fee ?? 0), 0),
+  );
+  const raised = roundMoney(
+    sold.reduce((sum, d) => sum + d.player.saleValue, 0),
+  );
+
+  return {
+    signings: signings.length,
+    spent,
+    sales: sold.length,
+    raised,
+    netSpend: roundMoney(spent - raised),
+    freeExits: state.departed
+      .filter((d) => d.reason === 'expired')
+      .map((d) => d.player.name),
+    squadValue: roundMoney(
+      state.squad.reduce((sum, p) => sum + p.baseValue, 0),
+    ),
+    fundsLeft: state.funds,
+  };
+}
+
+/**
+ * Builds the plain-text share summary for the end screen's share button.
+ *
+ * @param state - The final game state.
+ * @param breakdown - The score breakdown for the same state.
+ * @returns A short multi-line summary suitable for a social post.
+ */
+export function buildShareText(
+  state: GameState,
+  breakdown: ScoreBreakdown,
+): string {
+  const summary = endSummary(state);
+  const shape = state.xi?.formationId ?? '';
+  return [
+    `Sporting Director: ${String(breakdown.total)}/100`,
+    `Three windows, ${String(summary.signings)} in, ${String(summary.sales)} out, net spend ${formatMoney(summary.netSpend)}.`,
+    `Final squad value ${formatMoney(summary.squadValue)} in a ${shape}.`,
+  ].join('\n');
 }
 
 /**
