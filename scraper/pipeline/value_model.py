@@ -217,8 +217,27 @@ def add_true_value(players: pd.DataFrame) -> pd.DataFrame:
         blended,
     )
     final = np.minimum(np.maximum(0.1, clamped), GLOBAL_VALUE_CEILING_M)
-    result["true_value_m"] = np.round(final, 1)
+    result["true_value_m"] = round_game_value(final)
     return result
+
+
+def round_game_value(values: np.ndarray) -> np.ndarray:
+    """Rounds values to transfer-fee-like numbers (Sam, 11/07/2026).
+
+    Nearest 10 above EUR 50m, nearest 5 between 10 and 50, nearest 0.5
+    below 10 (so cheap squad players keep meaningful prices), with a
+    EUR 0.5m floor so nobody is accidentally free.
+
+    Args:
+        values: Values in EUR m.
+
+    Returns:
+        Rounded values.
+    """
+    small = np.maximum(0.5, np.round(values * 2) / 2)
+    mid = np.round(values / 5) * 5
+    big = np.round(values / 10) * 10
+    return np.where(values < 10, small, np.where(values < 50, mid, big))
 
 
 def add_wages(players: pd.DataFrame) -> pd.DataFrame:
