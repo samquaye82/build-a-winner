@@ -129,11 +129,31 @@ def add_quality(players: pd.DataFrame) -> pd.DataFrame:
 MODEL_BLEND_WEIGHT = 0.5
 
 #: Bounds on how far the final value may argue with a published TM value.
+#: The ceiling is age-graded (Sam, 11/07/2026): youth market values move
+#: fastest, so the model may argue hardest about teenagers.
 BLEND_FLOOR_RATIO = 0.65
-BLEND_CEILING_RATIO = 1.5
+CEILING_RATIO_YOUNG = 2.0
+CEILING_RATIO_MATURE = 1.5
+CEILING_AGE_YOUNG = 18
+CEILING_AGE_MATURE = 24
 
 #: Global ceiling (EUR m): no game value exceeds this, model or not.
-GLOBAL_VALUE_CEILING_M = 220.0
+GLOBAL_VALUE_CEILING_M = 250.0
+
+
+def ceiling_ratio(age: np.ndarray) -> np.ndarray:
+    """The age-graded ceiling ratio: 2.0x at 18 tapering to 1.5x by 24.
+
+    Args:
+        age: Player ages.
+
+    Returns:
+        Per-player ceiling ratios over the TM market value.
+    """
+    taper = (CEILING_AGE_MATURE - age) / (CEILING_AGE_MATURE - CEILING_AGE_YOUNG)
+    return CEILING_RATIO_MATURE + (
+        CEILING_RATIO_YOUNG - CEILING_RATIO_MATURE
+    ) * np.clip(taper, 0, 1)
 
 
 def add_true_value(players: pd.DataFrame) -> pd.DataFrame:
@@ -185,6 +205,7 @@ def add_true_value(players: pd.DataFrame) -> pd.DataFrame:
 
     tm = result.tm_value_m.to_numpy(dtype=float)
     has_tm = ~np.isnan(tm)
+    ages = result.age.to_numpy(dtype=float)
 
     blended = np.expm1(
         MODEL_BLEND_WEIGHT * np.log1p(model)
@@ -192,7 +213,7 @@ def add_true_value(players: pd.DataFrame) -> pd.DataFrame:
     )
     clamped = np.where(
         has_tm,
-        np.clip(blended, BLEND_FLOOR_RATIO * tm, BLEND_CEILING_RATIO * tm),
+        np.clip(blended, BLEND_FLOOR_RATIO * tm, ceiling_ratio(ages) * tm),
         blended,
     )
     final = np.minimum(np.maximum(0.1, clamped), GLOBAL_VALUE_CEILING_M)

@@ -46,10 +46,12 @@ def load_ratings() -> pd.DataFrame:
     ratings["surname"] = display.map(surname_key)
     ratings["alt_surname"] = full_name.map(surname_key)
     ratings["birthdate"] = ratings["birthdate"].str[:10]
-    ratings = ratings.rename(columns={"overallRating": "fc26_rating"})
+    ratings = ratings.rename(
+        columns={"overallRating": "fc26_rating", "age": "fc26_age"}
+    )
     return ratings[
-        ["fc26_rating", "name_key", "alt_name_key", "surname", "alt_surname",
-         "birthdate", "team", "leagueName"]
+        ["fc26_rating", "fc26_age", "name_key", "alt_name_key", "surname",
+         "alt_surname", "birthdate", "team", "leagueName"]
     ]
 
 
@@ -98,7 +100,11 @@ def join_ratings(players: pd.DataFrame, ratings: pd.DataFrame) -> pd.DataFrame:
         if len(hits) == 1:
             rating_by_index[index] = (float(hits[0].fc26_rating), "dob-token")
 
-    # Layer 3: globally unique full-name match.
+    # Layer 3: globally unique full-name match, age-guarded. Uniqueness in
+    # FC 26 does not preclude a lower-league namesake on our side: an early
+    # version of this join awarded a 22-year-old squad player Mohamed
+    # Salah's 91 rating. Ages may differ by one (the sources snapshot ages
+    # about a year apart).
     name_counts = ratings.name_key.value_counts()
     unique_names = ratings[ratings.name_key.map(name_counts) == 1].set_index(
         "name_key"
@@ -108,7 +114,8 @@ def join_ratings(players: pd.DataFrame, ratings: pd.DataFrame) -> pd.DataFrame:
             continue
         if row.cap_name_key in unique_names.index:
             hit = unique_names.loc[row.cap_name_key]
-            rating_by_index[index] = (float(hit.fc26_rating), "name-unique")
+            if abs(float(hit.fc26_age) - float(row.age)) <= 1:
+                rating_by_index[index] = (float(hit.fc26_rating), "name-unique")
 
     result["fc26_rating"] = pd.Series(
         {i: r for i, (r, _) in rating_by_index.items()}
