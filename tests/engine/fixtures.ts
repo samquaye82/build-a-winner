@@ -19,13 +19,14 @@ export const testWindow: WindowConfig = {
   seasonStartYear: 2026,
   midSeason: false,
   budget: 100,
+  squadCostCapBase: 250,
 };
 
 /** The three real windows of a full playthrough, with test budgets. */
 export const threeTestWindows: readonly WindowConfig[] = [
   testWindow,
-  { id: 'january-2027', label: 'January 2027', seasonStartYear: 2026, midSeason: true, budget: 30 },
-  { id: 'summer-2027', label: 'Summer 2027', seasonStartYear: 2027, midSeason: false, budget: 80 },
+  { id: 'january-2027', label: 'January 2027', seasonStartYear: 2026, midSeason: true, budget: 30, squadCostCapBase: 250 },
+  { id: 'summer-2027', label: 'Summer 2027', seasonStartYear: 2027, midSeason: false, budget: 80, squadCostCapBase: 260 },
 ];
 
 /**
@@ -133,7 +134,7 @@ export function makeSummer27Market(): MarketPlayer[] {
  * Builds a complete single-window game config from the standard fixtures.
  *
  * The SCR settings give the fixture squad a starting cost of 122 (wages 62
- * + baseline 60) against a cap of 170 (200 x 0.85): comfortable, so tests
+ * + baseline 60) against a cap of 175 (250 x 0.7): comfortable, so tests
  * not aimed at the SCR never trip it.
  *
  * @returns A config using the test window, squad and market.
@@ -144,7 +145,6 @@ export function makeTestConfig(): GameConfig {
     initialSquad: makeTestSquad(),
     marketByWindow: [makeTestMarket()],
     baselineAmortisation: 60,
-    squadCostCapBase: 200,
   };
 }
 

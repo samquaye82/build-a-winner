@@ -133,6 +133,12 @@ export interface MarketPlayer extends PlayerCore {
   wageDemand: number;
   /** Contract length in years the player demands. */
   contractYears: number;
+  /**
+   * Underlying market value (EUR m) if it differs from the fee. Free
+   * agents cost nothing but are not worth nothing: without this, a free
+   * signing would carry a zero book value forever.
+   */
+  baseValue?: number;
   /** True when the player's club refuses to sell: visible, unbuyable. */
   locked?: boolean;
   /** Current club, for the market browser. */
@@ -175,6 +181,12 @@ export interface WindowConfig {
   midSeason: boolean;
   /** Fresh transfer budget (EUR m) granted by the board for this window. */
   budget: number;
+  /**
+   * Club revenue (EUR m) for the season this window belongs to: the basis
+   * the squad cost ratio is measured against. Rising revenue across the
+   * game's windows buys extra SCR headroom each season.
+   */
+  squadCostCapBase: number;
 }
 
 /**
@@ -188,18 +200,14 @@ export interface GameConfig {
   /** One market pool per window, index-aligned with `windows`. */
   marketByWindow: readonly (readonly MarketPlayer[])[];
   /**
-   * Annual transfer-fee amortisation (EUR m) already on the club's books at
-   * game start, from pre-game signings. A club-level total: starting squad
-   * players carry no individual book values, so selling one removes their
-   * wage from the SCR but never touches this baseline.
+   * Annual squad cost (EUR m) already on the club's books at game start
+   * beyond current fixed player salaries: historic transfer amortisation
+   * plus the SCR components the game does not itemise (bonuses, coaching
+   * staff wages, agent fees). A club-level total: starting squad players
+   * carry no individual book values, so selling one removes their wage
+   * from the SCR but never touches this baseline.
    */
   baselineAmortisation: number;
-  /**
-   * The club's squad cost cap basis (EUR m), representing the revenue
-   * figure the SCR is measured against. Squad cost (wages + amortisation)
-   * must stay within SCR_LIMIT of this number in every window.
-   */
-  squadCostCapBase: number;
 }
 
 /**

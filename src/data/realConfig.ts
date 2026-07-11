@@ -6,12 +6,16 @@
  * applying the hand-editable locked lists at build time so edits to
  * lockedLists.ts take effect on refresh without regeneration.
  *
- * Money constants (provisional, tuned with Sam):
+ * Money constants (Sam, 11/07/2026):
  * - Budgets 250 / 0 / 250: one EUR 250m pot per fiscal year; January
  *   spends only what Summer left over (engine rollover handles this).
- * - SCR: baseline amortisation EUR 140m/yr (the pre-game transfer book),
- *   cap basis EUR 480m, so squad cost starts around two-thirds of the
- *   85% cap and two marquee signings bring genuine squeeze.
+ * - SCR: 70% of season revenue. Revenues 850 (25/26, the opening
+ *   position), 875 (26/27) and 900 (27/28): the cap grows with the club.
+ * - Baseline EUR 340m/yr: historic amortisation PLUS the SCR components
+ *   the game does not itemise (bonuses, coaching staff, agent fees; our
+ *   scraped wages are fixed player salaries only). Calibrated so the
+ *   opening SCR sits around 64%, up from the real 60% of 24/25 after the
+ *   Isak/Wirtz/Ekitike spree, partly offset by big frees departing.
  */
 import type {
   GameConfig,
@@ -38,7 +42,7 @@ interface GeneratedMarketPlayer {
   quality: number;
   club: string;
   league: string;
-  windows: { fee: number; wage: number; years: number; freeAgent?: boolean }[];
+  windows: { fee: number; wage: number; years: number; baseValue?: number; freeAgent?: boolean }[];
 }
 
 interface GeneratedSquadPlayer {
@@ -52,19 +56,21 @@ interface GeneratedSquadPlayer {
   contract: { expiryYear: number; salary: number };
 }
 
-const BASELINE_AMORTISATION = 140;
-const SQUAD_COST_CAP_BASE = 480;
+const BASELINE_AMORTISATION = 340;
 const BUDGETS: readonly number[] = [250, 0, 250];
+/** Season revenues (EUR m): 25/26 opening basis, then 26/27 and 27/28. */
+const REVENUES: readonly number[] = [850, 875, 900];
 
-const windows: WindowConfig[] = (
-  gameData.windows as (WindowConfig & { budget: number })[]
-).map((window, index) => ({
-  id: window.id,
-  label: window.label,
-  seasonStartYear: window.seasonStartYear,
-  midSeason: window.midSeason,
-  budget: BUDGETS[index] ?? 0,
-}));
+const windows: WindowConfig[] = (gameData.windows as WindowConfig[]).map(
+  (window, index) => ({
+    id: window.id,
+    label: window.label,
+    seasonStartYear: window.seasonStartYear,
+    midSeason: window.midSeason,
+    budget: BUDGETS[index] ?? 0,
+    squadCostCapBase: REVENUES[index] ?? 0,
+  }),
+);
 
 const initialSquad: SquadPlayerSeed[] = (
   gameData.squad as GeneratedSquadPlayer[]
@@ -114,6 +120,7 @@ const marketByWindow: MarketPlayer[][] = [0, 1, 2].map((windowIndex) =>
         fee: terms.fee,
         wageDemand: terms.wage,
         contractYears: terms.years,
+        baseValue: terms.baseValue,
         locked: isUntouchable(player),
         club: player.club,
         league: player.league,
@@ -128,5 +135,4 @@ export const realConfig: GameConfig = {
   initialSquad,
   marketByWindow,
   baselineAmortisation: BASELINE_AMORTISATION,
-  squadCostCapBase: SQUAD_COST_CAP_BASE,
 };

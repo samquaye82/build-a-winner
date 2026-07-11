@@ -2,7 +2,7 @@
  * Tests for the squad cost ratio rule.
  *
  * Fixture baseline: wage bill 62 + baseline amortisation 60 = 122 against a
- * cap of 170 (200 x 0.85).
+ * cap of 175 (season revenue 250 x 0.7).
  */
 import { describe, expect, it } from 'vitest';
 import {
@@ -28,8 +28,8 @@ describe('computeSquadCost', () => {
       baselineAmortisation: 60,
       signingAmortisation: 0,
       total: 122,
-      cap: 170,
-      ratio: 0.61,
+      cap: 175,
+      ratio: 0.488,
     });
   });
 
@@ -70,9 +70,13 @@ describe('computeSquadCost', () => {
 });
 
 describe('validateScr', () => {
-  /** A config with a tight cap: 155 x 0.85 = 131.75 against 122 starting. */
+  /** A config with tight revenue: 190 x 0.7 = 133 against 122 starting. */
   function tightGame(): GameState {
-    return createGame({ ...makeTestConfig(), squadCostCapBase: 155 });
+    const config = makeTestConfig();
+    return createGame({
+      ...config,
+      windows: config.windows.map((w) => ({ ...w, squadCostCapBase: 190 })),
+    });
   }
 
   it('accepts_a_squad_within_the_cap', () => {
@@ -80,7 +84,7 @@ describe('validateScr', () => {
   });
 
   it('flags_a_signing_that_bursts_the_cap', () => {
-    // buy-st adds 21 (wage 9 + amortisation 12): 143 > 131.75.
+    // buy-st adds 21 (wage 9 + amortisation 12): 143 > 133.
     const state = applyAction(tightGame(), { type: 'BUY', playerId: 'buy-st' });
     expect(validateState(state).map((v) => v.code)).toContain('SCR_EXCEEDED');
     expect(isSubmittable(state)).toBe(false);
@@ -88,7 +92,7 @@ describe('validateScr', () => {
 
   it('unblocks_when_wages_leave_the_book', () => {
     // Selling cm1 (salary 8) and rw1 (salary 5) brings 143 down to 130,
-    // under the 131.75 cap, while the 11-player squad floor still holds.
+    // under the 133 cap, while the 11-player squad floor still holds.
     const state = [
       { type: 'BUY', playerId: 'buy-st' } as const,
       { type: 'SELL', playerId: 'cm1' } as const,

@@ -128,12 +128,11 @@ const summer27Market: readonly MarketPlayer[] = [
  */
 export const devConfig: GameConfig = {
   windows: [
-    { id: 'summer-2026', label: 'Summer 2026', seasonStartYear: 2026, midSeason: false, budget: 175 },
-    { id: 'january-2027', label: 'January 2027', seasonStartYear: 2026, midSeason: true, budget: 40 },
-    { id: 'summer-2027', label: 'Summer 2027', seasonStartYear: 2027, midSeason: false, budget: 120 },
+    { id: 'summer-2026', label: 'Summer 2026', seasonStartYear: 2026, midSeason: false, budget: 175, squadCostCapBase: 340 },
+    { id: 'january-2027', label: 'January 2027', seasonStartYear: 2026, midSeason: true, budget: 40, squadCostCapBase: 340 },
+    { id: 'summer-2027', label: 'Summer 2027', seasonStartYear: 2027, midSeason: false, budget: 120, squadCostCapBase: 350 },
   ],
   initialSquad,
   marketByWindow: [summer26Market, january27Market, summer27Market],
   baselineAmortisation: 80,
-  squadCostCapBase: 320,
 };

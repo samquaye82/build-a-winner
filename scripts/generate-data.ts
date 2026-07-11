@@ -36,7 +36,7 @@ const OUT_DIR = join(ROOT, 'src/data/generated');
 /** Wage premium demanded to move clubs. */
 const WAGE_MOVE_PREMIUM = 1.15;
 /** Extra wage premium for free agents (no fee to pay, after all). */
-const FREE_AGENT_WAGE_PREMIUM = 1.25;
+const FREE_AGENT_WAGE_PREMIUM = 1.5;
 /**
  * Expiring contracts resolve at the Summer 2027 boundary: clubs quietly
  * renew useful players and release the fringe and the ageing (roughly a
@@ -47,10 +47,10 @@ const FREE_IF_QUALITY_BELOW = 72;
 const FREE_IF_AGE_AT_LEAST = 31;
 
 /** The three real windows (budgets per Sam: 250 fiscal-year pots). */
-const WINDOWS: readonly (WindowConfig & { budget: number })[] = [
-  { id: 'summer-2026', label: 'Summer 2026', seasonStartYear: 2026, midSeason: false, budget: 250 },
-  { id: 'january-2027', label: 'January 2027', seasonStartYear: 2026, midSeason: true, budget: 0 },
-  { id: 'summer-2027', label: 'Summer 2027', seasonStartYear: 2027, midSeason: false, budget: 250 },
+const WINDOWS: readonly WindowConfig[] = [
+  { id: 'summer-2026', label: 'Summer 2026', seasonStartYear: 2026, midSeason: false, budget: 250, squadCostCapBase: 850 },
+  { id: 'january-2027', label: 'January 2027', seasonStartYear: 2026, midSeason: true, budget: 0, squadCostCapBase: 875 },
+  { id: 'summer-2027', label: 'Summer 2027', seasonStartYear: 2027, midSeason: false, budget: 250, squadCostCapBase: 900 },
 ];
 
 /** Contract-length demand by age at signing. */
@@ -130,19 +130,37 @@ function main(): void {
 
   // Per-window market pricing (see module docstring for the design).
   const marketOut = market.map((r) => {
-    const wage = Math.round(r.salary * WAGE_MOVE_PREMIUM * 10) / 10;
+    const isCurrentFreeAgent = r.league === 'free-agent';
+    const wage = Math.round(
+      r.salary * (isCurrentFreeAgent ? FREE_AGENT_WAGE_PREMIUM : WAGE_MOVE_PREMIUM) * 10,
+    ) / 10;
     const w0 = WINDOWS[0] as WindowConfig;
     const w1 = WINDOWS[1] as WindowConfig;
     const w2 = WINDOWS[2] as WindowConfig;
 
     const base0 = r.value;
-    const fee0 = roundFee(base0 * contractDiscount(remainingMonths(r.expiryYear, w0)));
-
     const base1 = driftBaseValue(base0, r.age, r.quality);
-    const fee1 = roundFee(base1 * contractDiscount(remainingMonths(r.expiryYear, w1)));
-
     const age2 = r.age + 1;
     const base2 = driftBaseValue(base1, age2, r.quality);
+
+    // Current free agents (contractless since 25/26) cost nothing in any
+    // window: only their wages and the SCR bite.
+    if (isCurrentFreeAgent) {
+      return {
+        id: r.slug, name: r.name, position: r.position, age: r.age,
+        homegrown: r.homegrown, quality: r.quality, club: 'Free agent',
+        league: r.league,
+        windows: [
+          { fee: 0, wage, years: contractYearsDemand(r.age), baseValue: base0, freeAgent: true },
+          { fee: 0, wage, years: contractYearsDemand(r.age), baseValue: base1, freeAgent: true },
+          { fee: 0, wage, years: contractYearsDemand(age2), baseValue: base2, freeAgent: true },
+        ],
+      };
+    }
+
+    const fee0 = roundFee(base0 * contractDiscount(remainingMonths(r.expiryYear, w0)));
+    const fee1 = roundFee(base1 * contractDiscount(remainingMonths(r.expiryYear, w1)));
+
     const expired = r.expiryYear <= w2.seasonStartYear;
     const clubRenews =
       expired &&
@@ -162,9 +180,9 @@ function main(): void {
       homegrown: r.homegrown, quality: r.quality, club: r.club,
       league: r.league,
       windows: [
-        { fee: fee0, wage, years: contractYearsDemand(r.age) },
-        { fee: fee1, wage, years: contractYearsDemand(r.age) },
-        { fee: fee2, wage: wage2, years: contractYearsDemand(age2), freeAgent: expired && !clubRenews },
+        { fee: fee0, wage, years: contractYearsDemand(r.age), baseValue: base0 },
+        { fee: fee1, wage, years: contractYearsDemand(r.age), baseValue: base1 },
+        { fee: fee2, wage: wage2, years: contractYearsDemand(age2), baseValue: base2, freeAgent: expired && !clubRenews },
       ],
     };
   });

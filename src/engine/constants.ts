@@ -65,11 +65,11 @@ export const RENEWAL_QUALITY_FACTOR_BASE = 0.8;
 export const RENEWAL_QUALITY_FACTOR_DIVISOR = 250;
 
 /**
- * Squad cost ratio (real Premier League concept): squad cost (annual wages
- * plus annual transfer-fee amortisation) may not exceed this share of the
- * club's cap basis (GameConfig.squadCostCapBase).
+ * Squad cost ratio (UEFA-style, per Sam 11/07/2026): squad cost (annual
+ * wages plus amortisation plus the baseline) may not exceed 70% of the
+ * season's revenue (WindowConfig.squadCostCapBase).
  */
-export const SCR_LIMIT = 0.85;
+export const SCR_LIMIT = 0.7;
 
 /**
  * Contract-length discounts on sale value, by remaining months (M6 tuning

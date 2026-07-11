@@ -240,8 +240,26 @@ def round_game_value(values: np.ndarray) -> np.ndarray:
     return np.where(values < 10, small, np.where(values < 50, mid, big))
 
 
+#: Wage-level factors for leagues with NO published wages to fit on.
+#: pro-league: assumed a notch below the Eredivisie (tunable with Sam).
+#: free-agent: these players came from top clubs, so no league discount;
+#: the generator applies the free-agent premium on top.
+_LEAGUE_FACTOR_FALLBACKS: dict[str, tuple[str, float]] = {
+    "pro-league": ("eredivisie", 0.8),
+    "free-agent": ("premier-league", 0.6),
+}
+
+
 def add_wages(players: pd.DataFrame) -> pd.DataFrame:
-    """Imputes missing salaries from quality, age and league.
+    """Imputes missing salaries from a global curve and league factors.
+
+    A single fit of log salary against quality and age over every known
+    wage gives the shape; each league's factor is the median ratio of its
+    actual wages to that curve. League dummies are NOT used: a league with
+    zero known wages (the Belgian paywall, the free-agent pool) would get
+    a degenerate coefficient and absurd imputations (an early version
+    priced Vlahovic at EUR 0.7m a year). Data-less leagues instead borrow
+    a neighbouring league's factor, scaled (see _LEAGUE_FACTOR_FALLBACKS).
 
     Args:
         players: Table with salary_eur_m (nullable), quality, age, league.
@@ -251,27 +269,35 @@ def add_wages(players: pd.DataFrame) -> pd.DataFrame:
     """
     result = players.copy()
     result["salary_estimated"] = result.salary_eur_m.isna()
-
-    league_dummies = pd.get_dummies(result.league, prefix="lg", dtype=float)
-    features_all = pd.concat(
-        [
-            pd.DataFrame(
-                {"q": result.quality, "q2": result.quality**2, "age": result.age}
-            ),
-            league_dummies,
-        ],
-        axis=1,
-    )
     known = result.salary_eur_m.notna()
-    predictions = _lstsq_predict(
-        result[known],
-        np.log1p(result.loc[known, "salary_eur_m"]),
-        features_all[known],
-        features_all[~known],
+
+    features = pd.DataFrame(
+        {"q": result.quality, "q2": result.quality**2, "age": result.age}
     )
-    imputed = np.round(np.maximum(0.1, np.expm1(predictions)), 1)
-    result.loc[~known, "salary_eur_m"] = imputed
-    return result
+    predictions = np.expm1(
+        _lstsq_predict(
+            result[known],
+            np.log1p(result.loc[known, "salary_eur_m"]),
+            features[known],
+            features,
+        )
+    )
+    result["_wage_curve"] = np.maximum(0.05, predictions)
+
+    factors: dict[str, float] = {}
+    for league, group in result[known].groupby("league"):
+        factors[str(league)] = float(
+            (group.salary_eur_m / group._wage_curve).median()
+        )
+    for league, (source, scale) in _LEAGUE_FACTOR_FALLBACKS.items():
+        factors.setdefault(league, factors.get(source, 1.0) * scale)
+
+    league_factor = result.league.map(factors).fillna(1.0)
+    imputed = np.round(
+        np.maximum(0.1, result._wage_curve * league_factor), 1
+    )
+    result.loc[~known, "salary_eur_m"] = imputed[~known]
+    return result.drop(columns=["_wage_curve"])
 
 
 def divergence_report(players: pd.DataFrame, top: int = 15) -> pd.DataFrame:
