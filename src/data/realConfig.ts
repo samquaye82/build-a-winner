@@ -26,6 +26,7 @@ import type {
 } from '../engine';
 import {
   LIVERPOOL_LOCKED,
+  MARKET_LOCKED_CLUBS,
   MARKET_LOCKED_EXTRA,
   MARKET_UNLOCKED_EXCEPTIONS,
   MARKET_UNTOUCHABLE_MIN_VALUE_M,
@@ -86,12 +87,24 @@ const initialSquad: SquadPlayerSeed[] = (
   contract: player.contract,
 }));
 
-/** Whether a market player's club refuses to sell (see lockedLists.ts). */
+/** Whether a list entry names this player (by slug or display name). */
+function listed(list: readonly string[], player: GeneratedMarketPlayer): boolean {
+  return list.includes(player.id) || list.includes(player.name);
+}
+
+/**
+ * Whether a market player's club refuses to sell. Precedence documented
+ * in lockedLists.ts: exceptions, then named locks, then rival clubs, then
+ * the value threshold.
+ */
 function isUntouchable(player: GeneratedMarketPlayer): boolean {
-  if (MARKET_UNLOCKED_EXCEPTIONS.includes(player.id)) {
+  if (listed(MARKET_UNLOCKED_EXCEPTIONS, player)) {
     return false;
   }
-  if (MARKET_LOCKED_EXTRA.includes(player.id)) {
+  if (listed(MARKET_LOCKED_EXTRA, player)) {
+    return true;
+  }
+  if (MARKET_LOCKED_CLUBS.includes(player.club)) {
     return true;
   }
   const window0 = player.windows[0];

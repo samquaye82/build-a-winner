@@ -43,7 +43,23 @@ describe('realConfig', () => {
     // Locked market players remain a small minority.
     const lockedShare =
       state.market.filter((p) => p.locked === true).length / state.market.length;
-    expect(lockedShare).toBeLessThan(0.02);
+    expect(lockedShare).toBeLessThan(0.03);
+  });
+
+  it('locks_every_player_at_rival_clubs', () => {
+    const state = createGame(realConfig);
+    const rivals = state.market.filter(
+      (p) => p.club === 'Manchester United' || p.club === 'Everton',
+    );
+    expect(rivals.length).toBeGreaterThan(30);
+    expect(rivals.every((p) => p.locked === true)).toBe(true);
+  });
+
+  it('honours_named_unlock_exceptions_over_the_value_threshold', () => {
+    const state = createGame(realConfig);
+    const vinicius = state.market.find((p) => p.name === 'Vinicius Junior');
+    expect(vinicius).toBeDefined();
+    expect(vinicius?.locked).toBe(false);
   });
 
   it('starts_with_a_believable_scr_position', () => {
