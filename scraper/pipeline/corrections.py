@@ -37,6 +37,33 @@ CORRECTIONS: dict[str, dict[str, object]] = {
 }
 
 
+#: Players missing from every source, appended by pipeline.apply_review.
+#: Victor Munoz: Osasuna attacker, transferred to Liverpool July 2026;
+#: absent from both clubs' 26/27 Capology pages (Sam, 12/07/2026).
+#: Quality/value/salary are Claude's estimates pending Sam's adjustment.
+ADDITIONS: list[dict[str, object]] = [
+    {
+        "player_slug": "victor-munoz-osasuna",
+        "name": "Victor Muñoz",
+        "league": "premier-league",
+        "club": "Liverpool",
+        "club_slug": "liverpool",
+        "country": "Spain",
+        "position": "LW",
+        "age": 22,
+        "quality": 78,
+        "quality_source": "manual",
+        "true_value_m": 35.0,
+        "tm_value_m": None,
+        "salary_eur_m": 3.5,
+        "salary_estimated": True,
+        "expiry_year": 2031,
+        "homegrown": False,
+        "hg_basis": "manual",
+    },
+]
+
+
 def apply_corrections(players: pd.DataFrame) -> pd.DataFrame:
     """Applies the hand-correction table.
 

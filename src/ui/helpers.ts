@@ -60,6 +60,31 @@ export function formatSalary(salary: number): string {
 }
 
 /**
+ * Formats a salary as a weekly wage, football-discourse style.
+ *
+ * @param salary - Annual salary in EUR m.
+ * @returns E.g. "€163k/wk"; wages above EUR 1m a week show as "€1.2m/wk".
+ */
+export function formatWeeklyWage(salary: number): string {
+  const weeklyThousands = (salary * 1_000_000) / 52 / 1_000;
+  if (weeklyThousands >= 1_000) {
+    return `€${String(Math.round(weeklyThousands / 100) / 10)}m/wk`;
+  }
+  return `€${String(Math.round(weeklyThousands))}k/wk`;
+}
+
+/**
+ * Formats a salary with the weekly wage leading and the annual figure in
+ * brackets (Sam, 12/07/2026: wage discourse is weekly-first).
+ *
+ * @param salary - Annual salary in EUR m.
+ * @returns E.g. "€163k/wk (€8.5m/yr)".
+ */
+export function formatWage(salary: number): string {
+  return `${formatWeeklyWage(salary)} (${formatSalary(salary)})`;
+}
+
+/**
  * Formats a contract expiry as the season-end month/year.
  *
  * @param expiryYear - Season-end expiry year.

@@ -94,3 +94,15 @@ describe('badges', () => {
     expect(isExpiring(nearer, testWindow)).toBe(true);
   });
 });
+
+describe('weekly wages', () => {
+  it('formats_weekly_first_with_annual_in_brackets', async () => {
+    const { formatWage, formatWeeklyWage } = await import('../../src/ui/helpers');
+    // 8.5m/yr is 163,461 a week.
+    expect(formatWeeklyWage(8.5)).toBe('€163k/wk');
+    expect(formatWage(8.5)).toBe('€163k/wk (€8.5m/yr)');
+    // Superstar territory: 60m/yr is 1.15m a week.
+    expect(formatWeeklyWage(60)).toBe('€1.2m/wk');
+    expect(formatWeeklyWage(0.2)).toBe('€4k/wk');
+  });
+});
