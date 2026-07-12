@@ -24,7 +24,8 @@
  */
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { driftBaseValue, remainingMonths, contractDiscount } from '../src/engine/rules/value';
+import { contractDiscount, contractYearsDemand, driftBaseValue, remainingMonths } from '../src/engine/rules/value';
+import { FREE_AGENT_WAGE_PREMIUM } from '../src/engine/constants';
 import type { Position, WindowConfig } from '../src/engine/types';
 
 // esbuild relocates the bundle, so anchor paths to the invocation cwd
@@ -35,8 +36,6 @@ const OUT_DIR = join(ROOT, 'src/data/generated');
 
 /** Wage premium demanded to move clubs. */
 const WAGE_MOVE_PREMIUM = 1.15;
-/** Extra wage premium for free agents (no fee to pay, after all). */
-const FREE_AGENT_WAGE_PREMIUM = 1.5;
 /**
  * Expiring contracts resolve at the Summer 2027 boundary: clubs quietly
  * renew useful players and release the fringe and the ageing (roughly a
@@ -52,14 +51,6 @@ const WINDOWS: readonly WindowConfig[] = [
   { id: 'january-2027', label: 'January 2027', seasonStartYear: 2026, midSeason: true, budget: 0, squadCostCapBase: 875 },
   { id: 'summer-2027', label: 'Summer 2027', seasonStartYear: 2027, midSeason: false, budget: 250, squadCostCapBase: 900 },
 ];
-
-/** Contract-length demand by age at signing. */
-function contractYearsDemand(age: number): number {
-  if (age >= 32) return 2;
-  if (age >= 30) return 3;
-  if (age >= 28) return 4;
-  return 5;
-}
 
 /** Transfer-fee-style rounding, mirroring the Python pipeline's tiers. */
 function roundFee(value: number): number {

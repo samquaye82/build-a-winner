@@ -111,6 +111,27 @@ describe('January 2027 -> Summer 2027 (season boundary)', () => {
     expect(state.funds).toBe(210);
   });
 
+  it('relists_expired_players_as_free_agents_in_the_new_market', () => {
+    const state = play(advance, advance);
+    const cm1 = state.market.find((p) => p.id === 'cm1');
+
+    expect(cm1).toBeDefined();
+    expect(cm1?.fee).toBe(0);
+    expect(cm1?.club).toBe('Free agent');
+    // Free-agency wage premium on the old salary: 8 x 1.5.
+    expect(cm1?.wageDemand).toBe(12);
+    expect(cm1?.age).toBe(27);
+    // He is worth plenty despite the zero fee (explicit baseValue).
+    expect(cm1?.baseValue).toBeGreaterThan(30);
+
+    // Buying him back works and books the real value, not the zero fee.
+    const resigned = applyAction(state, { type: 'BUY', playerId: 'cm1' });
+    const player = resigned.squad.find((p) => p.id === 'cm1');
+    expect(resigned.funds).toBe(210); // no fee left the account
+    expect(player?.baseValue).toBe(cm1?.baseValue);
+    expect(player?.contract.salary).toBe(12);
+  });
+
   it('keeps_a_renewed_player_through_the_boundary', () => {
     const state = play(
       { type: 'RENEW', playerId: 'cm1', newExpiryYear: 2030 },

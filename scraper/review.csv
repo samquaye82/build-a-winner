@@ -4,13 +4,13 @@ Lamine Yamal,Barcelona,la-liga,RW,18,89,fc26,240,120,20.8,FALSE,2031,FALSE,appea
 Erling Haaland,Manchester City,premier-league,ST,25,90,fc26,240,200,32,FALSE,2034,FALSE,appearances,Norway
 Kylian Mbappé,Real Madrid,la-liga,ST,27,91,fc26,210,180,31.2,FALSE,2029,FALSE,appearances,France
 Vinicius Junior,Real Madrid,la-liga,LW,25,89,fc26,200,180,25,FALSE,2027,FALSE,appearances,Brazil
-Jamal Musiala,Bayern Munich,bundesliga,AM,23,88,fc26,190,130,22.8,FALSE,2030,FALSE,appearances,Germany
+Jamal Musiala,Bayern Munich,bundesliga,AM,23,88,fc26,190,130,22.8,FALSE,2030,TRUE,appearances,Germany
 Bukayo Saka,Arsenal,premier-league,RW,24,88,fc26,170,130,18.3,FALSE,2030,TRUE,appearances,England
 Florian Wirtz,Liverpool,premier-league,AM,23,89,fc26,170,110,12.2,FALSE,2030,FALSE,appearances,Germany
 Vitinha,PSG,ligue-1,CM,26,89,fc26,140,110,11.8,FALSE,2029,FALSE,appearances,Portugal
 João Neves,PSG,ligue-1,CM,21,85,fc26,140,110,9.1,FALSE,2029,FALSE,appearances,Portugal
 Cole Palmer,Chelsea,premier-league,AM,24,87,fc26,140,120,7.9,FALSE,2033,TRUE,appearances,England
-Michael Olise,Bayern Munich,bundesliga,RW,24,86,fc26,130,130,13.5,FALSE,2029,FALSE,appearances,France
+Michael Olise,Bayern Munich,bundesliga,RW,24,86,fc26,130,130,13.5,FALSE,2029,TRUE,appearances,France
 Pedri,Barcelona,la-liga,CM,23,89,fc26,130,80,12.5,FALSE,2030,FALSE,appearances,Spain
 Federico Valverde,Real Madrid,la-liga,CM,27,89,fc26,130,120,16.7,FALSE,2029,FALSE,appearances,Uruguay
 Désiré Doué,PSG,ligue-1,RW,21,85,fc26,130,90,6.9,FALSE,2029,FALSE,appearances,France
@@ -614,7 +614,7 @@ Carlos Alcaraz,Everton,premier-league,CM,23,75,fc26,15,15,1.2,FALSE,2027,FALSE,a
 Joachim Andersen,Fulham,premier-league,CB,30,78,fc26,15,25,5.5,FALSE,2029,FALSE,appearances,Denmark
 Alex Iwobi,Fulham,premier-league,LW,30,80,fc26,15,25,4.9,FALSE,2028,FALSE,appearances,Nigeria
 Emile Smith Rowe,Fulham,premier-league,AM,25,77,fc26,15,22,4.3,FALSE,2029,TRUE,appearances,England
-Oscar Bobb,Fulham,premier-league,RW,22,72,fc26,40,25,4,FALSE,2031,FALSE,appearances,Norway
+Oscar Bobb,Fulham,premier-league,RW,22,72,fc26,40,25,4,FALSE,2031,TRUE,appearances,Norway
 Rodrigo Muniz,Fulham,premier-league,ST,25,75,fc26,15,20,3.7,FALSE,2030,FALSE,appearances,Brazil
 Sander Berge,Fulham,premier-league,CM,28,79,fc26,15,25,3.4,FALSE,2029,FALSE,appearances,Norway
 Ryan Sessegnon,Fulham,premier-league,LB,26,75,fc26,15,20,3,FALSE,2027,TRUE,appearances,England

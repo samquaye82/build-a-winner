@@ -26,6 +26,7 @@
 
   /* Rhythm */
   --radius-button: 4px;
+  --radius-card: 12px;
   --speed: 180ms;
   --page-max: 1200px;
 }

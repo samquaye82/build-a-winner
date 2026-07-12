@@ -68,13 +68,27 @@ describe('PICK_XI', () => {
     ).toThrowError(/after the final window/);
   });
 
-  it('rejects_a_player_in_an_ineligible_slot', () => {
-    // am1 is an AM; the 4-3-3 has no AM slot, so he lands in a CM slot.
-    const invalid: XISelection = {
+  it('accepts_positional_group_flexibility', () => {
+    // am1 (an AM) in a CM slot is fine: midfielders cover all midfield
+    // slots (Sam's positional groups).
+    const flexible: XISelection = {
       formationId: '4-3-3',
       playerIds: [
         'gk1', 'rb1', 'cb1', 'cb2', 'lb1',
         'cm1', 'cm2', 'am1', 'rw1', 'st1', 'lw1',
+      ],
+    };
+    const state = play({ type: 'PICK_XI', selection: flexible });
+    expect(state.xi).toEqual(flexible);
+  });
+
+  it('rejects_a_player_outside_the_slot_positional_group', () => {
+    // A striker in a CM slot crosses groups and stays illegal.
+    const invalid: XISelection = {
+      formationId: '4-3-3',
+      playerIds: [
+        'gk1', 'rb1', 'cb1', 'cb2', 'lb1',
+        'cm1', 'cm2', 'st1', 'rw1', 'am1', 'lw1',
       ],
     };
     expect(() =>

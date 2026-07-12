@@ -30,10 +30,20 @@ const PHASE_LABELS: Partial<Record<Phase, string>> = {
  */
 export function App(): React.JSX.Element {
   const [phase, setPhase] = useState<Phase>('window');
+  // Remounting the provider with a fresh key rebuilds the game from
+  // scratch: the whole reset mechanism.
+  const [gameKey, setGameKey] = useState(0);
+
+  function reset(): void {
+    if (globalThis.confirm('Start again? All three windows will be reset.')) {
+      setGameKey((key) => key + 1);
+      setPhase('window');
+    }
+  }
 
   return (
-    <GameProvider config={realConfig}>
-      <Masthead phaseLabel={PHASE_LABELS[phase]} />
+    <GameProvider key={gameKey} config={realConfig}>
+      <Masthead phaseLabel={PHASE_LABELS[phase]} onReset={reset} />
       {phase === 'window' && (
         <WindowScreen
           onEnterXI={() => {

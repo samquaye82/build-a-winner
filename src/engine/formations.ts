@@ -2,10 +2,10 @@
  * Formation definitions for the pick-your-XI phase.
  *
  * A formation is eleven slots, each restricted to the positions that can
- * fill it. Slot labels are what the UI paints on the pitch. Wide slots (W)
- * take either winger; wing-back slots (WB) take either full-back; central
- * slots are strict, so a squad with no attacking midfielders simply cannot
- * play 4-2-3-1.
+ * fill it. Slot labels are what the UI paints on the pitch. Eligibility
+ * works in positional groups (Sam, 12/07/2026): any defender can fill any
+ * defensive slot, any midfielder any midfield slot, either winger any
+ * wide slot; strikers are strikers, keepers are keepers.
  */
 import type { Position } from './types';
 
@@ -32,17 +32,22 @@ export interface Formation {
   slots: readonly FormationSlot[];
 }
 
+/** The positional groups that gate slot eligibility. */
+const DEFENDERS: readonly Position[] = ['RB', 'CB', 'LB'];
+const MIDFIELDERS: readonly Position[] = ['CM', 'AM'];
+const WINGERS: readonly Position[] = ['RW', 'LW'];
+
 const GK: FormationSlot = { label: 'GK', eligible: ['GK'] };
-const RB: FormationSlot = { label: 'RB', eligible: ['RB'] };
-const LB: FormationSlot = { label: 'LB', eligible: ['LB'] };
-const CB: FormationSlot = { label: 'CB', eligible: ['CB'] };
-const CM: FormationSlot = { label: 'CM', eligible: ['CM'] };
-const AM: FormationSlot = { label: 'AM', eligible: ['AM'] };
+const RB: FormationSlot = { label: 'RB', eligible: DEFENDERS };
+const LB: FormationSlot = { label: 'LB', eligible: DEFENDERS };
+const CB: FormationSlot = { label: 'CB', eligible: DEFENDERS };
+const CM: FormationSlot = { label: 'CM', eligible: MIDFIELDERS };
+const AM: FormationSlot = { label: 'AM', eligible: MIDFIELDERS };
 const ST: FormationSlot = { label: 'ST', eligible: ['ST'] };
 /** Wide attacker: either winger. */
-const W: FormationSlot = { label: 'W', eligible: ['RW', 'LW'] };
-/** Wing-back in a back three: either full-back. */
-const WB: FormationSlot = { label: 'WB', eligible: ['RB', 'LB'] };
+const W: FormationSlot = { label: 'W', eligible: WINGERS };
+/** Wing-back in a back three: any defender. */
+const WB: FormationSlot = { label: 'WB', eligible: DEFENDERS };
 
 /** All selectable formations, keyed by id. */
 export const FORMATIONS: Readonly<Record<FormationId, Formation>> = {

@@ -96,6 +96,7 @@ button {
 .tile {
   background: var(--surface-muted);
   padding: 14px 16px;
+  border-radius: var(--radius-card);
 }
 
 .tile .label {
@@ -331,7 +332,7 @@ button {
   background: var(--red);
   color: #fff;
   border: none;
-  border-radius: var(--radius-button);
+  border-radius: var(--radius-card);
   font-size: 15px;
   font-weight: 700;
   padding: 12px 26px;
@@ -351,7 +352,7 @@ button {
   background: var(--surface);
   color: var(--ink);
   border: 1px solid var(--ink);
-  border-radius: var(--radius-button);
+  border-radius: var(--radius-card);
   font-size: 14px;
   font-weight: 700;
   padding: 10px 20px;
@@ -564,6 +565,7 @@ button {
 
 .end-stat {
   background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-card);
   padding: 14px 16px;
   display: flex;
   flex-direction: column;
@@ -731,4 +733,136 @@ button {
   .market-row-meta {
     display: none;
   }
+}
+
+/* ---- Playtest round 1 (12/07/2026) -------------------------------------- */
+
+.masthead-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.reset-btn {
+  background: none;
+  border: 1px solid var(--white-40);
+  border-radius: var(--radius-card);
+  color: var(--white-88);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  transition: border-color var(--speed) ease-out;
+}
+
+.reset-btn:hover {
+  border-color: #fff;
+}
+
+/* XI screen: pitch alongside the full-squad panel. */
+.xi-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 20px;
+  align-items: start;
+}
+
+.xi-squad {
+  background: var(--surface-muted);
+  border-radius: var(--radius-card);
+  padding: 6px 12px 12px;
+}
+
+.xi-squad .pill {
+  margin: 10px 0 4px;
+}
+
+.xi-squad-group {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--ink-70);
+  margin: 10px 0 2px;
+}
+
+.xi-squad-row {
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  gap: 8px;
+  width: 100%;
+  align-items: baseline;
+  text-align: left;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 6px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.xi-squad-row .q {
+  font-family: var(--font-display);
+  font-size: 12px;
+}
+
+.xi-squad-pos {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink-70);
+}
+
+.xi-squad-row.picked {
+  opacity: 0.4;
+}
+
+.xi-squad-row.eligible {
+  background: var(--green-tint);
+  cursor: pointer;
+}
+
+.xi-squad-row.eligible:hover {
+  outline: 1px solid var(--green);
+}
+
+@media (max-width: 900px) {
+  .xi-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* End screen: the depth behind the XI. */
+.end-squad {
+  max-width: 760px;
+  margin: 0 auto 24px;
+  display: grid;
+  gap: 8px;
+}
+
+.end-squad-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  align-items: baseline;
+  font-size: 13px;
+}
+
+.end-squad-pos {
+  flex: 0 0 150px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--white-40);
+}
+
+.end-squad-player {
+  color: var(--white-88);
+}
+
+.end-squad-player b {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--gold);
 }

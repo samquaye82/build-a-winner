@@ -124,6 +124,27 @@ export const VALUE_GROWTH_BANDS: readonly ValueGrowthBand[] = [
 /** Share of the annual value growth rate applied per window transition. */
 export const TRANSITION_RATE_FACTOR = 0.5;
 
+/**
+ * Wage premium demanded by free agents: no fee to pay, so the player's
+ * camp takes its cut through the salary (Sam: 1.5x, 11/07/2026).
+ */
+export const FREE_AGENT_WAGE_PREMIUM = 1.5;
+
+/**
+ * Contract-length demands by age at signing: five years under 28, down
+ * to two years at 32 and beyond. Used for market listings and for squad
+ * players re-entering the market as free agents.
+ */
+export const CONTRACT_DEMAND_BY_AGE: readonly {
+  minAge: number;
+  years: number;
+}[] = [
+  { minAge: 32, years: 2 },
+  { minAge: 30, years: 3 },
+  { minAge: 28, years: 4 },
+  { minAge: 0, years: 5 },
+];
+
 /* -------------------------------------------------------------------------
  * Scoring (weights agreed with Sam, 10/07/2026; sub-curves M6 tunable)
  * ---------------------------------------------------------------------- */

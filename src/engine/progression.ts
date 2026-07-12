@@ -23,13 +23,19 @@
  * Everything here is pure and derived from config plus current state:
  * no randomness, ever.
  */
+import { FREE_AGENT_WAGE_PREMIUM } from './constants';
 import { EngineError } from './errors';
 import { roundMoney } from './money';
-import { computeSaleValue, driftBaseValue } from './rules/value';
+import {
+  computeSaleValue,
+  contractYearsDemand,
+  driftBaseValue,
+} from './rules/value';
 import { currentWindow } from './state';
 import type {
   DepartedPlayer,
   GameState,
+  MarketPlayer,
   SquadPlayer,
   WindowConfig,
 } from './types';
@@ -85,11 +91,32 @@ export function advanceWindow(state: GameState): GameState {
     progressPlayer(player, seasonBoundary, nextWindow),
   );
 
-  // 4. Market swap: authored pool minus players already at the club.
+  // 4. Market swap: authored pool minus players already at the club, PLUS
+  // the players who just walked: an expired contract makes a free agent,
+  // not a ghost. Re-signing your own departed player is allowed, at a
+  // free-agency wage premium.
   const squadIds = new Set(squad.map((p) => p.id));
-  const market = (state.config.marketByWindow[nextIndex] ?? []).filter(
+  const freeListings: MarketPlayer[] = expired.map(({ player }) => {
+    const age = player.age + 1; // expiry only happens at season boundaries
+    return {
+      id: player.id,
+      name: player.name,
+      position: player.position,
+      age,
+      homegrown: player.homegrown,
+      quality: player.quality,
+      fee: 0,
+      baseValue: driftBaseValue(player.baseValue, age, player.quality),
+      wageDemand: roundMoney(player.contract.salary * FREE_AGENT_WAGE_PREMIUM),
+      contractYears: contractYearsDemand(age),
+      club: 'Free agent',
+      league: 'free-agent',
+    };
+  });
+  const pool = (state.config.marketByWindow[nextIndex] ?? []).filter(
     (p) => !squadIds.has(p.id),
   );
+  const market = [...pool, ...freeListings];
 
   // 5. Funds roll forward plus the new window's budget.
   return {
