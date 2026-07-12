@@ -59,4 +59,5 @@ export const MARKET_LOCKED_EXTRA: readonly string[] = [];
  */
 export const MARKET_UNLOCKED_EXCEPTIONS: readonly string[] = [
   'Vinicius Junior',
+  'Yan Diomande'
 ];

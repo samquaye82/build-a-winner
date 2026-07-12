@@ -9,9 +9,16 @@ import { useGame } from '../GameContext';
  *
  * @param props.phaseLabel - Optional override for the right-hand context,
  *   e.g. "Pick your XI" once the windows are done.
+ * @param props.onReset - Starts the whole game again (confirmed upstream).
  * @returns The masthead element.
  */
-export function Masthead({ phaseLabel }: { phaseLabel?: string }): React.JSX.Element {
+export function Masthead({
+  phaseLabel,
+  onReset,
+}: {
+  phaseLabel?: string;
+  onReset: () => void;
+}): React.JSX.Element {
   const { state } = useGame();
   const window = currentWindow(state);
   const context =
@@ -22,7 +29,12 @@ export function Masthead({ phaseLabel }: { phaseLabel?: string }): React.JSX.Ele
     <header className="masthead">
       <div className="masthead-inner">
         <span className="wordmark">Sporting Director</span>
-        <span className="window-context">{context}</span>
+        <span className="masthead-right">
+          <span className="window-context">{context}</span>
+          <button type="button" className="reset-btn" onClick={onReset}>
+            ↺ Reset
+          </button>
+        </span>
       </div>
     </header>
   );

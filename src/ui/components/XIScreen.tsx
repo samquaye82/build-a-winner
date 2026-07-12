@@ -9,6 +9,7 @@ import {
   type SquadPlayer,
 } from '../../engine';
 import { useGame } from '../GameContext';
+import { groupByPosition, POSITION_LABELS } from '../helpers';
 import { initials, SLOT_COORDS } from './pitchLayout';
 
 /**
@@ -104,6 +105,8 @@ export function XIScreen({
         ))}
       </div>
 
+      <div className="xi-layout">
+        <div className="xi-main">
       <div className="pitch">
         {formation.slots.map((slot, index) => {
           const [x, y] = coords[index] ?? [50, 50];
@@ -150,6 +153,46 @@ export function XIScreen({
           </div>
         </div>
       )}
+        </div>
+
+        <aside className="xi-squad">
+          <span className="pill">Full squad</span>
+          {groupByPosition(state.squad).map(([position, group]) => (
+            <div key={position}>
+              <div className="xi-squad-group">{POSITION_LABELS[position]}</div>
+              {group.map((player) => {
+                const picked = pickedIds.has(player.id);
+                const eligible =
+                  !picked &&
+                  activeSlot !== null &&
+                  (formation.slots[activeSlot]?.eligible.includes(
+                    player.position,
+                  ) ??
+                    false);
+                return (
+                  <button
+                    key={player.id}
+                    type="button"
+                    className={`xi-squad-row${picked ? ' picked' : ''}${eligible ? ' eligible' : ''}`}
+                    disabled={!eligible}
+                    onClick={() => {
+                      if (activeSlot !== null) {
+                        fillSlot(activeSlot, player.id);
+                      }
+                    }}
+                  >
+                    <span className="q">{player.quality}</span>
+                    <span className="xi-squad-name">{player.name}</span>
+                    <span className="xi-squad-pos">
+                      {picked ? '✓ XI' : player.position}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          ))}
+        </aside>
+      </div>
 
       <div className="xi-footer">
         <button type="button" className="btn-secondary" onClick={onBack}>

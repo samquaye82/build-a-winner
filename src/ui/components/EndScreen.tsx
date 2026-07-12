@@ -11,7 +11,13 @@ import {
   type ScoreBreakdown,
 } from '../../engine';
 import { useGame } from '../GameContext';
-import { buildShareText, endSummary, formatMoney } from '../helpers';
+import {
+  buildShareText,
+  endSummary,
+  formatMoney,
+  groupByPosition,
+  POSITION_LABELS,
+} from '../helpers';
 import { initials, SLOT_COORDS } from './pitchLayout';
 
 /** Display rows for the five score components, in weight order. */
@@ -136,6 +142,28 @@ export function EndScreen(): React.JSX.Element {
                   </div>
                 );
               })}
+            </div>
+          </>
+        )}
+
+        {xi !== undefined && (
+          <>
+            <div className="end-xi-label">The rest of the squad</div>
+            <div className="end-squad">
+              {groupByPosition(
+                state.squad.filter((p) => !xi.playerIds.includes(p.id)),
+              ).map(([position, group]) => (
+                <div className="end-squad-group" key={position}>
+                  <span className="end-squad-pos">
+                    {POSITION_LABELS[position]}
+                  </span>
+                  {group.map((player) => (
+                    <span className="end-squad-player" key={player.id}>
+                      <b>{player.quality}</b> {player.name}
+                    </span>
+                  ))}
+                </div>
+              ))}
             </div>
           </>
         )}

@@ -7,6 +7,7 @@
  * see identical prices (the determinism contract).
  */
 import {
+  CONTRACT_DEMAND_BY_AGE,
   CONTRACT_DISCOUNT_BY_MONTHS,
   TRANSITION_RATE_FACTOR,
   VALUE_GROWTH_BANDS,
@@ -91,6 +92,19 @@ export function contractDiscount(months: number): number {
     throw new Error(`No contract discount found for ${String(months)} months`);
   }
   return row.discount;
+}
+
+/**
+ * The contract length (years) a player of the given age demands when
+ * signing for a new club.
+ *
+ * @param age - Age at signing.
+ * @returns Demanded contract length in years.
+ */
+export function contractYearsDemand(age: number): number {
+  const row = CONTRACT_DEMAND_BY_AGE.find((r) => age >= r.minAge);
+  // The table's last row has minAge 0, so a match always exists.
+  return row?.years ?? 5;
 }
 
 /**

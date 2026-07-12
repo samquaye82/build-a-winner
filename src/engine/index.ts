@@ -19,7 +19,7 @@
  * Bump whenever a rules change would make scores incomparable with earlier
  * versions; a future leaderboard must only compare like-for-like versions.
  */
-export const ENGINE_VERSION = '0.6.0';
+export const ENGINE_VERSION = '0.7.0';
 
 export type {
   Action,
@@ -61,6 +61,7 @@ export {
   annualValueGrowthRate,
   computeSaleValue,
   contractDiscount,
+  contractYearsDemand,
   remainingMonths,
 } from './rules/value';
 export { roundMoney } from './money';
