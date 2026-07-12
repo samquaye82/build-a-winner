@@ -7,7 +7,8 @@ import { useGame } from '../GameContext';
 import {
   formatExpiry,
   formatMoney,
-  formatSalary,
+  formatWage,
+  formatWeeklyWage,
   playerBadges,
   renewalOptions,
 } from '../helpers';
@@ -53,7 +54,7 @@ export function SquadCard({ player }: { player: SquadPlayer }): React.JSX.Elemen
         <Badges player={player} />
       </div>
       <div className="contract">
-        <strong>{formatSalary(player.contract.salary)}</strong> ·{' '}
+        <strong>{formatWage(player.contract.salary)}</strong> ·{' '}
         {formatExpiry(player.contract.expiryYear)}
       </div>
       <div className="actions">
@@ -124,7 +125,7 @@ export function MarketCard({
         {isFree && <span className="badge free">Free agent</span>}
       </div>
       <div className="contract">
-        Wants <strong>{formatSalary(player.wageDemand)}</strong> ·{' '}
+        Wants <strong>{formatWage(player.wageDemand)}</strong> ·{' '}
         {player.contractYears}-year deal
       </div>
       <div className="actions">
@@ -208,7 +209,7 @@ export function RenewalCard({ player }: { player: SquadPlayer }): React.JSX.Elem
         <Badges player={player} />
       </div>
       <div className="contract">
-        Current: <strong>{formatSalary(player.contract.salary)}</strong> ·{' '}
+        Current: <strong>{formatWage(player.contract.salary)}</strong> ·{' '}
         {formatExpiry(player.contract.expiryYear)}
       </div>
       {renewedThisWindow ? (
@@ -238,7 +239,7 @@ export function RenewalCard({ player }: { player: SquadPlayer }): React.JSX.Elem
                 })
               }
             >
-              to {String(option.newExpiryYear)} · {formatSalary(option.contract.salary)}
+              to {String(option.newExpiryYear)} · {formatWeeklyWage(option.contract.salary)}
             </button>
           ))}
         </div>

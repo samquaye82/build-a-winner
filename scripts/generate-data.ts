@@ -30,7 +30,7 @@ import type { Position, WindowConfig } from '../src/engine/types';
 // esbuild relocates the bundle, so anchor paths to the invocation cwd
 // (the repo root, per the npm script) rather than import.meta.url.
 const ROOT = process.cwd();
-const CSV_PATH = join(ROOT, 'scraper/output/enriched_players.csv');
+const CSV_PATH = join(ROOT, 'scraper/output/final_players.csv');
 const OUT_DIR = join(ROOT, 'src/data/generated');
 
 /** Wage premium demanded to move clubs. */
