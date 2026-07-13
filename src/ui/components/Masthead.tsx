@@ -28,7 +28,7 @@ export function Masthead({
   return (
     <header className="masthead">
       <div className="masthead-inner">
-        <span className="wordmark">Sporting Director</span>
+        <span className="wordmark">Spirit Of Big Jorg</span>
         <span className="masthead-right">
           <span className="window-context">{context}</span>
           <button type="button" className="reset-btn" onClick={onReset}>
