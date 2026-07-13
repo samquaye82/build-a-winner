@@ -19,10 +19,22 @@ python -m pipeline.apply_review             # Sam's review.csv is master
 python -m pytest tests/ -q                  # tests
 ```
 
-Then `npm run generate:data` at the repo root rebuilds the game dataset.
-`scraper/review.csv` is the hand-edited, version-controlled master: the
-apply_review stage rebuilds from it, so dataset fixes belong there (or in
-`pipeline/corrections.py` for moves/additions with provenance).
+## Editing the dataset
+
+`scraper/review.csv` is THE hand-edited, version-controlled master.
+Dataset fixes (values, home-grown flags, positions) belong there, or in
+`pipeline/corrections.py` for moves and additions that need provenance.
+
+Editing `review.csv` alone changes nothing in the game: the edit must be
+propagated. From the repo root, one command does it:
+
+```bash
+npm run data:rebuild   # apply_review (review.csv -> final) then generate:data
+```
+
+That rebuilds `src/data/generated/gameData.json`, which the game reads.
+(Re-running the scraper/enrich stages is only needed to pull fresh source
+data; day-to-day edits just need `data:rebuild`.)
 
 Fetches are rate-limited and cached forever in `cache/` (gitignored);
 output lands in `output/players_capology.csv` (gitignored; the final game
