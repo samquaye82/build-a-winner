@@ -39,6 +39,11 @@ export function Dashboard(): React.JSX.Element {
           <div className="label">Funds</div>
           <div className="value">{formatMoney(state.funds)}</div>
         </div>
+        <div className="tile">
+          <div className="label">Home-grown</div>
+          <div className="value">{counts.homegrown}</div>
+          <div className="sub">of {counts.total} in squad</div>
+        </div>
         <div className={`tile${has('NON_HOMEGROWN_LIMIT_EXCEEDED') ? ' violating' : ''}`}>
           <div className="label">Non-home-grown</div>
           <div className="value">

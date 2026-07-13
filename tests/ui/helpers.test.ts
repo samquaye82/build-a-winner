@@ -106,3 +106,18 @@ describe('weekly wages', () => {
     expect(formatWeeklyWage(0.2)).toBe('€4k/wk');
   });
 });
+
+describe('verdict', () => {
+  it('maps_ratings_to_the_right_tier_including_the_70_boundary', async () => {
+    const { verdict } = await import('../../src/ui/helpers');
+    expect(verdict(95)).toMatch(/dynasty/);
+    expect(verdict(90)).toMatch(/favourites to win/);
+    expect(verdict(83)).toMatch(/puncher/);
+    expect(verdict(78)).toMatch(/top four/);
+    expect(verdict(73)).toMatch(/Europa League/);
+    // 71 is the lowest non-failing tier; 70 falls to failed.
+    expect(verdict(71)).toMatch(/Europa League/);
+    expect(verdict(70)).toMatch(/failed/);
+    expect(verdict(0)).toMatch(/failed/);
+  });
+});

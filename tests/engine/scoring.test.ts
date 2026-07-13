@@ -5,7 +5,7 @@
  * 4-2-3-1 XI leaving only gk2 outside):
  *
  * - Squad Quality: XI avg 840/11 = 76.36; depth = best 10 of {gk2} padded
- *   with zeros = 70/10 = 7. Score 0.7 x 76.36 + 0.3 x 7 = 55.6.
+ *   with zeros = 70/10 = 7. Score 0.6 x 76.36 + 0.4 x 7 = 48.6.
  * - Balance: GK 2/3, everything else at 1 of 2+ or 2 of 4:
  *   (0.6667 + 0.5 x 8) / 9 = 51.9.
  * - Age: nine peak (1.0), gk2 31 (0.4), am1 19 (0.9), lw1 20 (0.9):
@@ -13,8 +13,8 @@
  * - Contracts: all 36 months (1.0) except cb2 (q70) and cm1 (q80) at 12
  *   months (0.3): (760 + 21 + 24) / 910 = 88.5.
  * - Value created: nothing done, ratio 1.0, score 50.
- * - Total: 0.35x55.6 + 0.25x51.9 + 0.2x93.3 + 0.15x88.5 + 0.05x50
- *   = 66.87 -> 67.
+ * - Total: 0.35x48.6 + 0.25x51.9 + 0.15x93.3 + 0.2x88.5 + 0.05x50
+ *   = 64.18 -> 64.
  */
 import { describe, expect, it } from 'vitest';
 import {
@@ -136,13 +136,13 @@ describe('scoreGame', () => {
     expect(breakdown.squadQuality).toEqual({
       xiAverage: 76.4,
       depthAverage: 7,
-      score: 55.6,
+      score: 48.6,
     });
     expect(breakdown.balance.score).toBe(51.9);
     expect(breakdown.ageProfile.score).toBe(93.3);
     expect(breakdown.contractHealth.score).toBe(88.5);
     expect(breakdown.valueCreated).toEqual({ ratio: 1, score: 50 });
-    expect(breakdown.total).toBe(67);
+    expect(breakdown.total).toBe(64);
   });
 
   it('treats_selling_a_full_value_player_as_value_neutral', () => {
