@@ -47,6 +47,10 @@ export {
   type FormationSlot,
 } from './formations';
 export { scoreGame, validateXI, type ScoreBreakdown } from './scoring';
+export {
+  MIN_VIABLE_SQUAD_SIZE,
+  UNVIABLE_SQUAD_MAX_SCORE,
+} from './constants';
 
 export { EngineError, type EngineErrorCode } from './errors';
 export type { Violation, ViolationCode } from './rules/violations';

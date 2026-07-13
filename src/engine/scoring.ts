@@ -15,16 +15,20 @@
  *                       value + all budgets granted)
  *
  * Component scores are 0-100 and rounded to one decimal; the total is a
- * whole number. Everything is pure and deterministic.
+ * whole number. A squad below MIN_VIABLE_SQUAD_SIZE is not fit for
+ * purpose and its total is capped at UNVIABLE_SQUAD_MAX_SCORE, however
+ * strong the XI. Everything is pure and deterministic.
  */
 import {
   AGE_SCORE_BANDS,
   BALANCE_TEMPLATE,
   CONTRACT_HEALTH_BY_MONTHS,
   DEPTH_PLAYER_COUNT,
+  MIN_VIABLE_SQUAD_SIZE,
   SCORING_WEIGHTS,
   SQUAD_QUALITY_DEPTH_WEIGHT,
   SQUAD_QUALITY_XI_WEIGHT,
+  UNVIABLE_SQUAD_MAX_SCORE,
   VALUE_CREATED_BASE,
   VALUE_CREATED_SLOPE,
 } from './constants';
@@ -42,7 +46,14 @@ export interface ScoreBreakdown {
   ageProfile: { score: number };
   contractHealth: { score: number };
   valueCreated: { ratio: number; score: number };
-  /** The final rating out of 100, whole number. */
+  /**
+   * The weighted rating before the squad-size cap. Equals total unless the
+   * squad is below MIN_VIABLE_SQUAD_SIZE.
+   */
+  rawTotal: number;
+  /** True when total was capped because the squad is too small. */
+  squadSizeCapped: boolean;
+  /** The final rating out of 100, whole number (post-cap). */
   total: number;
 }
 
@@ -122,7 +133,7 @@ export function scoreGame(state: GameState): ScoreBreakdown {
   const contractHealth = scoreContractHealth(state);
   const valueCreated = scoreValueCreated(state);
 
-  const total = Math.round(
+  const rawTotal = Math.round(
     SCORING_WEIGHTS.squadQuality * squadQuality.score +
       SCORING_WEIGHTS.balance * balance.score +
       SCORING_WEIGHTS.ageProfile * ageProfile.score +
@@ -130,7 +141,23 @@ export function scoreGame(state: GameState): ScoreBreakdown {
       SCORING_WEIGHTS.valueCreated * valueCreated.score,
   );
 
-  return { squadQuality, balance, ageProfile, contractHealth, valueCreated, total };
+  // A squad too small to cover the healthy-squad template is not fit for
+  // purpose: cap the rating however good the eleven picked from it looks.
+  const squadSizeCapped = state.squad.length < MIN_VIABLE_SQUAD_SIZE;
+  const total = squadSizeCapped
+    ? Math.min(rawTotal, UNVIABLE_SQUAD_MAX_SCORE)
+    : rawTotal;
+
+  return {
+    squadQuality,
+    balance,
+    ageProfile,
+    contractHealth,
+    valueCreated,
+    rawTotal,
+    squadSizeCapped,
+    total,
+  };
 }
 
 /** Squad Quality: weighted XI average and best-ten depth average. */

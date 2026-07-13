@@ -26,7 +26,11 @@ import {
   type GameState,
   type XISelection,
 } from '../../src/engine';
-import { makeTestConfig, makeThreeWindowConfig } from './fixtures';
+import {
+  makeSquadPlayer,
+  makeTestConfig,
+  makeThreeWindowConfig,
+} from './fixtures';
 
 /** The natural fixture XI: a 4-2-3-1 using eleven of the twelve players. */
 const fixtureXI: XISelection = {
@@ -143,6 +147,46 @@ describe('scoreGame', () => {
     expect(breakdown.contractHealth.score).toBe(88.5);
     expect(breakdown.valueCreated).toEqual({ ratio: 1, score: 50 });
     expect(breakdown.total).toBe(64);
+  });
+
+  it('caps an elite but too-small squad at 70', () => {
+    // 22 elite players: one short of the viability threshold, but with
+    // full depth so the raw weighted total sails past 70 before the cap.
+    const config = makeTestConfig();
+    const elite = config.initialSquad.map((p) => ({ ...p, quality: 95 }));
+    const filler = Array.from({ length: 10 }, (_unused, i) =>
+      makeSquadPlayer({ id: `star-${String(i)}`, position: 'CM', quality: 95 }),
+    );
+    const state = applyAction(
+      createGame({ ...config, initialSquad: [...elite, ...filler] }),
+      { type: 'PICK_XI', selection: fixtureXI },
+    );
+    const breakdown = scoreGame(state);
+
+    expect(state.squad.length).toBe(22);
+    expect(breakdown.squadSizeCapped).toBe(true);
+    expect(breakdown.rawTotal).toBeGreaterThan(70);
+    expect(breakdown.total).toBe(70);
+  });
+
+  it('does not cap a squad at or above the viability threshold', () => {
+    // Pad the fixture squad to 23 with filler midfielders.
+    const config = makeTestConfig();
+    const filler = Array.from({ length: 11 }, (_unused, i) =>
+      makeSquadPlayer({ id: `fill-${String(i)}`, position: 'CM' }),
+    );
+    const state = applyAction(
+      createGame({
+        ...config,
+        initialSquad: [...config.initialSquad, ...filler],
+      }),
+      { type: 'PICK_XI', selection: fixtureXI },
+    );
+    const breakdown = scoreGame(state);
+
+    expect(state.squad.length).toBeGreaterThanOrEqual(23);
+    expect(breakdown.squadSizeCapped).toBe(false);
+    expect(breakdown.total).toBe(breakdown.rawTotal);
   });
 
   it('treats_selling_a_full_value_player_as_value_neutral', () => {

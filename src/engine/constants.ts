@@ -190,6 +190,17 @@ export const BALANCE_TEMPLATE: Readonly<Record<string, number>> = {
 };
 
 /**
+ * Minimum squad size to be "fit for purpose" (Sam, 13/07/2026). A squad
+ * below this cannot cover the healthy-squad template (BALANCE_TEMPLATE
+ * sums to 23) and, however good its XI, is not a serious operation: its
+ * final rating is capped at UNVIABLE_SQUAD_MAX_SCORE. Adjustable.
+ */
+export const MIN_VIABLE_SQUAD_SIZE = 23;
+
+/** The highest final rating an unviable (sub-threshold) squad may score. */
+export const UNVIABLE_SQUAD_MAX_SCORE = 70;
+
+/**
  * Age profile scores per player: peak years score full, a young pipeline
  * nearly full, veterans decay hard. Ordered by maxAge ascending.
  */

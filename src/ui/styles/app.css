@@ -998,3 +998,11 @@ button {
     grid-template-columns: 1fr;
   }
 }
+
+.end-cap-note {
+  max-width: 560px;
+  margin: 10px auto 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gold);
+}

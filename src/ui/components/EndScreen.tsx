@@ -7,7 +7,9 @@ import { useState } from 'react';
 import {
   ENGINE_VERSION,
   FORMATIONS,
+  MIN_VIABLE_SQUAD_SIZE,
   scoreGame,
+  UNVIABLE_SQUAD_MAX_SCORE,
   type ScoreBreakdown,
 } from '../../engine';
 import { useGame } from '../GameContext';
@@ -83,6 +85,15 @@ export function EndScreen(): React.JSX.Element {
           <div className="end-rating">{breakdown.total}</div>
           <span className="end-outof">/ 100</span>
           <p className="end-verdict">{verdict(breakdown.total)}</p>
+          {breakdown.squadSizeCapped && (
+            <p className="end-cap-note">
+              Squad below {MIN_VIABLE_SQUAD_SIZE} players: not fit for
+              purpose, so your rating is capped at {UNVIABLE_SQUAD_MAX_SCORE}
+              {breakdown.rawTotal > breakdown.total
+                ? ` (${String(breakdown.rawTotal)} before the cap).`
+                : '.'}
+            </p>
+          )}
         </div>
 
         <div className="end-bars">
