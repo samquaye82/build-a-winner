@@ -48,6 +48,7 @@ export function LandingScreen({ onStart }: { onStart: () => void }): React.JSX.E
         <span className="landing-kicker">The transfer window game</span>
         <h1 className="landing-title">Build a Winner</h1>
         <p className="landing-sub">Liverpool FC · Summer 2026 to Summer 2027</p>
+        <p className="landing-sub">Made by Q15 Analytics (<a href="https://twitter.com/Q15analytics">@Q15analytics</a>)</p>
       </div>
 
       <div className="landing-body">

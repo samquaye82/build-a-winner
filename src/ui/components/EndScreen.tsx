@@ -5,7 +5,6 @@
  */
 import { useState } from 'react';
 import {
-  ENGINE_VERSION,
   FORMATIONS,
   MIN_VIABLE_SQUAD_SIZE,
   scoreGame,
@@ -185,8 +184,7 @@ export function EndScreen(): React.JSX.Element {
         </div>
 
         <p className="end-footnote">
-          Deterministic rating · engine v{ENGINE_VERSION}. Same decisions,
-          same score, every time.
+          Analytics and UI by @Q15talks.
         </p>
       </main>
     </div>
