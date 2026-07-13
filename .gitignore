@@ -10,3 +10,6 @@ scraper/cache/
 scraper/output/
 __pycache__/
 .pytest_cache/
+
+# Stray screenshots
+*.jpeg
