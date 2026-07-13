@@ -65,6 +65,22 @@ export const RENEWAL_QUALITY_FACTOR_BASE = 0.8;
 export const RENEWAL_QUALITY_FACTOR_DIVISOR = 250;
 
 /**
+ * Star-player wage demands (Sam, 13/07/2026).
+ *
+ * A player rated STAR_QUALITY_THRESHOLD or above who is still on modest money,
+ * at or below STAR_WAGE_WEEKLY_CAP a week, will only agree a new deal (a
+ * contract extension or a transfer) for double their current wage: their
+ * status has outgrown their pay packet. Stars already earning above that
+ * ceiling negotiate on the normal curve. See rules/wage.ts.
+ *
+ * The cap is held as an annual salary in EUR m to match the engine's money
+ * unit: 200k a week is 200,000 x 52 = EUR 10.4m a year.
+ */
+export const STAR_QUALITY_THRESHOLD = 85;
+export const STAR_WAGE_WEEKLY_CAP_M = 10.4;
+export const STAR_WAGE_MULTIPLIER = 2;
+
+/**
  * Squad cost ratio (UEFA-style, per Sam 11/07/2026): squad cost (annual
  * wages plus amortisation plus the baseline) may not exceed 70% of the
  * season's revenue (WindowConfig.squadCostCapBase).

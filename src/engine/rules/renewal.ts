@@ -15,10 +15,12 @@ import {
   RENEWAL_UPLIFT_DISTANT,
   RENEWAL_UPLIFT_FINAL_YEAR,
   RENEWAL_UPLIFT_TWO_YEARS,
+  STAR_WAGE_MULTIPLIER,
 } from '../constants';
 import { EngineError } from '../errors';
 import { roundMoney } from '../money';
 import type { Contract, SquadPlayer, WindowConfig } from '../types';
+import { isStarWageCase } from './wage';
 
 /**
  * Computes the contract a player will accept for a renewal to the given
@@ -71,8 +73,15 @@ export function priceRenewal(
   const uplift =
     (urgency + PER_YEAR_ADDED_UPLIFT * yearsAdded) * qualityFactor;
 
+  // A star still on modest money will only extend for double their wage,
+  // whatever the leverage or years added (see rules/wage.ts). For everyone
+  // else the demand is the leverage-and-quality uplift on the current salary.
+  const salary = isStarWageCase(player.contract.salary, player.quality)
+    ? player.contract.salary * STAR_WAGE_MULTIPLIER
+    : player.contract.salary * (1 + uplift);
+
   return {
     expiryYear: newExpiryYear,
-    salary: roundMoney(player.contract.salary * (1 + uplift)),
+    salary: roundMoney(salary),
   };
 }

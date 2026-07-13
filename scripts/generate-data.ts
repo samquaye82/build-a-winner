@@ -18,14 +18,17 @@
  *   FREE AGENTS: no fee, but a 25% wage premium.
  * - Wage demands are the player's current salary plus a 15% moving
  *   premium. Contract-length demands fall with age (5 years under 28
- *   down to 2 years at 32+).
+ *   down to 2 years at 32+). A star still on modest money (rated 85+ and
+ *   at or below 200k a week) instead demands double their current wage to
+ *   move, matching the renewal rule (see engine rules/wage.ts).
  *
  * All provisional constants live at the top for tuning with Sam.
  */
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { contractDiscount, contractYearsDemand, driftBaseValue, remainingMonths } from '../src/engine/rules/value';
-import { FREE_AGENT_WAGE_PREMIUM } from '../src/engine/constants';
+import { FREE_AGENT_WAGE_PREMIUM, STAR_WAGE_MULTIPLIER } from '../src/engine/constants';
+import { isStarWageCase } from '../src/engine/rules/wage';
 import type { Position, WindowConfig } from '../src/engine/types';
 
 // esbuild relocates the bundle, so anchor paths to the invocation cwd
@@ -122,9 +125,14 @@ function main(): void {
   // Per-window market pricing (see module docstring for the design).
   const marketOut = market.map((r) => {
     const isCurrentFreeAgent = r.league === 'free-agent';
-    const wage = Math.round(
-      r.salary * (isCurrentFreeAgent ? FREE_AGENT_WAGE_PREMIUM : WAGE_MOVE_PREMIUM) * 10,
-    ) / 10;
+    // A star still on modest money doubles their wage to move; everyone else
+    // pays the normal moving (or free-agent) premium on their current salary.
+    const isStar = isStarWageCase(r.salary, r.quality);
+    const wage = isStar
+      ? Math.round(r.salary * STAR_WAGE_MULTIPLIER * 10) / 10
+      : Math.round(
+          r.salary * (isCurrentFreeAgent ? FREE_AGENT_WAGE_PREMIUM : WAGE_MOVE_PREMIUM) * 10,
+        ) / 10;
     const w0 = WINDOWS[0] as WindowConfig;
     const w1 = WINDOWS[1] as WindowConfig;
     const w2 = WINDOWS[2] as WindowConfig;
@@ -162,9 +170,14 @@ function main(): void {
         ? roundFee(base2)
         : 0
       : roundFee(base2 * contractDiscount(remainingMonths(r.expiryYear, w2)));
-    const wage2 = expired && !clubRenews
-      ? Math.round(r.salary * FREE_AGENT_WAGE_PREMIUM * 10) / 10
-      : wage;
+    // A released star still doubles their wage (the star rule wins over the
+    // free-agent premium); otherwise a released player takes the free-agent
+    // premium, and a still-contracted one keeps the moving wage.
+    const wage2 = isStar
+      ? wage
+      : expired && !clubRenews
+        ? Math.round(r.salary * FREE_AGENT_WAGE_PREMIUM * 10) / 10
+        : wage;
 
     return {
       id: r.slug, name: r.name, position: r.position, age: r.age,
