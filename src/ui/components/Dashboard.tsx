@@ -41,8 +41,8 @@ export function Dashboard(): React.JSX.Element {
         </div>
         <div className="tile">
           <div className="label">Home-grown</div>
-          <div className="value">{counts.homegrown}</div>
-          <div className="sub">of {counts.total} in squad</div>
+          <div className="value">{counts.homegrownOver21}</div>
+          <div className="sub">of {counts.over21} registered</div>
         </div>
         <div className={`tile${has('NON_HOMEGROWN_LIMIT_EXCEEDED') ? ' violating' : ''}`}>
           <div className="label">Non-home-grown</div>
