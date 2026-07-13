@@ -44,6 +44,9 @@ def main(argv: list[str]) -> int:
         html = fetch_league_html(CACHE_DIR, league)
         raw = parse_players(html)
         clean = clean_players(raw, league.key)
+        if league.club_allowlist is not None:
+            # Take only the allowlisted clubs (e.g. the relegated three).
+            clean = [p for p in clean if p.club_slug in league.club_allowlist]
         frames.append(pd.DataFrame(to_dicts(clean)))
         missing_salary = sum(1 for p in clean if p.salary_eur_m is None)
         print(

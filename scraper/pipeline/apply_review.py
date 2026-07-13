@@ -121,6 +121,39 @@ def normalise(review: pd.DataFrame) -> pd.DataFrame:
     return result
 
 
+#: Leagues added to the scrape AFTER Sam's review file was frozen, so their
+#: players are unioned in from the enriched table rather than review.csv.
+POST_REVIEW_LEAGUES = frozenset({"championship"})
+
+
+def append_post_review_leagues(
+    final: pd.DataFrame, enriched: pd.DataFrame
+) -> tuple[pd.DataFrame, int]:
+    """Unions enriched players from leagues absent from the review file.
+
+    The review file (Sam's master) predates these leagues, so their rows
+    are taken straight from enrichment, keyed so nothing already reviewed
+    is duplicated.
+
+    Args:
+        final: The dataset built from the review file plus additions.
+        enriched: The full enriched table.
+
+    Returns:
+        The extended dataset and the number of rows added.
+    """
+    existing = set(final.player_slug)
+    extra = enriched[
+        enriched.league.isin(POST_REVIEW_LEAGUES)
+        & ~enriched.player_slug.isin(existing)
+    ].copy()
+    if extra.empty:
+        return final, 0
+    extra = extra.reindex(columns=final.columns)
+    extra["homegrown"] = extra["homegrown"].map(parse_bool)
+    return pd.concat([final, extra], ignore_index=True), len(extra)
+
+
 def main() -> int:
     """Rebuilds the final dataset from the reviewed file."""
     review = pd.read_csv(REVIEW_CSV)
@@ -134,11 +167,17 @@ def main() -> int:
         for name in additions.name:
             print(f"Added: {name}")
 
+    final, extra_count = append_post_review_leagues(final, enriched)
+    if extra_count > 0:
+        print(f"Unioned {extra_count} players from post-review leagues "
+              f"({', '.join(sorted(POST_REVIEW_LEAGUES))})")
+
     dropped = len(enriched) - len(review)
     final.to_csv(FINAL_CSV, index=False)
     print(
         f"Final dataset: {len(final)} players "
-        f"({dropped} net removed in review, {len(additions)} added)"
+        f"({dropped} net removed in review, "
+        f"{len(additions)} added, {extra_count} unioned)"
     )
     print(f"Wrote {FINAL_CSV}")
     return 0

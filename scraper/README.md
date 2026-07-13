@@ -28,7 +28,10 @@ Fetches are rate-limited and cached forever in `cache/` (gitignored);
 output lands in `output/players_capology.csv` (gitignored; the final game
 dataset is generated into `src/data/` by a later pipeline stage).
 
-## Snapshot status (11/07/2026)
+## Snapshot status (13/07/2026)
 
-4,216 players. Belgian Pro League salaries are paywalled at source and
-null in the CSV; they are imputed by the downstream value model.
+The eight top leagues plus the three clubs relegated from the Premier
+League in 2025/26 (West Ham, Wolves, Burnley), lifted out of the
+Championship by a club allowlist. Belgian Pro League salaries are
+paywalled at source and null in the CSV; they are imputed by the
+downstream value model.

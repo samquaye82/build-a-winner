@@ -166,6 +166,7 @@ export const LEAGUE_LABELS: Readonly<Record<string, string>> = {
   'primeira-liga': 'Primeira Liga',
   eredivisie: 'Eredivisie',
   'pro-league': 'Belgian Pro League',
+  championship: 'Championship (relegated)',
   'free-agent': 'Free agents',
 };
 
