@@ -18,15 +18,26 @@ type Tab = 'squad' | 'market' | 'renewals';
  *
  * @param props.onEnterXI - Called when the final window is submitted and
  *   the game moves to squad selection.
+ * @param props.onReviewWindow - Called when the opening window is submitted,
+ *   to show its interim review before advancing.
  * @returns The window screen element.
  */
-export function WindowScreen({ onEnterXI }: { onEnterXI: () => void }): React.JSX.Element {
+export function WindowScreen({
+  onEnterXI,
+  onReviewWindow,
+}: {
+  onEnterXI: () => void;
+  onReviewWindow: () => void;
+}): React.JSX.Element {
   const { state, dispatch } = useGame();
   const [tab, setTab] = useState<Tab>('squad');
   const [filter, setFilter] = useState<Position | 'ALL'>('ALL');
 
   const window = currentWindow(state);
   const isFinalWindow = state.windowIndex === state.config.windows.length - 1;
+  // Only the opening window gets an interim review; later windows advance
+  // straight on (Sam, 13/07/2026).
+  const isReviewedWindow = state.windowIndex === 0;
   const submittable = isSubmittable(state);
   const nextWindow = state.config.windows[state.windowIndex + 1];
 
@@ -52,6 +63,25 @@ export function WindowScreen({ onEnterXI }: { onEnterXI: () => void }): React.JS
         {isFinalWindow ? (
           <button type="button" className="btn-primary" disabled={!submittable} onClick={onEnterXI}>
             Submit squad → pick your XI ▸
+          </button>
+        ) : isReviewedWindow ? (
+          <button
+            type="button"
+            className="btn-primary"
+            disabled={!submittable}
+            onClick={() => {
+              // Advancing is one-way; make the player mean it. The review
+              // that follows is read-only, so this is the real commit point.
+              if (
+                globalThis.confirm(
+                  `Submit ${window.label}? You cannot reopen this window.`,
+                )
+              ) {
+                onReviewWindow();
+              }
+            }}
+          >
+            Submit window → review ▸
           </button>
         ) : (
           <button

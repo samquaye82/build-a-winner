@@ -33,7 +33,7 @@ import {
   VALUE_CREATED_SLOPE,
 } from './constants';
 import { EngineError } from './errors';
-import { FORMATIONS, type Formation } from './formations';
+import { FORMATIONS, type Formation, type FormationId } from './formations';
 import { roundMoney } from './money';
 import { remainingMonths } from './rules/value';
 import { currentWindow } from './state';
@@ -158,6 +158,97 @@ export function scoreGame(state: GameState): ScoreBreakdown {
     squadSizeCapped,
     total,
   };
+}
+
+/**
+ * Auto-selects the highest-quality legal XI from the current squad.
+ *
+ * Used for the provisional interim rating, before the player has picked
+ * their own eleven. Fully deterministic: formations are tried in their
+ * declared order and players are ranked by quality with an id tie-break, so
+ * identical squads always yield identical selections.
+ *
+ * @param state - The current game state.
+ * @returns The best XI: the formation and assignment maximising total XI
+ *   quality.
+ * @throws {EngineError} XI_NOT_PICKED if no formation can be filled from the
+ *   current squad (too few bodies or missing positional cover).
+ */
+export function autoPickBestXI(state: GameState): XISelection {
+  // A squad ranked once, best first; id breaks ties for determinism. Slots
+  // within a formation share disjoint positional groups, so greedily taking
+  // the best eligible player per slot from this list is optimal per shape.
+  const ranked = [...state.squad].sort(
+    (a, b) => b.quality - a.quality || a.id.localeCompare(b.id),
+  );
+
+  let best: { formationId: FormationId; playerIds: string[]; total: number } | undefined;
+  for (const formation of Object.values(FORMATIONS)) {
+    const filled = fillFormation(ranked, formation);
+    if (filled === undefined) {
+      continue;
+    }
+    if (
+      best === undefined ||
+      filled.total > best.total ||
+      (filled.total === best.total && formation.id.localeCompare(best.formationId) < 0)
+    ) {
+      best = { formationId: formation.id, ...filled };
+    }
+  }
+
+  if (best === undefined) {
+    throw new EngineError(
+      'XI_NOT_PICKED',
+      'No legal XI can be formed from the current squad',
+    );
+  }
+  return { formationId: best.formationId, playerIds: best.playerIds };
+}
+
+/**
+ * Greedily assigns the best eligible player to each slot of a formation.
+ *
+ * @param ranked - The squad ranked best-quality first (with a stable tie-break).
+ * @param formation - The formation to fill.
+ * @returns The chosen player ids and their total quality, or undefined if a
+ *   slot cannot be filled.
+ */
+function fillFormation(
+  ranked: readonly SquadPlayer[],
+  formation: Formation,
+): { playerIds: string[]; total: number } | undefined {
+  const used = new Set<string>();
+  const playerIds: string[] = [];
+  let total = 0;
+  for (const slot of formation.slots) {
+    const pick = ranked.find(
+      (p) => !used.has(p.id) && slot.eligible.includes(p.position),
+    );
+    if (pick === undefined) {
+      return undefined;
+    }
+    used.add(pick.id);
+    playerIds.push(pick.id);
+    total += pick.quality;
+  }
+  return { playerIds, total };
+}
+
+/**
+ * Scores the current squad using an auto-picked best XI.
+ *
+ * This is the provisional rating shown at the interim window review, where
+ * the player has not yet chosen their eleven. The final rating still uses
+ * the player's own PICK_XI; this only borrows a best-XI so the same five
+ * components can be shown as a checkpoint.
+ *
+ * @param state - The current game state.
+ * @returns The score breakdown, computed against the auto-picked XI.
+ * @throws {EngineError} XI_NOT_PICKED if no legal XI can be formed.
+ */
+export function scoreProvisional(state: GameState): ScoreBreakdown {
+  return scoreGame({ ...state, xi: autoPickBestXI(state) });
 }
 
 /** Squad Quality: weighted XI average and best-ten depth average. */

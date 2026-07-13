@@ -280,6 +280,25 @@ export function verdict(total: number): string {
   return VERDICTS.find((tier) => total >= tier.min)?.text ?? '';
 }
 
+/**
+ * The five score components as label/score rows in weight order, for the
+ * bar chart shared by the interim summary and end screens.
+ *
+ * @param breakdown - A score breakdown.
+ * @returns One row per component.
+ */
+export function scoreComponentRows(
+  breakdown: ScoreBreakdown,
+): { label: string; score: number }[] {
+  return [
+    { label: 'Squad quality', score: breakdown.squadQuality.score },
+    { label: 'Balance', score: breakdown.balance.score },
+    { label: 'Age profile', score: breakdown.ageProfile.score },
+    { label: 'Contract health', score: breakdown.contractHealth.score },
+    { label: 'Value created', score: breakdown.valueCreated.score },
+  ];
+}
+
 /** The story of a finished playthrough, for the end screen. */
 export interface EndSummary {
   /** Players signed in-game (still here or since moved on). */

@@ -19,9 +19,12 @@
 import { describe, expect, it } from 'vitest';
 import {
   applyAction,
+  autoPickBestXI,
   createGame,
   replay,
   scoreGame,
+  scoreProvisional,
+  validateXI,
   type Action,
   type GameState,
   type XISelection,
@@ -250,5 +253,67 @@ describe('full playthrough scoring', () => {
     );
     const replayed = replay(makeThreeWindowConfig(), live.actionLog);
     expect(scoreGame(replayed)).toEqual(scoreGame(live));
+  });
+});
+
+describe('autoPickBestXI', () => {
+  it('picks_the_highest_quality_legal_eleven', () => {
+    const state = createGame(makeTestConfig());
+    const xi = autoPickBestXI(state);
+
+    // Twelve fixture players; the best eleven drops only the spare keeper.
+    const chosen = new Set(xi.playerIds);
+    const dropped = state.squad
+      .map((p) => p.id)
+      .filter((id) => !chosen.has(id));
+    expect(dropped).toEqual(['gk2']);
+    // A valid selection the scorer would accept (4-2-3-1 ties 4-3-3 on
+    // quality and wins the id tie-break).
+    expect(xi.formationId).toBe('4-2-3-1');
+    expect(() => validateXI(state, xi)).not.toThrow();
+  });
+
+  it('is_deterministic', () => {
+    const state = createGame(makeTestConfig());
+    expect(autoPickBestXI(state)).toEqual(autoPickBestXI(state));
+  });
+
+  it('never_beats_a_hand_picked_eleven_on_quality', () => {
+    const state = createGame(makeTestConfig());
+    const byId = new Map(state.squad.map((p) => [p.id, p]));
+    const quality = (xi: XISelection): number =>
+      xi.playerIds.reduce((sum, id) => sum + (byId.get(id)?.quality ?? 0), 0);
+
+    // The auto-pick is at least as good as the known-good natural XI.
+    expect(quality(autoPickBestXI(state))).toBeGreaterThanOrEqual(
+      quality(fixtureXI),
+    );
+  });
+
+  it('throws_when_no_formation_can_be_filled', () => {
+    // A squad with no striker cannot fill any formation (all six carry an
+    // ST slot); the provisional scorer must surface that, not guess.
+    const noStriker = createGame({
+      ...makeTestConfig(),
+      initialSquad: [
+        makeSquadPlayer({ id: 'gk1', position: 'GK' }),
+        makeSquadPlayer({ id: 'cb1', position: 'CB' }),
+      ],
+    });
+    expect(() => autoPickBestXI(noStriker)).toThrow();
+  });
+});
+
+describe('scoreProvisional', () => {
+  it('scores_against_the_auto_picked_eleven', () => {
+    const state = createGame(makeTestConfig());
+    const expected = scoreGame({ ...state, xi: autoPickBestXI(state) });
+    expect(scoreProvisional(state)).toEqual(expected);
+  });
+
+  it('needs_no_committed_xi', () => {
+    const state = createGame(makeTestConfig());
+    expect(state.xi).toBeUndefined();
+    expect(scoreProvisional(state).total).toBeGreaterThan(0);
   });
 });

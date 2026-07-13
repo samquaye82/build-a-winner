@@ -19,7 +19,7 @@
  * Bump whenever a rules change would make scores incomparable with earlier
  * versions; a future leaderboard must only compare like-for-like versions.
  */
-export const ENGINE_VERSION = '0.7.0';
+export const ENGINE_VERSION = '0.8.0';
 
 export type {
   Action,
@@ -46,7 +46,13 @@ export {
   type FormationId,
   type FormationSlot,
 } from './formations';
-export { scoreGame, validateXI, type ScoreBreakdown } from './scoring';
+export {
+  autoPickBestXI,
+  scoreGame,
+  scoreProvisional,
+  validateXI,
+  type ScoreBreakdown,
+} from './scoring';
 export {
   MIN_VIABLE_SQUAD_SIZE,
   UNVIABLE_SQUAD_MAX_SCORE,

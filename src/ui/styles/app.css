@@ -173,6 +173,13 @@ button {
   gap: 24px;
   border-bottom: 1px solid var(--ink-17);
   margin: 20px 0 8px;
+  /* Scroll rather than overflow when the tab labels do not fit (mobile). */
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .tabs button {
@@ -184,6 +191,9 @@ button {
   color: var(--ink);
   border-bottom: 3px solid transparent;
   transition: border-color var(--speed) ease-out;
+  /* Keep each label on one line so the row scrolls cleanly. */
+  white-space: nowrap;
+  flex: 0 0 auto;
 }
 
 .tabs button.active {
@@ -625,6 +635,11 @@ button {
 @media (max-width: 640px) {
   .dashboard { grid-template-columns: repeat(2, 1fr); }
   .page { padding: 16px; }
+  .masthead { padding: 16px; }
+  .tabs { gap: 16px; }
+  .window-footer { margin: 20px 0 8px; }
+  /* Full-width primary actions are easier tap targets on a phone. */
+  .window-footer .btn-primary { width: 100%; }
 }
 
 /* ---- Market browser (Phase E) ------------------------------------------ */
@@ -842,7 +857,6 @@ button {
 
 .end-squad-group {
   display: flex;
-  flex-wrap: wrap;
   gap: 4px 14px;
   align-items: baseline;
   font-size: 13px;
@@ -854,6 +868,17 @@ button {
   font-weight: 700;
   text-transform: uppercase;
   color: var(--white-40);
+}
+
+/* The players sit in their own column so wrapped lines stay left-aligned
+ * with the first player instead of sliding under the position label. */
+.end-squad-players {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  align-items: baseline;
 }
 
 .end-squad-player {
@@ -982,7 +1007,8 @@ button {
   max-width: none;
 }
 
-/* In the narrow depth column, stack each position group. */
+/* In the narrow depth column, stack the label above its players, and stack
+ * the players one per line rather than wrapping them across the column. */
 .end-team-depth .end-squad-group {
   flex-direction: column;
   gap: 2px;
@@ -991,6 +1017,11 @@ button {
 .end-team-depth .end-squad-pos {
   flex: none;
   margin-bottom: 2px;
+}
+
+.end-team-depth .end-squad-players {
+  flex-direction: column;
+  gap: 2px;
 }
 
 @media (max-width: 760px) {
@@ -1005,4 +1036,34 @@ button {
   font-size: 13px;
   font-weight: 700;
   color: var(--gold);
+}
+
+/* ---- Narrow phones (<= 520px) ------------------------------------------ */
+
+@media (max-width: 520px) {
+  /* Score bars: shrink the fixed label and value columns so the bar keeps
+   * a usable width on a phone. */
+  .end-bar-row {
+    grid-template-columns: 88px 1fr 30px;
+    gap: 8px;
+  }
+  .end-bar-label { font-size: 11px; }
+
+  /* Squad overview: stack the position label above its players so the
+   * fixed 150px label column never crushes the names. */
+  .end-squad-group { flex-direction: column; gap: 2px; }
+  .end-squad-pos { flex: none; }
+
+  /* Two stat cards per row rather than one long column. */
+  .end-stats { grid-template-columns: 1fr 1fr; }
+
+  /* Full-width continue / share actions for easier tapping. */
+  .end-actions .btn-primary { width: 100%; }
+
+  /* A roomier pitch with smaller markers so an XI still reads on a phone. */
+  .pitch { aspect-ratio: 3 / 3.4; }
+  .pitch .slot { width: 58px; }
+  .pitch .slot .roundel { width: 42px; height: 42px; font-size: 12px; }
+  .pitch .slot.filled .roundel { font-size: 11px; }
+  .pitch .slot .slot-name { font-size: 10px; }
 }

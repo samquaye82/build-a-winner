@@ -10,7 +10,6 @@ import {
   MIN_VIABLE_SQUAD_SIZE,
   scoreGame,
   UNVIABLE_SQUAD_MAX_SCORE,
-  type ScoreBreakdown,
 } from '../../engine';
 import { useGame } from '../GameContext';
 import {
@@ -19,20 +18,10 @@ import {
   formatMoney,
   groupByPosition,
   POSITION_LABELS,
+  scoreComponentRows,
   verdict,
 } from '../helpers';
 import { initials, SLOT_COORDS } from './pitchLayout';
-
-/** Display rows for the five score components, in weight order. */
-function componentRows(b: ScoreBreakdown): { label: string; score: number }[] {
-  return [
-    { label: 'Squad quality', score: b.squadQuality.score },
-    { label: 'Balance', score: b.balance.score },
-    { label: 'Age profile', score: b.ageProfile.score },
-    { label: 'Contract health', score: b.contractHealth.score },
-    { label: 'Value created', score: b.valueCreated.score },
-  ];
-}
 
 /**
  * Renders the end screen.
@@ -97,7 +86,7 @@ export function EndScreen(): React.JSX.Element {
         </div>
 
         <div className="end-bars">
-          {componentRows(breakdown).map((row) => (
+          {scoreComponentRows(breakdown).map((row) => (
             <div key={row.label} className="end-bar-row">
               <span className="end-bar-label">{row.label}</span>
               <div className="end-bar-track">
@@ -169,11 +158,13 @@ export function EndScreen(): React.JSX.Element {
                     <span className="end-squad-pos">
                       {POSITION_LABELS[position]}
                     </span>
-                    {group.map((player) => (
-                      <span className="end-squad-player" key={player.id}>
-                        <b>{player.quality}</b> {player.name}
-                      </span>
-                    ))}
+                    <div className="end-squad-players">
+                      {group.map((player) => (
+                        <span className="end-squad-player" key={player.id}>
+                          <b>{player.quality}</b> {player.name}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 ))}
               </div>
