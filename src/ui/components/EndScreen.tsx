@@ -17,6 +17,7 @@ import {
   formatMoney,
   groupByPosition,
   POSITION_LABELS,
+  verdict,
 } from '../helpers';
 import { initials, SLOT_COORDS } from './pitchLayout';
 
@@ -81,6 +82,7 @@ export function EndScreen(): React.JSX.Element {
           <span className="end-label">Final rating</span>
           <div className="end-rating">{breakdown.total}</div>
           <span className="end-outof">/ 100</span>
+          <p className="end-verdict">{verdict(breakdown.total)}</p>
         </div>
 
         <div className="end-bars">
@@ -121,51 +123,51 @@ export function EndScreen(): React.JSX.Element {
         </div>
 
         {formation !== undefined && coords !== undefined && xi !== undefined && (
-          <>
-            <div className="end-xi-label">Your XI · {xi.formationId}</div>
-            <div className="pitch pitch-mini">
-              {formation.slots.map((slot, index) => {
-                const [x, y] = coords[index] ?? [50, 50];
-                const player = byId.get(xi.playerIds[index] ?? '');
-                return (
-                  <div
-                    key={`${xi.formationId}-${String(index)}`}
-                    className="slot filled"
-                    style={{ left: `${String(x)}%`, top: `${String(y)}%` }}
-                  >
-                    <span className="roundel">
-                      {player === undefined ? slot.label : initials(player.name)}
-                    </span>
-                    <span className="slot-name">
-                      {player?.name.split(' ').pop() ?? slot.label}
-                    </span>
-                  </div>
-                );
-              })}
+          <div className="end-team">
+            <div className="end-team-xi">
+              <div className="end-xi-label">Your XI · {xi.formationId}</div>
+              <div className="pitch pitch-mini">
+                {formation.slots.map((slot, index) => {
+                  const [x, y] = coords[index] ?? [50, 50];
+                  const player = byId.get(xi.playerIds[index] ?? '');
+                  return (
+                    <div
+                      key={`${xi.formationId}-${String(index)}`}
+                      className="slot filled"
+                      style={{ left: `${String(x)}%`, top: `${String(y)}%` }}
+                    >
+                      <span className="roundel">
+                        {player === undefined ? slot.label : initials(player.name)}
+                      </span>
+                      <span className="slot-name">
+                        {player?.name.split(' ').pop() ?? slot.label}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </>
-        )}
 
-        {xi !== undefined && (
-          <>
-            <div className="end-xi-label">The rest of the squad</div>
-            <div className="end-squad">
-              {groupByPosition(
-                state.squad.filter((p) => !xi.playerIds.includes(p.id)),
-              ).map(([position, group]) => (
-                <div className="end-squad-group" key={position}>
-                  <span className="end-squad-pos">
-                    {POSITION_LABELS[position]}
-                  </span>
-                  {group.map((player) => (
-                    <span className="end-squad-player" key={player.id}>
-                      <b>{player.quality}</b> {player.name}
+            <div className="end-team-depth">
+              <div className="end-xi-label">The rest of the squad</div>
+              <div className="end-squad">
+                {groupByPosition(
+                  state.squad.filter((p) => !xi.playerIds.includes(p.id)),
+                ).map(([position, group]) => (
+                  <div className="end-squad-group" key={position}>
+                    <span className="end-squad-pos">
+                      {POSITION_LABELS[position]}
                     </span>
-                  ))}
-                </div>
-              ))}
+                    {group.map((player) => (
+                      <span className="end-squad-player" key={player.id}>
+                        <b>{player.quality}</b> {player.name}
+                      </span>
+                    ))}
+                  </div>
+                ))}
+              </div>
             </div>
-          </>
+          </div>
         )}
 
         <div className="end-actions">

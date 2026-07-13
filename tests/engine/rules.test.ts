@@ -44,6 +44,8 @@ describe('countRegistration', () => {
     expect(counts).toEqual({
       over21: 10,
       nonHomegrownOver21: 7,
+      // gk1, rb1, cm1, am1 are home-grown (am1 is a U21 HG player).
+      homegrown: 4,
       u21: 2,
       total: 12,
       goalkeepers: 2,

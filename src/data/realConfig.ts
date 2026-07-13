@@ -7,8 +7,9 @@
  * lockedLists.ts take effect on refresh without regeneration.
  *
  * Money constants (Sam, 11/07/2026):
- * - Budgets 250 / 0 / 250: one EUR 250m pot per fiscal year; January
- *   spends only what Summer left over (engine rollover handles this).
+ * - Budgets 200 / 0 / 250: Summer 2026 opens with EUR 200m; January
+ *   spends only what Summer left over; Summer 2027 adds a fresh EUR 250m
+ *   pot (engine rollover handles the carry-forward).
  * - SCR: 70% of season revenue. Revenues 850 (25/26, the opening
  *   position), 875 (26/27) and 900 (27/28): the cap grows with the club.
  * - Baseline EUR 340m/yr: historic amortisation PLUS the SCR components
@@ -58,7 +59,7 @@ interface GeneratedSquadPlayer {
 }
 
 const BASELINE_AMORTISATION = 340;
-const BUDGETS: readonly number[] = [250, 0, 250];
+const BUDGETS: readonly number[] = [200, 0, 250];
 /** Season revenues (EUR m): 25/26 opening basis, then 26/27 and 27/28. */
 const REVENUES: readonly number[] = [850, 875, 900];
 

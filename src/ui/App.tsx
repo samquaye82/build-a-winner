@@ -1,21 +1,23 @@
 /**
- * Root application component: wires the game provider to the three UI
- * phases. The engine owns all rules; this component only decides which
- * screen is showing.
+ * Root application component: wires the game provider to the UI phases.
+ * The engine owns all rules; this component only decides which screen is
+ * showing.
  *
- * Phases: 'window' (the three transfer windows) -> 'xi' (squad selection,
- * final window only, can return to the window) -> 'end' (rating).
+ * Phases: 'start' (landing / rules) -> 'window' (the three transfer
+ * windows) -> 'xi' (squad selection, can return to the window) -> 'end'
+ * (rating).
  */
 import { useState } from 'react';
 import { realConfig } from '../data/realConfig';
 import { GameProvider } from './GameContext';
 import { EndScreen } from './components/EndScreen';
+import { LandingScreen } from './components/LandingScreen';
 import { Masthead } from './components/Masthead';
 import { WindowScreen } from './components/WindowScreen';
 import { XIScreen } from './components/XIScreen';
 import './styles/app.css';
 
-type Phase = 'window' | 'xi' | 'end';
+type Phase = 'start' | 'window' | 'xi' | 'end';
 
 /** Masthead context labels for the non-window phases. */
 const PHASE_LABELS: Partial<Record<Phase, string>> = {
@@ -29,7 +31,7 @@ const PHASE_LABELS: Partial<Record<Phase, string>> = {
  * @returns The root React element for the game.
  */
 export function App(): React.JSX.Element {
-  const [phase, setPhase] = useState<Phase>('window');
+  const [phase, setPhase] = useState<Phase>('start');
   // Remounting the provider with a fresh key rebuilds the game from
   // scratch: the whole reset mechanism.
   const [gameKey, setGameKey] = useState(0);
@@ -37,8 +39,20 @@ export function App(): React.JSX.Element {
   function reset(): void {
     if (globalThis.confirm('Start again? All three windows will be reset.')) {
       setGameKey((key) => key + 1);
-      setPhase('window');
+      setPhase('start');
     }
+  }
+
+  // The landing screen sits outside the game chrome: no masthead, no
+  // mounted game until the player starts.
+  if (phase === 'start') {
+    return (
+      <LandingScreen
+        onStart={() => {
+          setPhase('window');
+        }}
+      />
+    );
   }
 
   return (

@@ -1,14 +1,14 @@
 /**
  * Final squad rating.
  *
- * Five weighted components (weights agreed with Sam, 10/07/2026):
+ * Five weighted components (re-weighted with Sam, 13/07/2026):
  *
- *   Squad Quality  35%  0.7 x XI average quality + 0.3 x depth (best ten
+ *   Squad Quality  35%  0.6 x XI average quality + 0.4 x depth (best ten
  *                       outside the XI; missing bodies score zero)
  *   Balance        25%  positional coverage against the healthy-squad
  *                       template; extras beyond the template earn nothing
- *   Age profile    20%  per-player age-band scores, averaged
- *   Contract health 15% per-player remaining-months scores at game end,
+ *   Age profile    15%  per-player age-band scores, averaged
+ *   Contract health 20% per-player remaining-months scores at game end,
  *                       weighted by quality (a star running down their deal
  *                       hurts far more than a reserve)
  *   Value created   5%  (final squad value + funds) vs (starting squad

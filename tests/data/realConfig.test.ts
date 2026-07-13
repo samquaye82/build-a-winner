@@ -15,7 +15,7 @@ describe('realConfig', () => {
   it('builds_a_playable_three_window_game', () => {
     const state = createGame(realConfig);
     expect(state.config.windows).toHaveLength(3);
-    expect(state.funds).toBe(250);
+    expect(state.funds).toBe(200);
     expect(state.squad.length).toBeGreaterThanOrEqual(25);
     expect(state.market.length).toBeGreaterThan(3000);
   });

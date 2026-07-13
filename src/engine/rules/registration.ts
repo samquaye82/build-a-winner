@@ -34,6 +34,8 @@ export interface RegistrationCounts {
   over21: number;
   /** Registered players who are not home-grown. */
   nonHomegrownOver21: number;
+  /** Home-grown players in the whole squad (U21s included). */
+  homegrown: number;
   /** Registration-exempt under-21 players. */
   u21: number;
   /** Total squad size including U21s. */
@@ -52,11 +54,15 @@ export function countRegistration(
 ): RegistrationCounts {
   let over21 = 0;
   let nonHomegrownOver21 = 0;
+  let homegrown = 0;
   let goalkeepers = 0;
 
   for (const player of squad) {
     if (player.position === 'GK') {
       goalkeepers += 1;
+    }
+    if (player.homegrown) {
+      homegrown += 1;
     }
     if (isU21(player)) {
       continue;
@@ -70,6 +76,7 @@ export function countRegistration(
   return {
     over21,
     nonHomegrownOver21,
+    homegrown,
     u21: squad.length - over21,
     total: squad.length,
     goalkeepers,

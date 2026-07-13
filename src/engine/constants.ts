@@ -149,18 +149,23 @@ export const CONTRACT_DEMAND_BY_AGE: readonly {
  * Scoring (weights agreed with Sam, 10/07/2026; sub-curves M6 tunable)
  * ---------------------------------------------------------------------- */
 
-/** Component weights of the final rating; must sum to 1. */
+/**
+ * Component weights of the final rating; must sum to 1. Re-weighted with
+ * Sam (13/07/2026): Liverpool start with an elite XI, so the game rewards
+ * filling out the depth and future-proofing the contracts rather than the
+ * quality that is already there. Depth weight up, age down, contracts up.
+ */
 export const SCORING_WEIGHTS = {
   squadQuality: 0.35,
   balance: 0.25,
-  ageProfile: 0.2,
-  contractHealth: 0.15,
+  ageProfile: 0.15,
+  contractHealth: 0.2,
   valueCreated: 0.05,
 } as const;
 
-/** Inside Squad Quality: the XI / depth split. */
-export const SQUAD_QUALITY_XI_WEIGHT = 0.7;
-export const SQUAD_QUALITY_DEPTH_WEIGHT = 0.3;
+/** Inside Squad Quality: the XI / depth split (depth is the mission). */
+export const SQUAD_QUALITY_XI_WEIGHT = 0.6;
+export const SQUAD_QUALITY_DEPTH_WEIGHT = 0.4;
 
 /**
  * Depth counts the best N players outside the XI; missing bodies score
