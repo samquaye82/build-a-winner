@@ -3,7 +3,7 @@
  * Deep red backdrop, gold hero rating, component bars, the story of the
  * three windows, the chosen XI on a mini pitch, and a share action.
  */
-import { useState } from 'react';
+
 import {
   FORMATIONS,
   MIN_VIABLE_SQUAD_SIZE,
@@ -12,7 +12,6 @@ import {
 } from '../../engine';
 import { useGame } from '../GameContext';
 import {
-  buildShareText,
   endSummary,
   formatMoney,
   groupByPosition,
