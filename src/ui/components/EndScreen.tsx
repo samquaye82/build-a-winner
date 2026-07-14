@@ -171,17 +171,7 @@ export function EndScreen(): React.JSX.Element {
           </div>
         )}
 
-        <div className="end-actions">
-          <button
-            type="button"
-            className="btn-primary"
-            onClick={() => {
-              void share();
-            }}
-          >
-            {shared ? '✓ Copied · share it' : 'Share your window'}
-          </button>
-        </div>
+
 
         <p className="end-footnote">
           Analytics and UI by @Q15analytics.
