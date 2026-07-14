@@ -29,7 +29,6 @@ import { initials, SLOT_COORDS } from './pitchLayout';
  */
 export function EndScreen(): React.JSX.Element {
   const { state } = useGame();
-  const [shared, setShared] = useState(false);
   const breakdown = scoreGame(state);
   const summary = endSummary(state);
 
@@ -38,32 +37,7 @@ export function EndScreen(): React.JSX.Element {
   const coords = xi === undefined ? undefined : SLOT_COORDS[xi.formationId];
   const byId = new Map(state.squad.map((p) => [p.id, p]));
 
-  /** Shares via the Web Share API, falling back to the clipboard. */
-  async function share(): Promise<void> {
-    const text = buildShareText(state, breakdown);
 
-    if (typeof navigator.share === 'function') {
-      try {
-        await navigator.share({ text });
-        setShared(true);
-        return;
-      } catch (error) {
-        if (error instanceof DOMException && error.name === 'AbortError') {
-          // The player closed the share sheet; not a failure.
-          return;
-        }
-        // Desktop browsers often expose navigator.share but refuse to open
-        // a sheet; fall through to the clipboard instead.
-      }
-    }
-
-    try {
-      await navigator.clipboard.writeText(text);
-      setShared(true);
-    } catch {
-      // Clipboard refused (permissions); the button simply stays unchanged.
-    }
-  }
 
   return (
     <div className="end-screen">
