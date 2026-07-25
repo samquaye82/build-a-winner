@@ -19,9 +19,11 @@
  *   Isak/Wirtz/Ekitike spree, partly offset by big frees departing.
  */
 import type {
+  AcademyPlayerSeed,
   GameConfig,
   MarketPlayer,
   Position,
+  RivalTeam,
   SquadPlayerSeed,
   WindowConfig,
 } from '../engine';
@@ -33,6 +35,7 @@ import {
   MARKET_UNTOUCHABLE_MIN_VALUE_M,
 } from './lockedLists';
 import gameData from './generated/gameData.json';
+import academyData from './academy-players.json';
 
 /** Shape of one generated market entry (see scripts/generate-data.ts). */
 interface GeneratedMarketPlayer {
@@ -58,7 +61,27 @@ interface GeneratedSquadPlayer {
   contract: { expiryYear: number; salary: number };
 }
 
+/** Shape of one entry in src/data/academy-players.json. */
+interface AcademyDataPlayer {
+  id: string;
+  name: string;
+  position: string;
+  age: number;
+  homegrown: boolean;
+}
+
 const BASELINE_AMORTISATION = 340;
+
+/**
+ * Fixed attributes every academy player carries until promoted (Sam,
+ * 25/07/2026). Wage is an in-game weekly figure of EUR 15k, held as the
+ * engine's annual EUR m unit (15,000 x 52 = EUR 0.78m/yr). See the
+ * fixed_attributes note in academy-players.json.
+ */
+const ACADEMY_QUALITY = 65;
+const ACADEMY_BASE_VALUE = 20;
+const ACADEMY_SALARY_EUR_M = 0.78;
+const ACADEMY_EXPIRY_YEAR = 2029;
 const BUDGETS: readonly number[] = [200, 0, 200];
 /** Season revenues (EUR m): 25/26 opening basis, then 26/27 and 27/28. */
 const REVENUES: readonly number[] = [875, 875, 900];
@@ -143,10 +166,69 @@ const marketByWindow: MarketPlayer[][] = [0, 1, 2].map((windowIndex) =>
   }),
 );
 
+/**
+ * The academy pool: promotable youngsters, all sharing the fixed attributes
+ * above. Positions, ages and home-grown status are authored in
+ * academy-players.json; everything else is applied here.
+ */
+const academy: AcademyPlayerSeed[] = (
+  academyData.players as AcademyDataPlayer[]
+).map((player) => ({
+  id: player.id,
+  name: player.name,
+  position: player.position as Position,
+  age: player.age,
+  homegrown: player.homegrown,
+  quality: ACADEMY_QUALITY,
+  baseValue: ACADEMY_BASE_VALUE,
+  contract: {
+    expiryYear: ACADEMY_EXPIRY_YEAR,
+    salary: ACADEMY_SALARY_EUR_M,
+  },
+}));
+
+/**
+ * Rival strengths, derived with the same full-squad methodology as Squad
+ * quality (0.6 x a club's best XI + 0.4 x the rest of its squad), taken from
+ * the Premier League players in the dataset. Computed rather than authored,
+ * so the projected league stays consistent with the game world.
+ */
+const RIVAL_XI_WEIGHT = 0.6;
+const RIVAL_DEPTH_WEIGHT = 0.4;
+
+function rivalStrength(qualities: readonly number[]): number {
+  const sorted = [...qualities].sort((a, b) => b - a);
+  const xi = sorted.slice(0, 11);
+  const rest = sorted.slice(11);
+  const mean = (xs: readonly number[]): number =>
+    xs.reduce((sum, q) => sum + q, 0) / xs.length;
+  const depthAverage = rest.length > 0 ? mean(rest) : mean(xi);
+  return (
+    Math.round((RIVAL_XI_WEIGHT * mean(xi) + RIVAL_DEPTH_WEIGHT * depthAverage) * 10) /
+    10
+  );
+}
+
+const rivalQualities = new Map<string, number[]>();
+for (const player of generatedMarket) {
+  if (player.league !== 'premier-league') {
+    continue;
+  }
+  const list = rivalQualities.get(player.club) ?? [];
+  list.push(player.quality);
+  rivalQualities.set(player.club, list);
+}
+
+const rivals: RivalTeam[] = [...rivalQualities.entries()]
+  .map(([name, qualities]) => ({ name, strength: rivalStrength(qualities) }))
+  .sort((a, b) => b.strength - a.strength);
+
 /** The production game configuration. */
 export const realConfig: GameConfig = {
   windows,
   initialSquad,
   marketByWindow,
+  academy,
+  rivals,
   baselineAmortisation: BASELINE_AMORTISATION,
 };

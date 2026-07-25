@@ -91,6 +91,16 @@ export interface Renewal {
 }
 
 /**
+ * A record that a player was promoted from the academy into the first-team
+ * squad, kept so the promotion can be undone within the window it was made
+ * in. Present only on players promoted during the game.
+ */
+export interface Promotion {
+  /** Index of the window in which the player was promoted. */
+  windowIndex: number;
+}
+
+/**
  * Authored form of a squad player, as written in the data files. The engine
  * derives the runtime SquadPlayer from this at game start.
  */
@@ -120,6 +130,29 @@ export interface SquadPlayer extends SquadPlayerSeed {
   acquisition?: Acquisition;
   /** Present only once renewed; a player renews at most once per game. */
   renewal?: Renewal;
+  /**
+   * Present only for players promoted from the academy during the game.
+   * Promoted players carry no acquisition (they arrive for free), so they
+   * add wages but no amortisation to the squad cost.
+   */
+  promotion?: Promotion;
+}
+
+/**
+ * Authored form of an academy player, as written in the data files. Academy
+ * players sit outside the first-team squad: they are invisible to every
+ * topline number, the registration count and the squad cost until promoted
+ * (see the PROMOTE action). The engine derives a runtime SquadPlayer from
+ * this at game start, exactly as it does for the starting squad.
+ */
+export interface AcademyPlayerSeed extends PlayerCore {
+  /**
+   * Underlying market value in EUR m, before the contract-length discount.
+   * Academy values are fixed: unlike squad players they do not drift between
+   * windows (Sam, 25/07/2026), though the player still ages.
+   */
+  baseValue: number;
+  contract: Contract;
 }
 
 /**
@@ -190,6 +223,17 @@ export interface WindowConfig {
 }
 
 /**
+ * A rival club for the end-of-game season projection. Strength is a single
+ * 0-100 rating in the same units as player quality; the simulation treats it
+ * as both the rival's attack and defence.
+ */
+export interface RivalTeam {
+  name: string;
+  /** Overall strength, 0-100 (same scale as player quality). */
+  strength: number;
+}
+
+/**
  * Immutable configuration for an entire playthrough: the windows, the
  * starting squad, the market pool for each window, and the club's squad
  * cost ratio (SCR) baseline.
@@ -199,6 +243,19 @@ export interface GameConfig {
   initialSquad: readonly SquadPlayerSeed[];
   /** One market pool per window, index-aligned with `windows`. */
   marketByWindow: readonly (readonly MarketPlayer[])[];
+  /**
+   * Academy players available to promote into the first-team squad. A single
+   * pool shared across all windows: it is not authored per window, and it
+   * carries forward (minus anyone already promoted) as the game advances.
+   * Optional so configs without an academy stay valid.
+   */
+  academy?: readonly AcademyPlayerSeed[];
+  /**
+   * Rival clubs for the end-of-game season projection: each is played home
+   * and away, so nineteen rivals make a 38-game season. Optional; the
+   * simulation falls back to a league of average opponents when absent.
+   */
+  rivals?: readonly RivalTeam[];
   /**
    * Annual squad cost (EUR m) already on the club's books at game start
    * beyond current fixed player salaries: historic transfer amortisation
@@ -232,6 +289,13 @@ export type Action =
   | { type: 'RENEW'; playerId: string; newExpiryYear: number }
   | { type: 'UNDO_RENEW'; playerId: string }
   /**
+   * Promotes an academy player into the first-team squad. Free of charge;
+   * from this point they count towards every topline number and the squad
+   * cost, and become sellable. Undoable within the window it was made in.
+   */
+  | { type: 'PROMOTE'; playerId: string }
+  | { type: 'UNDO_PROMOTE'; playerId: string }
+  /**
    * Submits the current window and opens the next. One-way: earlier windows
    * cannot be reopened. Rejected while soft-constraint violations remain.
    */
@@ -258,6 +322,12 @@ export interface GameState {
   squad: readonly SquadPlayer[];
   /** Players still available to buy in the current window. */
   market: readonly MarketPlayer[];
+  /**
+   * Academy players not yet promoted. Runtime SquadPlayers (they carry a
+   * derived saleValue) but held apart from `squad` so they are excluded from
+   * every rule and topline figure until PROMOTE moves them across.
+   */
+  academy: readonly SquadPlayer[];
   departed: readonly DepartedPlayer[];
   /** The chosen starting eleven; set by PICK_XI in the final window. */
   xi?: XISelection;

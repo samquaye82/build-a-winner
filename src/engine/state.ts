@@ -44,12 +44,25 @@ export function createGame(config: GameConfig): GameState {
     ),
   }));
 
+  // Academy players are derived the same way, but land in their own pool:
+  // locked defaults to false since the board never blocks a promotion.
+  const academy: SquadPlayer[] = (config.academy ?? []).map((seed) => ({
+    ...seed,
+    locked: false,
+    saleValue: computeSaleValue(
+      seed.baseValue,
+      seed.contract.expiryYear,
+      firstWindow,
+    ),
+  }));
+
   return {
     config,
     windowIndex: 0,
     funds: firstWindow.budget,
     squad,
     market: config.marketByWindow[0] ?? [],
+    academy,
     departed: [],
     actionLog: [],
   };
@@ -110,6 +123,28 @@ export function requireMarketPlayer(
     throw new EngineError(
       'PLAYER_NOT_IN_MARKET',
       `Player ${playerId} is not in the current market`,
+    );
+  }
+  return player;
+}
+
+/**
+ * Finds an academy player by id in the current academy pool.
+ *
+ * @param state - The current game state.
+ * @param playerId - The player to find.
+ * @returns The academy player.
+ * @throws {EngineError} PLAYER_NOT_IN_ACADEMY if absent.
+ */
+export function requireAcademyPlayer(
+  state: GameState,
+  playerId: string,
+): SquadPlayer {
+  const player = state.academy.find((p) => p.id === playerId);
+  if (player === undefined) {
+    throw new EngineError(
+      'PLAYER_NOT_IN_ACADEMY',
+      `Player ${playerId} is not in the academy`,
     );
   }
   return player;

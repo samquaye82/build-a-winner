@@ -4,17 +4,18 @@
  * Fixture arithmetic (single-window config, no actions, the natural
  * 4-2-3-1 XI leaving only gk2 outside):
  *
- * - Squad Quality: XI avg 840/11 = 76.36; depth = best 10 of {gk2} padded
- *   with zeros = 70/10 = 7. Score 0.6 x 76.36 + 0.4 x 7 = 48.6.
- * - Balance: GK 2/3, everything else at 1 of 2+ or 2 of 4:
- *   (0.6667 + 0.5 x 8) / 9 = 51.9.
- * - Age: nine peak (1.0), gk2 31 (0.4), am1 19 (0.9), lw1 20 (0.9):
- *   11.2/12 = 93.3.
- * - Contracts: all 36 months (1.0) except cb2 (q70) and cm1 (q80) at 12
- *   months (0.3): (760 + 21 + 24) / 910 = 88.5.
+ * - Squad Quality: XI avg 840/11 = 76.36; depth = the whole squad outside
+ *   the XI = {gk2} = 70. Score 0.6 x 76.36 + 0.4 x 70 = 73.8.
+ * - Balance: quality-weighted coverage against reference 90. Contributions
+ *   (min quality/90, 1): GK 0.778 x2, RB/LB/LW 0.778, CB 1.0+0.778,
+ *   CM 0.889+0.778, AM 0.867, RW 0.933, ST 0.978; coverage/9 x 100 = 43.7.
+ * - Age: quality-weighted age-band scores across the squad = 93.8.
+ * - Contract: quality-aware asset/liability model (secured good players are
+ *   assets, below-par or expiring ones liabilities), squad average mapped to
+ *   0-100 = 58.3.
  * - Value created: nothing done, ratio 1.0, score 50.
- * - Total: 0.35x48.6 + 0.25x51.9 + 0.15x93.3 + 0.2x88.5 + 0.05x50
- *   = 64.18 -> 64.
+ * - Total: 0.35x73.8 + 0.25x43.7 + 0.15x93.8 + 0.2x58.3 + 0.05x50
+ *   = 64.99 -> 65.
  */
 import { describe, expect, it } from 'vitest';
 import {
@@ -142,14 +143,14 @@ describe('scoreGame', () => {
 
     expect(breakdown.squadQuality).toEqual({
       xiAverage: 76.4,
-      depthAverage: 7,
-      score: 48.6,
+      depthAverage: 70,
+      score: 73.8,
     });
-    expect(breakdown.balance.score).toBe(51.9);
-    expect(breakdown.ageProfile.score).toBe(93.3);
-    expect(breakdown.contractHealth.score).toBe(88.5);
+    expect(breakdown.balance.score).toBe(43.7);
+    expect(breakdown.ageProfile.score).toBe(93.8);
+    expect(breakdown.contractHealth.score).toBe(58.3);
     expect(breakdown.valueCreated).toEqual({ ratio: 1, score: 50 });
-    expect(breakdown.total).toBe(64);
+    expect(breakdown.total).toBe(65);
   });
 
   it('caps an elite but too-small squad at 70', () => {
@@ -267,9 +268,10 @@ describe('autoPickBestXI', () => {
       .map((p) => p.id)
       .filter((id) => !chosen.has(id));
     expect(dropped).toEqual(['gk2']);
-    // A valid selection the scorer would accept (4-2-3-1 ties 4-3-3 on
-    // quality and wins the id tie-break).
-    expect(xi.formationId).toBe('4-2-3-1');
+    // Every shape that fields this XI ties on quality, so the smallest
+    // formation id wins the tie-break. With CM eligible in defensive slots
+    // and AM in wide slots, 3-4-3 can now field the same eleven and takes it.
+    expect(xi.formationId).toBe('3-4-3');
     expect(() => validateXI(state, xi)).not.toThrow();
   });
 

@@ -8,6 +8,7 @@ import {
   FORMATIONS,
   MIN_VIABLE_SQUAD_SIZE,
   scoreGame,
+  simulateSeason,
   UNVIABLE_SQUAD_MAX_SCORE,
 } from '../../engine';
 import { useGame } from '../GameContext';
@@ -29,6 +30,7 @@ import { initials, SLOT_COORDS } from './pitchLayout';
 export function EndScreen(): React.JSX.Element {
   const { state } = useGame();
   const breakdown = scoreGame(state);
+  const projection = simulateSeason(state);
   const summary = endSummary(state);
 
   const xi = state.xi;
@@ -67,6 +69,41 @@ export function EndScreen(): React.JSX.Element {
               <span className="end-bar-value">{row.score}</span>
             </div>
           ))}
+        </div>
+
+        <div className="end-projection">
+          <span className="end-label">Projected season</span>
+          <p className="end-verdict">{projection.verdict}</p>
+          {projection.invincible && (
+            <p className="invincible-badge">Invincible · unbeaten all season</p>
+          )}
+          <div className="end-stats">
+            <div className="end-stat">
+              <span className="label">Record</span>
+              <span className="value">
+                {projection.won}–{projection.drawn}–{projection.lost}
+              </span>
+              <span className="sub">{projection.played} games (W–D–L)</span>
+            </div>
+            <div className="end-stat">
+              <span className="label">Points</span>
+              <span className="value">{projection.points}</span>
+            </div>
+            <div className="end-stat">
+              <span className="label">Goals</span>
+              <span className="value">
+                {projection.goalsFor}–{projection.goalsAgainst}
+              </span>
+              <span className="sub">
+                {projection.goalDiff >= 0 ? '+' : ''}
+                {projection.goalDiff} GD
+              </span>
+            </div>
+            <div className="end-stat">
+              <span className="label">Squad strength</span>
+              <span className="value">{projection.strength}</span>
+            </div>
+          </div>
         </div>
 
         <div className="end-stats">

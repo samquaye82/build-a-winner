@@ -19,6 +19,7 @@ import { validateXI } from './scoring';
 import {
   createGame,
   currentWindow,
+  requireAcademyPlayer,
   requireMarketPlayer,
   requireSquadPlayer,
 } from './state';
@@ -82,6 +83,10 @@ function reduce(state: GameState, action: Action): GameState {
       return renew(state, action.playerId, action.newExpiryYear);
     case 'UNDO_RENEW':
       return undoRenew(state, action.playerId);
+    case 'PROMOTE':
+      return promote(state, action.playerId);
+    case 'UNDO_PROMOTE':
+      return undoPromote(state, action.playerId);
     case 'ADVANCE_WINDOW':
       return advanceWindow(state);
     case 'PICK_XI':
@@ -316,6 +321,72 @@ function undoRenew(state: GameState, playerId: string): GameState {
 }
 
 /**
+ * Promotes an academy player into the first-team squad. No fee changes hands
+ * (they come through the academy), so no acquisition is recorded and the
+ * player adds wages but no amortisation to the squad cost. From now on they
+ * count towards every registration and topline figure and can be sold.
+ */
+function promote(state: GameState, playerId: string): GameState {
+  const player = requireAcademyPlayer(state, playerId);
+  const window = currentWindow(state);
+
+  const promoted: SquadPlayer = {
+    ...player,
+    // Recompute against the current window so the sale value is consistent
+    // with the discount curve at the moment of promotion.
+    saleValue: computeSaleValue(player.baseValue, player.contract.expiryYear, window),
+    promotion: { windowIndex: state.windowIndex },
+  };
+
+  return {
+    ...state,
+    squad: [...state.squad, promoted],
+    academy: state.academy.filter((p) => p.id !== playerId),
+  };
+}
+
+/**
+ * Reverses a promotion made in the current window: the player returns to the
+ * academy pool. Any renewal agreed since the promotion is unwound with it,
+ * mirroring how undoing a purchase discards later renewals.
+ */
+function undoPromote(state: GameState, playerId: string): GameState {
+  const player = requireSquadPlayer(state, playerId);
+  if (player.promotion?.windowIndex !== state.windowIndex) {
+    throw new EngineError(
+      'PLAYER_NOT_PROMOTED_THIS_WINDOW',
+      `${player.name} has no promotion to undo in the current window`,
+    );
+  }
+
+  // Restore the pre-promotion contract if the player was renewed after being
+  // promoted, so the whole promotion unwinds cleanly.
+  const contract =
+    player.renewal?.windowIndex === state.windowIndex
+      ? player.renewal.previousContract
+      : player.contract;
+
+  const restored: SquadPlayer = {
+    ...player,
+    contract,
+    saleValue: computeSaleValue(
+      player.baseValue,
+      contract.expiryYear,
+      currentWindow(state),
+    ),
+  };
+  delete restored.promotion;
+  delete restored.renewal;
+
+  const basePool = state.config.academy ?? [];
+  return {
+    ...state,
+    squad: state.squad.filter((p) => p.id !== playerId),
+    academy: restoreAcademyOrder([...state.academy, restored], basePool),
+  };
+}
+
+/**
  * Sorts a market list back into its base-pool listing order, so undoing a
  * purchase restores the market exactly as it was.
  */
@@ -325,6 +396,20 @@ function restoreMarketOrder(
 ): MarketPlayer[] {
   const orderById = new Map(basePool.map((p, index) => [p.id, index]));
   return [...market].sort(
+    (a, b) => (orderById.get(a.id) ?? 0) - (orderById.get(b.id) ?? 0),
+  );
+}
+
+/**
+ * Sorts an academy list back into its authored order, so undoing a promotion
+ * restores the pool exactly as it was.
+ */
+function restoreAcademyOrder(
+  academy: readonly SquadPlayer[],
+  basePool: readonly { id: string }[],
+): SquadPlayer[] {
+  const orderById = new Map(basePool.map((p, index) => [p.id, index]));
+  return [...academy].sort(
     (a, b) => (orderById.get(a.id) ?? 0) - (orderById.get(b.id) ?? 0),
   );
 }

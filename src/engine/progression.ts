@@ -118,6 +118,13 @@ export function advanceWindow(state: GameState): GameState {
   );
   const market = [...pool, ...freeListings];
 
+  // Academy pool carries forward. Players age at season boundaries but their
+  // value never drifts (Sam, 25/07/2026), so only the age and its derived
+  // sale value change.
+  const academy = state.academy.map((player) =>
+    progressAcademyPlayer(player, seasonBoundary, nextWindow),
+  );
+
   // 5. Funds roll forward plus the new window's budget.
   return {
     ...state,
@@ -125,7 +132,35 @@ export function advanceWindow(state: GameState): GameState {
     funds: roundMoney(state.funds + nextWindow.budget),
     squad,
     market,
+    academy,
     departed: [...state.departed, ...expired],
+  };
+}
+
+/**
+ * Ages an un-promoted academy player across a window transition. Unlike squad
+ * players their baseValue does not drift; only the age ticks (season
+ * boundaries only) and the sale value is recomputed against the new window.
+ *
+ * @param player - The academy player before the transition.
+ * @param seasonBoundary - Whether this transition crosses seasons.
+ * @param nextWindow - The window being opened.
+ * @returns The academy player as they stand in the new window.
+ */
+function progressAcademyPlayer(
+  player: SquadPlayer,
+  seasonBoundary: boolean,
+  nextWindow: WindowConfig,
+): SquadPlayer {
+  const age = seasonBoundary ? player.age + 1 : player.age;
+  return {
+    ...player,
+    age,
+    saleValue: computeSaleValue(
+      player.baseValue,
+      player.contract.expiryYear,
+      nextWindow,
+    ),
   };
 }
 

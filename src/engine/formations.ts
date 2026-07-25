@@ -33,9 +33,9 @@ export interface Formation {
 }
 
 /** The positional groups that gate slot eligibility. */
-const DEFENDERS: readonly Position[] = ['RB', 'CB', 'LB'];
+const DEFENDERS: readonly Position[] = ['RB', 'CB', 'LB', 'CM'];
 const MIDFIELDERS: readonly Position[] = ['CM', 'AM'];
-const WINGERS: readonly Position[] = ['RW', 'LW'];
+const WINGERS: readonly Position[] = ['RW', 'LW', 'AM'];
 
 const GK: FormationSlot = { label: 'GK', eligible: ['GK'] };
 const RB: FormationSlot = { label: 'RB', eligible: DEFENDERS };

@@ -38,10 +38,12 @@ export function SquadCard({ player }: { player: SquadPlayer }): React.JSX.Elemen
   const { state, dispatch } = useGame();
   const boughtThisWindow =
     player.acquisition?.windowIndex === state.windowIndex;
+  const promotedThisWindow =
+    player.promotion?.windowIndex === state.windowIndex;
 
   return (
     <article
-      className={`player-card${player.locked ? ' locked' : ''}${boughtThisWindow ? ' selected-buy' : ''}`}
+      className={`player-card${player.locked ? ' locked' : ''}${boughtThisWindow || promotedThisWindow ? ' selected-buy' : ''}`}
     >
       <div className="quality">{player.quality}</div>
       <h3 className="name">
@@ -71,6 +73,25 @@ export function SquadCard({ player }: { player: SquadPlayer }): React.JSX.Elemen
               >
                 Undo buy
               </button>
+            ) : promotedThisWindow ? (
+              // A player promoted this window can be sold like any other, or
+              // the promotion undone: offer both.
+              <>
+                <button
+                  type="button"
+                  className="action-link"
+                  onClick={() => dispatch({ type: 'SELL', playerId: player.id })}
+                >
+                  Sell
+                </button>
+                <button
+                  type="button"
+                  className="action-link"
+                  onClick={() => dispatch({ type: 'UNDO_PROMOTE', playerId: player.id })}
+                >
+                  Undo promote
+                </button>
+              </>
             ) : (
               <button
                 type="button"
@@ -82,6 +103,49 @@ export function SquadCard({ player }: { player: SquadPlayer }): React.JSX.Elemen
             )}
           </>
         )}
+      </div>
+    </article>
+  );
+}
+
+/**
+ * An academy-tab card with a promote action. Mirrors the squad card layout
+ * but shows the fixed academy terms and, in place of a sale value, the
+ * one-click promotion into the first-team squad.
+ *
+ * @param props.player - The academy player to render.
+ * @returns The card element.
+ */
+export function AcademyCard({ player }: { player: SquadPlayer }): React.JSX.Element {
+  const { dispatch } = useGame();
+
+  return (
+    <article className="player-card">
+      <div className="quality">{player.quality}</div>
+      <h3 className="name">{player.name}</h3>
+      <div className="meta">
+        <span>{player.position}</span>
+        <span>{player.age}</span>
+        {player.age <= 21 ? (
+          <span className="badge u21">U21</span>
+        ) : player.homegrown ? (
+          <span className="badge hg">HG</span>
+        ) : null}
+        <span className="badge free">Academy</span>
+      </div>
+      <div className="contract">
+        <strong>{formatWage(player.contract.salary)}</strong> ·{' '}
+        {formatExpiry(player.contract.expiryYear)}
+      </div>
+      <div className="actions">
+        <span className="fee">{formatMoney(player.baseValue)}</span>
+        <button
+          type="button"
+          className="action-link"
+          onClick={() => dispatch({ type: 'PROMOTE', playerId: player.id })}
+        >
+          Promote
+        </button>
       </div>
     </article>
   );

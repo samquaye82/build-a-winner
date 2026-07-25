@@ -6,8 +6,10 @@
  * rule-relevant case: locked, home-grown, U21, and expiring contracts.
  */
 import type {
+  AcademyPlayerSeed,
   GameConfig,
   MarketPlayer,
+  RivalTeam,
   SquadPlayerSeed,
   WindowConfig,
 } from '../../src/engine';
@@ -71,6 +73,52 @@ export function makeMarketPlayer(
     contractYears: 5,
     ...overrides,
   };
+}
+
+/**
+ * Builds an academy player seed with sensible defaults, overridable per test.
+ * Mirrors the real academy fixed attributes (rating 65, value 20, expiry
+ * 2029, home-grown) but keeps a young default age so promotions stay
+ * registration-exempt unless a test says otherwise.
+ *
+ * @param overrides - Fields to override on the default seed.
+ * @returns A complete academy player seed.
+ */
+export function makeAcademyPlayer(
+  overrides: Partial<AcademyPlayerSeed> & Pick<AcademyPlayerSeed, 'id'>,
+): AcademyPlayerSeed {
+  return {
+    name: `Academy ${overrides.id}`,
+    position: 'CM',
+    age: 18,
+    homegrown: true,
+    quality: 65,
+    baseValue: 20,
+    contract: { expiryYear: 2029, salary: 0.78 },
+    ...overrides,
+  };
+}
+
+/**
+ * Nineteen fictional rivals so a projected season is a full 38 games, with a
+ * spread of strengths (68 to 86) from strugglers to title contenders.
+ *
+ * @returns The fixture rival league.
+ */
+export function makeTestRivals(): RivalTeam[] {
+  return Array.from({ length: 19 }, (_unused, i) => ({
+    name: `Rival ${String(i + 1)}`,
+    strength: 68 + i,
+  }));
+}
+
+/** Standard fixture academy pool: one keeper, two outfielders. */
+export function makeTestAcademy(): AcademyPlayerSeed[] {
+  return [
+    makeAcademyPlayer({ id: 'acad-gk', position: 'GK' }),
+    makeAcademyPlayer({ id: 'acad-cb', position: 'CB', age: 20 }),
+    makeAcademyPlayer({ id: 'acad-st', position: 'ST', age: 21 }),
+  ];
 }
 
 /**
@@ -144,6 +192,8 @@ export function makeTestConfig(): GameConfig {
     windows: [testWindow],
     initialSquad: makeTestSquad(),
     marketByWindow: [makeTestMarket()],
+    academy: makeTestAcademy(),
+    rivals: makeTestRivals(),
     baselineAmortisation: 60,
   };
 }

@@ -9,9 +9,9 @@ import { useGame } from '../GameContext';
 import { groupByPosition, POSITION_LABELS, POSITION_ORDER } from '../helpers';
 import { Dashboard } from './Dashboard';
 import { MarketBrowser } from './MarketBrowser';
-import { RenewalCard, SoldCard, SquadCard } from './PlayerCards';
+import { AcademyCard, RenewalCard, SoldCard, SquadCard } from './PlayerCards';
 
-type Tab = 'squad' | 'market' | 'renewals';
+type Tab = 'squad' | 'market' | 'academy' | 'renewals';
 
 /**
  * Renders the window screen.
@@ -121,6 +121,13 @@ export function WindowScreen({
         </button>
         <button
           type="button"
+          className={tab === 'academy' ? 'active' : ''}
+          onClick={() => setTab('academy')}
+        >
+          Academy ({state.academy.length})
+        </button>
+        <button
+          type="button"
           className={tab === 'renewals' ? 'active' : ''}
           onClick={() => setTab('renewals')}
         >
@@ -177,6 +184,22 @@ export function WindowScreen({
       )}
 
       {tab === 'market' && <MarketBrowser />}
+
+      {tab === 'academy' &&
+        (state.academy.length === 0 ? (
+          <p className="intro">No academy players left to promote.</p>
+        ) : (
+          groupByPosition(byFilter(state.academy)).map(([position, group]) => (
+            <section key={position}>
+              <span className="pill">{POSITION_LABELS[position]}</span>
+              <div className="card-grid">
+                {group.map((player) => (
+                  <AcademyCard key={player.id} player={player} />
+                ))}
+              </div>
+            </section>
+          ))
+        ))}
 
       {tab === 'renewals' &&
         groupByPosition(byFilter(state.squad)).map(([position, group]) => (

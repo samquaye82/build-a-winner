@@ -19,9 +19,10 @@
  * Bump whenever a rules change would make scores incomparable with earlier
  * versions; a future leaderboard must only compare like-for-like versions.
  */
-export const ENGINE_VERSION = '0.8.0';
+export const ENGINE_VERSION = '0.10.0';
 
 export type {
+  AcademyPlayerSeed,
   Action,
   Acquisition,
   Contract,
@@ -32,7 +33,9 @@ export type {
   MarketPlayer,
   PlayerCore,
   Position,
+  Promotion,
   Renewal,
+  RivalTeam,
   SquadPlayer,
   SquadPlayerSeed,
   WindowConfig,
@@ -53,6 +56,7 @@ export {
   validateXI,
   type ScoreBreakdown,
 } from './scoring';
+export { simulateSeason, type SeasonProjection } from './simulation';
 export {
   MIN_VIABLE_SQUAD_SIZE,
   UNVIABLE_SQUAD_MAX_SCORE,
@@ -62,7 +66,13 @@ export { EngineError, type EngineErrorCode } from './errors';
 export type { Violation, ViolationCode } from './rules/violations';
 
 export { applyAction, replay } from './actions';
-export { createGame, currentWindow } from './state';
+export {
+  createGame,
+  currentWindow,
+  requireAcademyPlayer,
+  requireMarketPlayer,
+  requireSquadPlayer,
+} from './state';
 export { validateState, isSubmittable } from './validate';
 export { countRegistration, isU21 } from './rules/registration';
 export { priceRenewal } from './rules/renewal';

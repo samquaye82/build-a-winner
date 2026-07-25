@@ -21,9 +21,12 @@
  */
 import {
   AGE_SCORE_BANDS,
+  BALANCE_QUALITY_REFERENCE,
   BALANCE_TEMPLATE,
   CONTRACT_HEALTH_BY_MONTHS,
-  DEPTH_PLAYER_COUNT,
+  CONTRACT_QUALITY_PIVOT,
+  CONTRACT_QUALITY_SCALE,
+  CONTRACT_WAGE_PENALTY_PER_M,
   MIN_VIABLE_SQUAD_SIZE,
   SCORING_WEIGHTS,
   SQUAD_QUALITY_DEPTH_WEIGHT,
@@ -175,19 +178,38 @@ export function scoreGame(state: GameState): ScoreBreakdown {
  *   current squad (too few bodies or missing positional cover).
  */
 export function autoPickBestXI(state: GameState): XISelection {
-  // A squad ranked once, best first; id breaks ties for determinism. Slots
-  // within a formation share disjoint positional groups, so greedily taking
-  // the best eligible player per slot from this list is optimal per shape.
-  const ranked = [...state.squad].sort(
-    (a, b) => b.quality - a.quality || a.id.localeCompare(b.id),
+  // Positional groups now overlap (a CM is eligible in defensive slots, an AM
+  // in wide slots), so a slot-by-slot greedy pick can dead-end: it might spend
+  // the only midfielder on a defensive slot and leave a midfield slot
+  // unfillable. Instead each formation is filled by a proper maximum-weight
+  // assignment (see fillFormation), which is both feasible-complete and
+  // quality-optimal.
+  //
+  // Each player carries a weight of quality first, with a small tie-break
+  // bonus that favours the alphabetically-earlier id. The bonus is always
+  // smaller than one quality point, so quality dominates the assignment while
+  // ties resolve deterministically towards smaller ids (the same convention
+  // used elsewhere in the engine).
+  const byId = [...state.squad].sort((a, b) => a.id.localeCompare(b.id));
+  const count = byId.length;
+  const weightById = new Map(
+    byId.map((p, index) => [p.id, p.quality + (count - index) / (count + 1)]),
   );
+  const players: WeightedPlayer[] = state.squad.map((p) => ({
+    id: p.id,
+    position: p.position,
+    quality: p.quality,
+    weight: weightById.get(p.id) ?? p.quality,
+  }));
 
   let best: { formationId: FormationId; playerIds: string[]; total: number } | undefined;
   for (const formation of Object.values(FORMATIONS)) {
-    const filled = fillFormation(ranked, formation);
+    const filled = fillFormation(players, formation);
     if (filled === undefined) {
       continue;
     }
+    // Formations are compared on total quality alone; the id tie-break keeps
+    // the choice deterministic when several shapes field an equal-quality XI.
     if (
       best === undefined ||
       filled.total > best.total ||
@@ -206,33 +228,141 @@ export function autoPickBestXI(state: GameState): XISelection {
   return { formationId: best.formationId, playerIds: best.playerIds };
 }
 
+/** A squad player reduced to what the XI assignment needs, plus its weight. */
+interface WeightedPlayer {
+  id: string;
+  position: SquadPlayer['position'];
+  quality: number;
+  /** Quality plus a sub-unit id tie-break bonus; drives the assignment. */
+  weight: number;
+}
+
 /**
- * Greedily assigns the best eligible player to each slot of a formation.
+ * Assigns players to every slot of a formation, maximising total weight.
  *
- * @param ranked - The squad ranked best-quality first (with a stable tie-break).
+ * Solves the assignment as a maximum-weight bipartite matching (slots to
+ * players) so it copes with overlapping positional groups where a greedy pass
+ * would fail. Deterministic: the player weights are distinct, so identical
+ * squads always produce identical assignments.
+ *
+ * @param players - The squad as weighted players.
  * @param formation - The formation to fill.
- * @returns The chosen player ids and their total quality, or undefined if a
- *   slot cannot be filled.
+ * @returns The chosen player ids in slot order and their total quality, or
+ *   undefined if the formation cannot be legally filled.
  */
 function fillFormation(
-  ranked: readonly SquadPlayer[],
+  players: readonly WeightedPlayer[],
   formation: Formation,
 ): { playerIds: string[]; total: number } | undefined {
-  const used = new Set<string>();
+  const slots = formation.slots;
+  const slotCount = slots.length;
+  // The assignment needs at least as many columns (players) as rows (slots);
+  // fewer players than slots is trivially unfillable.
+  if (players.length < slotCount) {
+    return undefined;
+  }
+
+  // Cost matrix for a MINIMISING solver: negate the weight of eligible
+  // pairings and make ineligible pairings prohibitively expensive.
+  const PROHIBITED = 1e6;
+  const cost = slots.map((slot) =>
+    players.map((player) =>
+      slot.eligible.includes(player.position) ? -player.weight : PROHIBITED,
+    ),
+  );
+
+  const assignment = minCostAssignment(cost);
+
   const playerIds: string[] = [];
   let total = 0;
-  for (const slot of formation.slots) {
-    const pick = ranked.find(
-      (p) => !used.has(p.id) && slot.eligible.includes(p.position),
-    );
-    if (pick === undefined) {
+  for (let slotIndex = 0; slotIndex < slotCount; slotIndex += 1) {
+    const playerIndex = assignment[slotIndex];
+    const player = playerIndex === undefined ? undefined : players[playerIndex];
+    // A prohibited pairing surviving into the result means no legal XI exists.
+    if (player === undefined || !slots[slotIndex]?.eligible.includes(player.position)) {
       return undefined;
     }
-    used.add(pick.id);
-    playerIds.push(pick.id);
-    total += pick.quality;
+    playerIds.push(player.id);
+    total += player.quality;
   }
   return { playerIds, total };
+}
+
+/**
+ * Solves the rectangular assignment problem (Kuhn-Munkres with potentials):
+ * assigns each row to a distinct column so total cost is minimised.
+ *
+ * @param cost - A rows x cols cost matrix; rows must not exceed cols.
+ * @returns For each row, the column assigned to it.
+ */
+function minCostAssignment(cost: readonly (readonly number[])[]): number[] {
+  const rows = cost.length;
+  const cols = cost[0]?.length ?? 0;
+  const INF = Number.POSITIVE_INFINITY;
+
+  // Potentials and the current column->row matching (1-indexed; 0 = unmatched).
+  const rowPotential = new Array<number>(rows + 1).fill(0);
+  const colPotential = new Array<number>(cols + 1).fill(0);
+  const matchByCol = new Array<number>(cols + 1).fill(0);
+  const parentCol = new Array<number>(cols + 1).fill(0);
+
+  for (let row = 1; row <= rows; row += 1) {
+    matchByCol[0] = row;
+    let curCol = 0;
+    const minCost = new Array<number>(cols + 1).fill(INF);
+    const visited = new Array<boolean>(cols + 1).fill(false);
+
+    // Grow an augmenting path from this row until it reaches a free column.
+    do {
+      visited[curCol] = true;
+      const curRow = matchByCol[curCol] ?? 0;
+      let delta = INF;
+      let nextCol = 0;
+      for (let col = 1; col <= cols; col += 1) {
+        if (visited[col]) {
+          continue;
+        }
+        const reduced =
+          (cost[curRow - 1]?.[col - 1] ?? INF) -
+          (rowPotential[curRow] ?? 0) -
+          (colPotential[col] ?? 0);
+        if (reduced < (minCost[col] ?? INF)) {
+          minCost[col] = reduced;
+          parentCol[col] = curCol;
+        }
+        if ((minCost[col] ?? INF) < delta) {
+          delta = minCost[col] ?? INF;
+          nextCol = col;
+        }
+      }
+      for (let col = 0; col <= cols; col += 1) {
+        if (visited[col]) {
+          const matchedRow = matchByCol[col] ?? 0;
+          rowPotential[matchedRow] = (rowPotential[matchedRow] ?? 0) + delta;
+          colPotential[col] = (colPotential[col] ?? 0) - delta;
+        } else {
+          minCost[col] = (minCost[col] ?? INF) - delta;
+        }
+      }
+      curCol = nextCol;
+    } while ((matchByCol[curCol] ?? 0) !== 0);
+
+    // Flip the matching along the augmenting path.
+    do {
+      const prevCol = parentCol[curCol] ?? 0;
+      matchByCol[curCol] = matchByCol[prevCol] ?? 0;
+      curCol = prevCol;
+    } while (curCol);
+  }
+
+  const result = new Array<number>(rows).fill(-1);
+  for (let col = 1; col <= cols; col += 1) {
+    const row = matchByCol[col] ?? 0;
+    if (row > 0) {
+      result[row - 1] = col - 1;
+    }
+  }
+  return result;
 }
 
 /**
@@ -251,7 +381,7 @@ export function scoreProvisional(state: GameState): ScoreBreakdown {
   return scoreGame({ ...state, xi: autoPickBestXI(state) });
 }
 
-/** Squad Quality: weighted XI average and best-ten depth average. */
+/** Squad Quality: weighted XI average and whole-squad depth average. */
 function scoreSquadQuality(
   xiPlayers: readonly SquadPlayer[],
   rest: readonly SquadPlayer[],
@@ -259,12 +389,14 @@ function scoreSquadQuality(
   const xiAverage =
     xiPlayers.reduce((sum, p) => sum + p.quality, 0) / xiPlayers.length;
 
-  // Best DEPTH_PLAYER_COUNT non-XI players; a short bench pads with zeros.
-  const bestRest = [...rest]
-    .sort((a, b) => b.quality - a.quality)
-    .slice(0, DEPTH_PLAYER_COUNT);
+  // Depth is the average of EVERY player outside the XI (Sam, 25/07/2026):
+  // injuries and rotation mean the whole tail can be called on, so weak
+  // reserves drag the score down rather than being ignored. An XI-only squad
+  // has no depth and scores zero on this half.
   const depthAverage =
-    bestRest.reduce((sum, p) => sum + p.quality, 0) / DEPTH_PLAYER_COUNT;
+    rest.length > 0
+      ? rest.reduce((sum, p) => sum + p.quality, 0) / rest.length
+      : 0;
 
   return {
     xiAverage: roundMoney(xiAverage),
@@ -276,7 +408,7 @@ function scoreSquadQuality(
   };
 }
 
-/** Balance: positional coverage against the template. */
+/** Balance: quality-weighted positional coverage against the template. */
 function scoreBalance(
   squad: readonly SquadPlayer[],
 ): ScoreBreakdown['balance'] {
@@ -287,18 +419,35 @@ function scoreBalance(
     if (required === undefined || required <= 0) {
       continue;
     }
-    const count = squad.filter((p) => p.position === position).length;
-    coverage += Math.min(count, required) / required;
+    // Each player contributes a quality-weighted fraction of a covered slot
+    // (Sam, 25/07/2026): a player at or above the reference counts as a full
+    // unit, a weaker one for less, so a promoted academy player covers the
+    // position but not as fully as a star.
+    const contributed = squad
+      .filter((p) => p.position === position)
+      .reduce(
+        (sum, p) => sum + Math.min(p.quality / BALANCE_QUALITY_REFERENCE, 1),
+        0,
+      );
+    coverage += Math.min(contributed, required) / required;
   }
   return { score: roundMoney((coverage / positions.length) * 100) };
 }
 
-/** Age profile: averaged per-player age-band scores. */
+/** Age profile: quality-weighted per-player age-band scores. */
 function scoreAgeProfile(
   squad: readonly SquadPlayer[],
 ): ScoreBreakdown['ageProfile'] {
-  const sum = squad.reduce((acc, p) => acc + ageScore(p.age), 0);
-  return { score: roundMoney((sum / squad.length) * 100) };
+  // Quality-weighted (Sam, 25/07/2026): a well-aged squad matters only to the
+  // extent its good players are well-aged; a 65-rated teenager barely moves it.
+  let weighted = 0;
+  let totalQuality = 0;
+  for (const player of squad) {
+    weighted += player.quality * ageScore(player.age);
+    totalQuality += player.quality;
+  }
+  const score = totalQuality > 0 ? (weighted / totalQuality) * 100 : 0;
+  return { score: roundMoney(score) };
 }
 
 /** The age-band score for a single age. */
@@ -311,22 +460,49 @@ function ageScore(age: number): number {
   return band.score;
 }
 
-/** Contract health: quality-weighted remaining-months scores. */
+/**
+ * Contract health: quality-aware asset/liability scoring (Sam, 25/07/2026).
+ *
+ * Each player sits in one of four quadrants of tenure x quality:
+ *  - a good player on a long deal is an asset (securing a star);
+ *  - a good player running down their deal is a liability (about to be lost);
+ *  - a below-par player on a long deal is a liability (stuck with them), the
+ *    more so the bigger their wage;
+ *  - a below-par player running down their deal is fine (they will leave).
+ *
+ * Per player: (2 x tenure - 1), from +1 (secured) to -1 (expiring), times a
+ * quality standing from +1 (well above the pivot) to -1 (well below). A
+ * below-par, still-secured player has their (negative) score amplified by
+ * their wage. The squad average maps onto 0-100 with 50 as neutral.
+ */
 function scoreContractHealth(
   state: GameState,
 ): ScoreBreakdown['contractHealth'] {
   const window = currentWindow(state);
-  let weighted = 0;
-  let totalQuality = 0;
+  let sum = 0;
 
   for (const player of state.squad) {
     const months = remainingMonths(player.contract.expiryYear, window);
-    const row = CONTRACT_HEALTH_BY_MONTHS.find((r) => months >= r.minMonths);
-    weighted += player.quality * (row?.score ?? 0);
-    totalQuality += player.quality;
+    const tenure =
+      CONTRACT_HEALTH_BY_MONTHS.find((r) => months >= r.minMonths)?.score ?? 0;
+    const secured = 2 * tenure - 1; // +1 locked in, -1 running out
+
+    const standing = Math.max(
+      -1,
+      Math.min(1, (player.quality - CONTRACT_QUALITY_PIVOT) / CONTRACT_QUALITY_SCALE),
+    );
+
+    let contribution = secured * standing;
+    // Stuck with a below-par player on a big wage: a long deal makes it worse.
+    if (standing < 0 && secured > 0) {
+      contribution *= 1 + player.contract.salary * CONTRACT_WAGE_PENALTY_PER_M;
+    }
+    sum += contribution;
   }
 
-  return { score: roundMoney((weighted / totalQuality) * 100) };
+  const average = state.squad.length > 0 ? sum / state.squad.length : 0;
+  const score = Math.max(0, Math.min(100, 50 + 50 * average));
+  return { score: roundMoney(score) };
 }
 
 /**

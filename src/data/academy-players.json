@@ -1,0 +1,428 @@
+{
+  "_notes": {
+    "source": "https://www.liverpoolfc.com/team/academy (scraped 25/07/2026)",
+    "instructions": "Fill in `position` (one of GK, RB, LB, CB, CM, AM, RW, LW, ST) and `age` for each player. `group` is the coarse label from the site, kept only as a hint. Set `homegrown` to false for any player who is NOT home-grown (all default to true). Fixed attributes (rating 65, wage 0.78 EUR m/yr = 15k/wk, value 20m, expiry 2029) are applied automatically at wiring time and are not listed here.",
+    "fixed_attributes": {
+      "quality": 65,
+      "salaryEurM": 0.78,
+      "baseValue": 20,
+      "expiryYear": 2029
+    }
+  },
+  "players": [
+    {
+      "id": "bailey-hall",
+      "name": "Bailey Hall",
+      "group": "GOALKEEPER",
+      "position": "GK",
+      "DOB": "01/09/2007",
+      "age": 18,
+      "homegrown": true
+    },
+    {
+      "id": "armin-pesci",
+      "name": "Armin Pesci",
+      "group": "GOALKEEPER",
+      "position": "GK",
+      "DOB": "24/02/2005",
+      "age": 21,
+      "homegrown": false
+    },
+    {
+      "id": "kornel-misciur",
+      "name": "Kornel Misciur",
+      "group": "GOALKEEPER",
+      "position": "GK",
+      "DOB": "27/04/2007",
+      "age": 19,
+      "homegrown": true
+    },
+    {
+      "id": "matty-wright",
+      "name": "Matty Wright",
+      "group": "GOALKEEPER",
+      "position": "GK",
+      "DOB": "13/06/2008",
+      "age": 18,
+      "homegrown": true
+    },
+    {
+      "id": "fabian-mrozek",
+      "name": "Fabian Mrozek",
+      "group": "GOALKEEPER",
+      "position": "GK",
+      "DOB": "28/09/2003",
+      "age": 22,
+      "homegrown": true
+    },
+    {
+      "id": "noah-adekoya",
+      "name": "Noah Adekoya",
+      "group": "DEFENDER",
+      "position": "CB",
+      "DOB": "22/11/2006",
+      "age": 19,
+      "homegrown": true
+    },
+    {
+      "id": "owen-beck",
+      "name": "Owen Beck",
+      "group": "DEFENDER",
+      "position": "LB",
+      "DOB": "09/08/2002",
+      "age": 23,
+      "homegrown": true
+    },
+    {
+      "id": "luke-chambers",
+      "name": "Luke Chambers",
+      "group": "DEFENDER",
+      "position": "LB",
+      "DOB": "24/06/2004",
+      "age": 22,
+      "homegrown": true
+    },
+    {
+      "id": "prince-cisse",
+      "name": "Prince Cisse",
+      "group": "DEFENDER",
+      "position": "CB",
+      "DOB": "26/07/2008",
+      "age": 17,
+      "homegrown": true
+    },
+    {
+      "id": "lucas-clarke",
+      "name": "Lucas Clarke",
+      "group": "DEFENDER",
+      "position": "CB",
+      "DOB": "16/10/2008",
+      "age": 17,
+      "homegrown": true
+    },
+    {
+      "id": "lenix-conde",
+      "name": "Lenix Conde",
+      "group": "DEFENDER",
+      "position": "RB",
+      "DOB": "19/09/2008",
+      "age": 17,
+      "homegrown": true
+    },
+    {
+      "id": "dj-esdaille",
+      "name": "DJ Esdaille",
+      "group": "DEFENDER",
+      "position": "CB",
+      "DOB": "01/12/2007",
+      "age": 18,
+      "homegrown": true
+    },
+    {
+      "id": "clae-ewing",
+      "name": "Clae Ewing",
+      "group": "DEFENDER",
+      "position": "CB",
+      "DOB": "29/10/2006",
+      "age": 19,
+      "homegrown": true
+    },
+    {
+      "id": "wellity-lucky",
+      "name": "Wellity Lucky",
+      "group": "DEFENDER",
+      "position": "CB",
+      "DOB": "12/01/2006",
+      "age": 20,
+      "homegrown": true
+    },
+    {
+      "id": "isaac-mabaya",
+      "name": "Isaac Mabaya",
+      "group": "DEFENDER",
+      "position": "RB",
+      "DOB": "22/09/2004",
+      "age": 21,
+      "homegrown": true
+    },
+    {
+      "id": "harry-moran",
+      "name": "Harry Moran",
+      "group": "DEFENDER",
+      "position": "CB",
+      "DOB": "01/11/2008",
+      "age": 17,
+      "homegrown": true
+    },
+    {
+      "id": "mor-talla-ndiaye",
+      "name": "Mor Talla Ndiaye",
+      "group": "DEFENDER",
+      "position": "CB",
+      "DOB": "06/01/2008",
+      "age": 18,
+      "homegrown": true
+    },
+    {
+      "id": "harvey-owen",
+      "name": "Harvey Owen",
+      "group": "DEFENDER",
+      "position": "CB",
+      "DOB": "28/08/2008",
+      "age": 17,
+      "homegrown": true
+    },
+    {
+      "id": "lucas-pitt",
+      "name": "Lucas Pitt",
+      "group": "DEFENDER",
+      "position": "RB",
+      "DOB": "31/10/2006",
+      "age": 19,
+      "homegrown": true
+    },
+    {
+      "id": "cian-powney-wain",
+      "name": "Cian Powney Wain",
+      "group": "DEFENDER",
+      "position": "RB",
+      "DOB": "12/09/2008",
+      "age": 17,
+      "homegrown": true
+    },
+    {
+      "id": "calum-scanlon",
+      "name": "Calum Scanlon",
+      "group": "DEFENDER",
+      "position": "LB",
+      "DOB": "14/02/2005",
+      "age": 21,
+      "homegrown": true
+    },
+    {
+      "id": "cam-williams",
+      "name": "Cam Williams",
+      "group": "DEFENDER",
+      "position": "LB",
+      "DOB": "24/11/2008",
+      "age": 17,
+      "homegrown": true
+    },
+    {
+      "id": "amara-nallo",
+      "name": "Amara Nallo",
+      "group": "DEFENDER",
+      "position": "CB",
+      "DOB": "18/11/2006",
+      "age": 19,
+      "homegrown": true
+    },
+    {
+      "id": "josh-abe",
+      "name": "Josh Abe",
+      "group": "MIDFIELDER",
+      "position": "AM",
+      "DOB": "17/07/2010",
+      "age": 16,
+      "homegrown": true
+    },
+    {
+      "id": "alvin-ayman",
+      "name": "Alvin Ayman",
+      "group": "MIDFIELDER",
+      "position": "CM",
+      "DOB": "12/09/2007",
+      "age": 18,
+      "homegrown": true
+    },
+    {
+      "id": "joe-bradshaw",
+      "name": "Joe Bradshaw",
+      "group": "MIDFIELDER",
+      "position": "CM",
+      "DOB": "17/06/2008",
+      "age": 18,
+      "homegrown": true
+    },
+    {
+      "id": "ryan-cowley",
+      "name": "Ryan Cowley",
+      "group": "MIDFIELDER",
+      "position": "CM",
+      "DOB": "11/01/2008",
+      "age": 18,
+      "homegrown": true
+    },
+    {
+      "id": "ellis-hickman",
+      "name": "Ellis Hickman",
+      "group": "MIDFIELDER",
+      "position": "CM",
+      "DOB": "17/03/2009",
+      "age": 17,
+      "homegrown": true
+    },
+    {
+      "id": "michael-laffey",
+      "name": "Michael Laffey",
+      "group": "MIDFIELDER",
+      "position": "CM",
+      "DOB": "11/10/2005",
+      "age": 20,
+      "homegrown": true
+    },
+    {
+      "id": "lamore-lee-forrester",
+      "name": "La'more Lee Forrester",
+      "group": "MIDFIELDER",
+      "position": "AM",
+      "DOB": "07/11/2008",
+      "age": 17,
+      "homegrown": true
+    },
+    {
+      "id": "kieran-morrison",
+      "name": "Kieran Morrison",
+      "group": "MIDFIELDER",
+      "position": "AM",
+      "DOB": "09/11/2006",
+      "age": 19,
+      "homegrown": true
+    },
+    {
+      "id": "haydn-murray-holme",
+      "name": "Haydn Murray-Holme",
+      "group": "MIDFIELDER",
+      "position": "CM",
+      "DOB": "30/09/2008",
+      "age": 17,
+      "homegrown": true
+    },
+    {
+      "id": "oliver-oconnor",
+      "name": "Oliver O'Connor",
+      "group": "MIDFIELDER",
+      "position": "CM",
+      "DOB": "15/07/2008",
+      "age": 18,
+      "homegrown": true
+    },
+    {
+      "id": "afolami-onanuga",
+      "name": "Afolami Onanuga",
+      "group": "MIDFIELDER",
+      "position": "CM",
+      "DOB": "01/09/2006",
+      "age": 19,
+      "homegrown": true
+    },
+    {
+      "id": "tommy-pilling",
+      "name": "Tommy Pilling",
+      "group": "MIDFIELDER",
+      "position": "CM",
+      "DOB": "14/09/2004",
+      "age": 21,
+      "homegrown": true
+    },
+    {
+      "id": "ben-trueman",
+      "name": "Ben Trueman",
+      "group": "MIDFIELDER",
+      "position": "CM",
+      "DOB": "14/09/2006",
+      "age": 19,
+      "homegrown": true
+    },
+    {
+      "id": "joe-upton",
+      "name": "Joe Upton",
+      "group": "MIDFIELDER",
+      "position": "CM",
+      "DOB": "16/02/2008",
+      "age": 18,
+      "homegrown": true
+    },
+    {
+      "id": "aj-yeguo",
+      "name": "AJ Yeguo",
+      "group": "MIDFIELDER",
+      "position": "CM",
+      "DOB": "21/08/2009",
+      "age": 16,
+      "homegrown": true
+    },
+    {
+      "id": "kyle-kelly",
+      "name": "Kyle Kelly",
+      "group": "MIDFIELDER",
+      "position": "CM",
+      "DOB": "16/10/2005",
+      "age": 20,
+      "homegrown": true
+    },
+    {
+      "id": "jayden-danns",
+      "name": "Jayden Danns",
+      "group": "FORWARD",
+      "position": "ST",
+      "DOB": "16/01/2006",
+      "age": 20,
+      "homegrown": true
+    },
+    {
+      "id": "keyrol-figueroa",
+      "name": "Keyrol Figueroa",
+      "group": "FORWARD",
+      "position": "ST",
+      "DOB": "31/08/2006",
+      "age": 19,
+      "homegrown": true
+    },
+    {
+      "id": "kaide-gordon",
+      "name": "Kaide Gordon",
+      "group": "FORWARD",
+      "position": "RW",
+      "DOB": "05/10/2004",
+      "age": 21,
+      "homegrown": true
+    },
+    {
+      "id": "finn-inglethorpe",
+      "name": "Finn Inglethorpe",
+      "group": "FORWARD",
+      "position": "AM",
+      "DOB": "01/10/2008",
+      "age": 17,
+      "homegrown": true
+    },
+    {
+      "id": "lewis-koumas",
+      "name": "Lewis Koumas",
+      "group": "FORWARD",
+      "position": "AM",
+      "DOB": "19/09/2005",
+      "age": 20,
+      "homegrown": true
+    },
+    {
+      "id": "josh-sonni-lambie",
+      "name": "Josh Sonni-Lambie",
+      "group": "FORWARD",
+      "position": "ST",
+      "DOB": "16/11/2007",
+      "age": 18,
+      "homegrown": true
+    },
+    {
+      "id": "will-wright",
+      "name": "Will Wright",
+      "group": "FORWARD",
+      "position": "ST",
+      "DOB": "03/04/2008",
+      "age": 18,
+      "homegrown": true
+    }
+  ]
+}

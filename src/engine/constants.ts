@@ -190,8 +190,18 @@ export const SQUAD_QUALITY_DEPTH_WEIGHT = 0.4;
 export const DEPTH_PLAYER_COUNT = 10;
 
 /**
+ * Balance is quality-weighted (Sam, 25/07/2026): a position is not simply
+ * "covered" by a body, it is covered in proportion to the quality of the
+ * players there. Each player contributes min(quality / reference, 1) of a
+ * slot, so a player at or above this reference counts as a full unit and a
+ * weaker one (e.g. a promoted academy player) counts for less.
+ */
+export const BALANCE_QUALITY_REFERENCE = 90;
+
+/**
  * Balance template: the healthy-squad headcount per position. Each position
- * scores min(count, required) / required; extras earn nothing.
+ * scores min(coverage, required) / required, where coverage is the
+ * quality-weighted contribution of the players in that position.
  */
 export const BALANCE_TEMPLATE: Readonly<Record<string, number>> = {
   GK: 3,
@@ -229,8 +239,23 @@ export const AGE_SCORE_BANDS: readonly { maxAge: number; score: number }[] = [
 ];
 
 /**
- * Contract health scores by remaining months at game end. Ordered by
- * minMonths descending; the first matching row wins.
+ * Contract health is quality-aware (Sam, 25/07/2026). A contract is not
+ * "healthy" simply for being long: securing a good player is an asset, but
+ * being locked into a below-par player is a liability, worse the bigger their
+ * wage. Each player's tenure (see CONTRACT_HEALTH_BY_MONTHS) is combined with
+ * a quality standing about this pivot:
+ *  - quality at CONTRACT_QUALITY_PIVOT is neutral;
+ *  - CONTRACT_QUALITY_SCALE points above or below reaches the +/-1 extreme;
+ *  - a below-pivot player on a long deal is penalised by their wage, scaled
+ *    by CONTRACT_WAGE_PENALTY_PER_M per EUR m/yr.
+ */
+export const CONTRACT_QUALITY_PIVOT = 72;
+export const CONTRACT_QUALITY_SCALE = 18;
+export const CONTRACT_WAGE_PENALTY_PER_M = 0.03;
+
+/**
+ * Tenure scores by remaining months at game end (how secured a player is).
+ * Ordered by minMonths descending; the first matching row wins.
  */
 export const CONTRACT_HEALTH_BY_MONTHS: readonly {
   minMonths: number;
@@ -251,3 +276,66 @@ export const CONTRACT_HEALTH_BY_MONTHS: readonly {
  */
 export const VALUE_CREATED_BASE = 50;
 export const VALUE_CREATED_SLOPE = 250;
+
+/* -------------------------------------------------------------------------
+ * Season simulation (Sam, 25/07/2026; all tunable)
+ *
+ * A deterministic expected-goals projection, separate from and additional to
+ * the 0-100 rating. Both sides are reduced to a single full-squad strength
+ * (the same 0.6 XI / 0.4 rest blend as Squad quality). Each rival is played
+ * home and away; per fixture, expected goals for each side come from the
+ * strength ratio, and a Poisson model turns those into win/draw/loss
+ * probabilities. Summed over the season they give the projected record. No
+ * randomness: identical squads always project identical seasons.
+ * ---------------------------------------------------------------------- */
+
+/** League-average goals scored by one side in one game: the scoring scale. */
+export const SIM_LEAGUE_BASE_GOALS = 1.35;
+
+/**
+ * How sharply a strength advantage converts into goals. Higher means bigger
+ * mismatches; 1 would make goals scale linearly with the strength ratio.
+ */
+export const SIM_STRENGTH_ELASTICITY = 2;
+
+/**
+ * Full-squad strengths cluster near the league average, so before the match
+ * model runs, each team's distance from the league mean is stretched by this
+ * factor (Sam, 25/07/2026). This gives the league realistic separation so
+ * strength and projected points line up: the strongest sides pull clear and
+ * the weakest are cut adrift, instead of everyone drawing to mid-table.
+ */
+export const SIM_STRENGTH_SPREAD = 3;
+
+/** Floor for a stretched strength, so a far-below-average side stays positive. */
+export const SIM_MIN_EFFECTIVE_STRENGTH = 20;
+
+/** Home-field swing: the home side's expected goals are scaled up by this
+ * fraction and the away side's down by it. Over 19 home and 19 away games it
+ * roughly nets out. */
+export const SIM_HOME_ADVANTAGE = 0.15;
+
+/** Goals per side are summed over a truncated Poisson tail up to this many. */
+export const SIM_MAX_GOALS = 8;
+
+/** Fallback league when a config supplies no rivals: nineteen average sides. */
+export const SIM_DEFAULT_RIVAL_COUNT = 19;
+export const SIM_DEFAULT_RIVAL_STRENGTH = 75;
+
+/**
+ * Verdict bands by projected points (Sam, 25/07/2026). Ordered by minPoints
+ * descending; the first band the total reaches wins. An unbeaten projection
+ * (zero losses) additionally earns the "Invincible" badge in the UI.
+ */
+export const SIM_VERDICT_BANDS: readonly {
+  minPoints: number;
+  label: string;
+}[] = [
+  { minPoints: 90, label: 'Dynasty' },
+  { minPoints: 84, label: 'Champions' },
+  { minPoints: 78, label: 'Title race' },
+  { minPoints: 68, label: 'Champions League' },
+  { minPoints: 58, label: 'Europa / top half' },
+  { minPoints: 45, label: 'Mid-table' },
+  { minPoints: 0, label: 'Relegation scrap' },
+];
