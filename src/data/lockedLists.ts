@@ -44,7 +44,7 @@ export const MARKET_LOCKED_CLUBS: readonly string[] = [
  * Visible in the market browser, unbuyable. Criterion: game value EUR
  * 100m and above.
  */
-export const MARKET_UNTOUCHABLE_MIN_VALUE_M = 100;
+export const MARKET_UNTOUCHABLE_MIN_VALUE_M = 150;
 
 /**
  * Named exceptions that should always be locked even below the value
