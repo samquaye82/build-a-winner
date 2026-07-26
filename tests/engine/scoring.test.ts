@@ -5,7 +5,7 @@
  * 4-2-3-1 XI leaving only gk2 outside):
  *
  * - Squad Quality: XI avg 840/11 = 76.36; depth = the whole squad outside
- *   the XI = {gk2} = 70. Score 0.6 x 76.36 + 0.4 x 70 = 73.8.
+ *   the XI = {gk2} = 70. Score 0.65 x 76.36 + 0.35 x 70 = 74.1.
  * - Balance: quality-weighted coverage against reference 90. Contributions
  *   (min quality/90, 1): GK 0.778 x2, RB/LB/LW 0.778, CB 1.0+0.778,
  *   CM 0.889+0.778, AM 0.867, RW 0.933, ST 0.978; coverage/9 x 100 = 43.7.
@@ -14,8 +14,8 @@
  *   assets, below-par or expiring ones liabilities), squad average mapped to
  *   0-100 = 58.3.
  * - Value created: nothing done, ratio 1.0, score 50.
- * - Total: 0.35x73.8 + 0.25x43.7 + 0.15x93.8 + 0.2x58.3 + 0.05x50
- *   = 64.99 -> 65.
+ * - Total: 0.35x74.1 + 0.25x43.7 + 0.15x93.8 + 0.2x58.3 + 0.05x50
+ *   = 65.09 -> 65.
  */
 import { describe, expect, it } from 'vitest';
 import {
@@ -144,7 +144,7 @@ describe('scoreGame', () => {
     expect(breakdown.squadQuality).toEqual({
       xiAverage: 76.4,
       depthAverage: 70,
-      score: 73.8,
+      score: 74.1,
     });
     expect(breakdown.balance.score).toBe(43.7);
     expect(breakdown.ageProfile.score).toBe(93.8);

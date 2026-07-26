@@ -259,25 +259,29 @@ export function clubsIn(
   return [...clubs].sort((a, b) => a.localeCompare(b));
 }
 
-/** Verdict tiers by final rating (Sam, 13/07/2026), highest first. */
+/**
+ * Verdict tiers by squad quality rating (Sam, 26/07/2026), highest first.
+ * Keyed off Squad quality rather than the overall rating so the description
+ * tracks the squad's strength, in step with the projected season it sits
+ * beneath (which is also based on squad quality).
+ */
 const VERDICTS: readonly { min: number; text: string }[] = [
-  { min: 91, text: 'Job done. You’ve built a squad for a dynasty.' },
-  { min: 86, text: 'Success! This squad should be one of the favourites to win the Premier League and/or Champions League.' },
-  { min: 81, text: 'You’re not one of the favourites, but you’ve got a puncher’s chance to win a major trophy.' },
+  { min: 88, text: 'Job done. You’ve built a squad for a dynasty.' },
+  { min: 83, text: 'Success! This squad should be one of the favourites to win the Premier League and/or Champions League.' },
+  { min: 80, text: 'You’re not one of the favourites, but you’ve got a puncher’s chance to win a major trophy.' },
   { min: 76, text: 'The most this squad should expect is to qualify for the top four and maybe win a domestic trophy.' },
-  { min: 71, text: 'You’ve built a Europa League level squad. Good, but still not good enough for LFC.' },
+  { min: 72, text: 'You’ve built a Europa League level squad. Good, but still not good enough for LFC.' },
   { min: 0, text: 'This squad is not LFC standard. You’ve failed, and you’re fired.' },
 ];
 
 /**
- * The end-screen verdict for a final rating. A rating of 70 falls into the
- * failed tier (the tiers begin at 71); everything is covered from 0 up.
+ * The end-screen verdict for a squad quality rating.
  *
- * @param total - The rating out of 100.
+ * @param squadQuality - The squad quality score out of 100.
  * @returns The matching verdict text.
  */
-export function verdict(total: number): string {
-  return VERDICTS.find((tier) => total >= tier.min)?.text ?? '';
+export function verdict(squadQuality: number): string {
+  return VERDICTS.find((tier) => squadQuality >= tier.min)?.text ?? '';
 }
 
 /**

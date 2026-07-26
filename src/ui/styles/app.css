@@ -543,6 +543,9 @@ button {
   font-weight: 700;
   text-transform: uppercase;
   color: var(--white-88);
+  /* Left-aligned so every label starts at the same point (the .end-overall
+   * column is centre-aligned, which would otherwise centre these). */
+  text-align: left;
 }
 
 .end-bar-track {
@@ -600,10 +603,53 @@ button {
   color: var(--white-40);
 }
 
+/* ---- Overall rating + summary (two columns) --------------------------- */
+.end-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: 24px;
+  max-width: 900px;
+  margin: 0 auto 40px;
+  padding-top: 28px;
+  align-items: stretch;
+}
+
+.end-overall {
+  text-align: center;
+}
+
+.end-overall .end-bars {
+  margin: 22px auto 0;
+}
+
+.end-summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  /* Centre the 2x2 grid vertically against the taller rating column, so it
+   * has a little breathing room above and below. */
+  align-content: center;
+  align-self: center;
+}
+
+@media (max-width: 760px) {
+  .end-top {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ---- Projected season ------------------------------------------------- */
 .end-projection {
   text-align: center;
-  margin: 8px auto 30px;
+  margin: 0 auto 48px;
+}
+
+.end-projection-desc {
+  max-width: 620px;
+  margin: 8px auto 20px;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--white-88);
 }
 
 .invincible-badge {
@@ -1013,13 +1059,17 @@ button {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
   gap: 24px;
-  max-width: 900px;
+  /* Matches the projected-season stats width and centring, so the pitch's
+   * left edge lines up with the left edge of the Record tile above it. */
+  max-width: 760px;
   margin: 0 auto 8px;
   align-items: start;
 }
 
 .end-team .pitch-mini {
   max-width: none;
+  /* A touch taller than the default 3 / 2.6 so the formation has more room. */
+  aspect-ratio: 3 / 2.75;
 }
 
 .end-team .end-squad {

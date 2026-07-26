@@ -179,9 +179,9 @@ export const SCORING_WEIGHTS = {
   valueCreated: 0.05,
 } as const;
 
-/** Inside Squad Quality: the XI / depth split (depth is the mission). */
-export const SQUAD_QUALITY_XI_WEIGHT = 0.6;
-export const SQUAD_QUALITY_DEPTH_WEIGHT = 0.4;
+/** Inside Squad Quality: the XI / depth split (Sam, 26/07/2026: 65/35). */
+export const SQUAD_QUALITY_XI_WEIGHT = 0.65;
+export const SQUAD_QUALITY_DEPTH_WEIGHT = 0.35;
 
 /**
  * Depth counts the best N players outside the XI; missing bodies score

@@ -193,8 +193,8 @@ const academy: AcademyPlayerSeed[] = (
  * the Premier League players in the dataset. Computed rather than authored,
  * so the projected league stays consistent with the game world.
  */
-const RIVAL_XI_WEIGHT = 0.6;
-const RIVAL_DEPTH_WEIGHT = 0.4;
+const RIVAL_XI_WEIGHT = 0.65;
+const RIVAL_DEPTH_WEIGHT = 0.35;
 
 function rivalStrength(qualities: readonly number[]): number {
   const sorted = [...qualities].sort((a, b) => b - a);

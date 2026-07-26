@@ -24,7 +24,7 @@ type Phase = 'start' | 'window' | 'summary' | 'xi' | 'end';
 const PHASE_LABELS: Partial<Record<Phase, string>> = {
   summary: 'Window review',
   xi: 'Pick your XI',
-  end: 'Final rating',
+  end: 'Overall rating',
 };
 
 /**
