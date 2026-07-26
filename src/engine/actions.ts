@@ -149,6 +149,9 @@ function buy(state: GameState, playerId: string): GameState {
       windowIndex: state.windowIndex,
       contractYears: marketPlayer.contractYears,
     },
+    // Kept so undo can restore the exact listing, including free agents that
+    // progression created and that are not in the authored config pool.
+    boughtFrom: marketPlayer,
   };
 
   return {
@@ -175,14 +178,13 @@ function undoBuy(state: GameState, playerId: string): GameState {
     );
   }
 
-  // The market listing is reconstructed from config rather than from the
-  // squad entry, so that renewals made since the purchase are discarded
-  // cleanly along with the purchase itself.
+  // Restore the exact listing captured at buy time; fall back to the authored
+  // config pool for safety. The stored listing also covers progression-created
+  // free agents, which are not in config. Restoring a fresh listing (rather
+  // than the squad entry) discards any renewal made since the purchase.
   const basePool = state.config.marketByWindow[state.windowIndex] ?? [];
-  const listing = basePool.find((p) => p.id === playerId);
+  const listing = player.boughtFrom ?? basePool.find((p) => p.id === playerId);
   if (listing === undefined) {
-    // Unreachable while undo is same-window only: a bought player always
-    // originates from the current window's pool.
     throw new EngineError(
       'PLAYER_NOT_IN_MARKET',
       `No market listing found to restore for ${player.name}`,
@@ -395,9 +397,11 @@ function restoreMarketOrder(
   basePool: readonly MarketPlayer[],
 ): MarketPlayer[] {
   const orderById = new Map(basePool.map((p, index) => [p.id, index]));
-  return [...market].sort(
-    (a, b) => (orderById.get(a.id) ?? 0) - (orderById.get(b.id) ?? 0),
-  );
+  // Listings not in the authored pool (restored free agents) sort to the end,
+  // where progression originally placed them.
+  const rank = (id: string): number =>
+    orderById.get(id) ?? Number.MAX_SAFE_INTEGER;
+  return [...market].sort((a, b) => rank(a.id) - rank(b.id));
 }
 
 /**

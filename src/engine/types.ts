@@ -128,6 +128,13 @@ export interface SquadPlayer extends SquadPlayerSeed {
   saleValue: number;
   /** Present only for players bought during the game. */
   acquisition?: Acquisition;
+  /**
+   * The market listing this player was signed from, retained so a same-window
+   * undo can restore it exactly. Needed because progression-created free
+   * agents (an expired player who re-entered the market) are not in the
+   * authored config pool, so the listing cannot be reconstructed from config.
+   */
+  boughtFrom?: MarketPlayer;
   /** Present only once renewed; a player renews at most once per game. */
   renewal?: Renewal;
   /**
