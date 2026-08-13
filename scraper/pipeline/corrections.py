@@ -40,7 +40,10 @@ CORRECTIONS: dict[str, dict[str, object]] = {
 #: Players missing from every source, appended by pipeline.apply_review.
 #: Victor Munoz: Osasuna attacker, transferred to Liverpool July 2026;
 #: absent from both clubs' 26/27 Capology pages (Sam, 12/07/2026).
-#: Quality/value/salary are Claude's estimates pending Sam's adjustment.
+#: Quality and salary are Claude's estimates pending Sam's adjustment;
+#: the value is now the realised fee. Note he is a different player from
+#: the Iker Munoz who remains at Osasuna in review.csv: same surname,
+#: same club, a year apart in age (Sam, 13/08/2026).
 ADDITIONS: list[dict[str, object]] = [
     {
         "player_slug": "victor-munoz-osasuna",
@@ -53,7 +56,10 @@ ADDITIONS: list[dict[str, object]] = [
         "age": 22,
         "quality": 78,
         "quality_source": "manual",
-        "true_value_m": 35.0,
+        # The realised fee, confirmed by the summer 2026 transfer sweep
+        # (Osasuna to Liverpool, 01/07/2026). Sam's rule is that a price
+        # actually paid beats an estimate (Sam, 13/08/2026).
+        "true_value_m": 40.0,
         "tm_value_m": None,
         "salary_eur_m": 3.5,
         "salary_estimated": True,
