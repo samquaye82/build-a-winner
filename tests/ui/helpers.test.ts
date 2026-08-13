@@ -78,6 +78,28 @@ describe('badges', () => {
     ]);
   });
 
+  it('flags_a_loanee_last_in_the_badge_row', () => {
+    const loanee = {
+      ...makeSquadPlayer({
+        id: 'd',
+        homegrown: true,
+        contract: { expiryYear: 2027, salary: 4 },
+      }),
+      onLoan: true,
+      saleValue: 0,
+    };
+    const badges = playerBadges(loanee, testWindow);
+    expect(badges.map((b) => b.kind)).toEqual(['hg', 'expiring', 'loan']);
+    expect(badges.at(-1)?.label).toBe('On loan');
+  });
+
+  it('leaves_an_owned_player_unbadged_as_a_loanee', () => {
+    const owned = { ...makeSquadPlayer({ id: 'e' }), saleValue: 0 };
+    expect(playerBadges(owned, testWindow).map((b) => b.kind)).not.toContain(
+      'loan',
+    );
+  });
+
   it('treats_18_months_as_not_expiring_but_12_as_expiring', () => {
     const player = {
       ...makeSquadPlayer({ id: 'c', contract: { expiryYear: 2028, salary: 4 } }),

@@ -155,6 +155,36 @@ describe('SELL', () => {
     );
   });
 
+  it('rejects_selling_a_player_who_is_on_loan', () => {
+    // A loanee fills a squad place but belongs to another club, so he
+    // cannot be cashed in for his value.
+    const config = makeTestConfig();
+    const state = createGame({
+      ...config,
+      initialSquad: config.initialSquad.map((p) =>
+        p.id === 'rb1' ? { ...p, onLoan: true } : p,
+      ),
+    });
+    expect(() => applyAction(state, { type: 'SELL', playerId: 'rb1' })).toThrowError(
+      /on loan/,
+    );
+  });
+
+  it('rejects_renewing_a_player_who_is_on_loan', () => {
+    // Renewing someone else's player is nonsense, and would otherwise be
+    // an easy way to farm the contract-health score.
+    const config = makeTestConfig();
+    const state = createGame({
+      ...config,
+      initialSquad: config.initialSquad.map((p) =>
+        p.id === 'rb1' ? { ...p, onLoan: true } : p,
+      ),
+    });
+    expect(() =>
+      applyAction(state, { type: 'RENEW', playerId: 'rb1', newExpiryYear: 2030 }),
+    ).toThrowError(/on loan/);
+  });
+
   it('rejects_selling_a_player_not_in_the_squad', () => {
     expect(() => play({ type: 'SELL', playerId: 'buy-st' })).toThrowError(
       EngineError,

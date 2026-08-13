@@ -4,6 +4,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import {
+  applyAction,
   computeSquadCost,
   countRegistration,
   createGame,
@@ -80,6 +81,48 @@ describe('realConfig', () => {
     const violations = validateState(state);
     for (const violation of violations) {
       expect(violation.message.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('marks_loanees_as_unsellable_in_the_real_squad', () => {
+    // Wiring check for LOANED_IN: the list is matched by display name, so
+    // a rename in the dataset would silently stop flagging anyone and
+    // hand the player a free sale of a player the club does not own.
+    const state = createGame(realConfig);
+    const loanees = state.squad.filter((p) => p.onLoan === true);
+    expect(loanees.length).toBeGreaterThan(0);
+    for (const loanee of loanees) {
+      expect(() =>
+        applyAction(state, { type: 'SELL', playerId: loanee.id }),
+      ).toThrowError(/on loan/);
+      expect(() =>
+        applyAction(state, {
+          type: 'RENEW',
+          playerId: loanee.id,
+          newExpiryYear: 2030,
+        }),
+      ).toThrowError(/on loan/);
+      // The loan's own end date, not the parent club's contract.
+      expect(loanee.contract.expiryYear).toBe(2027);
+    }
+  });
+
+  it('sends_loanees_back_to_their_parent_club_after_the_season', () => {
+    const state = createGame(realConfig);
+    const loaneeIds = state.squad
+      .filter((p) => p.onLoan === true)
+      .map((p) => p.id);
+    const summer2027 = applyAction(
+      applyAction(state, { type: 'ADVANCE_WINDOW' }),
+      { type: 'ADVANCE_WINDOW' },
+    );
+    for (const id of loaneeIds) {
+      expect(summer2027.squad.find((p) => p.id === id)).toBeUndefined();
+      // Crucially not a free agent: he is under contract elsewhere.
+      expect(summer2027.market.find((p) => p.id === id)).toBeUndefined();
+      expect(
+        summer2027.departed.find((d) => d.player.id === id)?.reason,
+      ).toBe('loan-ended');
     }
   });
 

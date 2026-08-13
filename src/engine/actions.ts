@@ -211,6 +211,12 @@ function sell(state: GameState, playerId: string): GameState {
       `The board will not sanction the sale of ${player.name}`,
     );
   }
+  if (player.onLoan === true) {
+    throw new EngineError(
+      'PLAYER_ON_LOAN',
+      `${player.name} is on loan and is not the club's to sell`,
+    );
+  }
 
   return {
     ...state,
@@ -261,6 +267,12 @@ function renew(
   newExpiryYear: number,
 ): GameState {
   const player = requireSquadPlayer(state, playerId);
+  if (player.onLoan === true) {
+    throw new EngineError(
+      'PLAYER_ON_LOAN',
+      `${player.name} is on loan; his contract is his parent club's to extend`,
+    );
+  }
   if (player.renewal !== undefined) {
     throw new EngineError(
       'ALREADY_RENEWED',

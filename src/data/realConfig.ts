@@ -29,6 +29,7 @@ import type {
 } from '../engine';
 import {
   LIVERPOOL_LOCKED,
+  LOANED_IN,
   MARKET_LOCKED_CLUBS,
   MARKET_LOCKED_EXTRA,
   MARKET_UNLOCKED_EXCEPTIONS,
@@ -97,19 +98,45 @@ const windows: WindowConfig[] = (gameData.windows as WindowConfig[]).map(
   }),
 );
 
+/**
+ * Whether a hand-edited list names a player, by slug or by display name.
+ *
+ * @param list - The list from lockedLists.ts.
+ * @param id - The player's Capology slug.
+ * @param name - The player's display name.
+ * @returns True when either identifier appears in the list.
+ */
+function namedIn(list: readonly string[], id: string, name: string): boolean {
+  return list.includes(id) || list.includes(name);
+}
+
+/** The season a 2026/27 loan runs to, as a contract expiry year. */
+const LOAN_EXPIRY_YEAR = 2027;
+
 const initialSquad: SquadPlayerSeed[] = (
   gameData.squad as GeneratedSquadPlayer[]
-).map((player) => ({
-  id: player.id,
-  name: player.name,
-  position: player.position as Position,
-  age: player.age,
-  homegrown: player.homegrown,
-  quality: player.quality,
-  baseValue: player.baseValue,
-  locked: LIVERPOOL_LOCKED.includes(player.id),
-  contract: player.contract,
-}));
+).map((player) => {
+  const onLoan = namedIn(LOANED_IN, player.id, player.name);
+  return {
+    id: player.id,
+    name: player.name,
+    position: player.position as Position,
+    age: player.age,
+    homegrown: player.homegrown,
+    quality: player.quality,
+    baseValue: player.baseValue,
+    locked: namedIn(LIVERPOOL_LOCKED, player.id, player.name),
+    onLoan,
+    // The dataset carries the loanee's contract with his PARENT club,
+    // which runs years beyond the loan (Araujo's to 2031). Left alone it
+    // would tell the player his squad is secure when the man leaves in
+    // twelve months, and inflate contract health, which is a fifth of the
+    // final rating. The loan's own end date is the honest figure.
+    contract: onLoan
+      ? { ...player.contract, expiryYear: LOAN_EXPIRY_YEAR }
+      : player.contract,
+  };
+});
 
 /** Whether a list entry names this player (by slug or display name). */
 function listed(list: readonly string[], player: GeneratedMarketPlayer): boolean {

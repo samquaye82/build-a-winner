@@ -316,6 +316,9 @@ button {
 .badge.hg { background: var(--green-tint); color: var(--green); }
 .badge.u21 { background: var(--gold); color: var(--ink); }
 .badge.expiring { background: var(--red-tint); color: var(--red); }
+/* Solid deep red, so a loanee reads as a different kind of fact from the
+   three tinted status badges rather than another shade of the same. */
+.badge.loan { background: var(--red-deep); color: var(--white-88); }
 
 /* Renewal options */
 .renew-options {

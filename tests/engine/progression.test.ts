@@ -132,6 +132,29 @@ describe('January 2027 -> Summer 2027 (season boundary)', () => {
     expect(player?.contract.salary).toBe(12);
   });
 
+  it('returns_a_loanee_to_his_parent_club_rather_than_free_agency', () => {
+    // cb2's deal ends at the boundary. As an ordinary player he would
+    // become a free agent anyone could sign; as a loanee he belongs to
+    // another club, so he must simply be gone.
+    const config = makeThreeWindowConfig();
+    const state = createGame({
+      ...config,
+      initialSquad: config.initialSquad.map((p) =>
+        p.id === 'cb2' ? { ...p, onLoan: true } : p,
+      ),
+    });
+    const advanced = applyAction(
+      applyAction(state, { type: 'ADVANCE_WINDOW' }),
+      { type: 'ADVANCE_WINDOW' },
+    );
+
+    expect(advanced.squad.map((p) => p.id)).not.toContain('cb2');
+    expect(advanced.market.find((p) => p.id === 'cb2')).toBeUndefined();
+
+    const departure = advanced.departed.find((d) => d.player.id === 'cb2');
+    expect(departure?.reason).toBe('loan-ended');
+  });
+
   it('keeps_a_renewed_player_through_the_boundary', () => {
     const state = play(
       { type: 'RENEW', playerId: 'cm1', newExpiryYear: 2030 },

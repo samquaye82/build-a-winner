@@ -62,6 +62,11 @@ export function SquadCard({ player }: { player: SquadPlayer }): React.JSX.Elemen
       <div className="actions">
         {player.locked ? (
           <span className="fee">🔒 Locked</span>
+        ) : player.onLoan === true ? (
+          // A loanee belongs to another club: no sale value, no sale. The
+          // badge already says he is on loan, so this only needs to explain
+          // the missing button.
+          <span className="fee">Not for sale</span>
         ) : (
           <>
             <span className="fee in">+{formatMoney(player.saleValue)}</span>
@@ -289,6 +294,10 @@ export function RenewalCard({ player }: { player: SquadPlayer }): React.JSX.Elem
         </div>
       ) : renewedEarlier ? (
         <div className="contract">Renewed in an earlier window: no second bite.</div>
+      ) : player.onLoan === true ? (
+        <div className="contract">
+          On loan: his contract is his parent club&rsquo;s to extend.
+        </div>
       ) : (
         <div className="renew-options">
           {options.map((option) => (

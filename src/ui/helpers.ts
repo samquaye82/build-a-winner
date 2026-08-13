@@ -130,7 +130,9 @@ export function renewalOptions(
   player: SquadPlayer,
   window: WindowConfig,
 ): RenewalOption[] {
-  if (player.renewal !== undefined) {
+  // A loanee's deal belongs to his parent club, so there is nothing here
+  // for the player to extend; the engine rejects the action outright.
+  if (player.renewal !== undefined || player.onLoan === true) {
     return [];
   }
   const options: RenewalOption[] = [];
@@ -390,8 +392,9 @@ export function buildShareText(
 export function playerBadges(
   player: SquadPlayer,
   window: WindowConfig,
-): { kind: 'u21' | 'hg' | 'expiring'; label: string }[] {
-  const badges: { kind: 'u21' | 'hg' | 'expiring'; label: string }[] = [];
+): { kind: 'u21' | 'hg' | 'expiring' | 'loan'; label: string }[] {
+  const badges: { kind: 'u21' | 'hg' | 'expiring' | 'loan'; label: string }[] =
+    [];
   if (isU21(player)) {
     badges.push({ kind: 'u21', label: 'U21' });
   } else if (player.homegrown) {
@@ -399,6 +402,11 @@ export function playerBadges(
   }
   if (isExpiring(player, window)) {
     badges.push({ kind: 'expiring', label: 'Expiring' });
+  }
+  // Last in the row: it is the fact that most changes what you can do with
+  // the player, so it should be the one the eye finishes on.
+  if (player.onLoan === true) {
+    badges.push({ kind: 'loan', label: 'On loan' });
   }
   return badges;
 }

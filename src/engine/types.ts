@@ -112,6 +112,12 @@ export interface SquadPlayerSeed extends PlayerCore {
   baseValue: number;
   /** True when the board refuses to sanction a sale. */
   locked: boolean;
+  /**
+   * True when the player is at the club on loan for the season. He fills a
+   * registration slot and plays, but he is not the club's to sell: the game
+   * models no loan mechanics beyond this, so he simply cannot be traded.
+   */
+  onLoan?: boolean;
   contract: Contract;
 }
 
@@ -187,8 +193,13 @@ export interface MarketPlayer extends PlayerCore {
   league?: string;
 }
 
-/** Why a player is no longer at the club. 'expired' arrives with M2. */
-export type DepartureReason = 'sold' | 'expired';
+/**
+ * Why a player is no longer at the club. 'expired' arrives with M2.
+ * 'loan-ended' is distinct from 'expired' because the two lead somewhere
+ * different: an expired player becomes a free agent anyone can sign, while
+ * a loanee simply goes back to the club that owns him.
+ */
+export type DepartureReason = 'sold' | 'expired' | 'loan-ended';
 
 /**
  * A player who has left the club during the game, retained so sales can be

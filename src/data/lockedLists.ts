@@ -31,6 +31,22 @@ export const LIVERPOOL_LOCKED: readonly string[] = [
 ];
 
 /**
+ * Players at Liverpool on loan for 2026/27 rather than under contract.
+ *
+ * They fill a registration slot and count towards the squad exactly as an
+ * owned player does, which is right: they are available to pick. What they
+ * are not is the club's to trade, so the engine blocks their sale and the
+ * card shows an "On loan" badge in place of a fee.
+ *
+ * Entries may be Capology slugs or exact display names, as above. Sourced
+ * from the confirmed-loan sweep (scraper/pipeline/loans.py) and applied by
+ * realConfig.ts at build time.
+ */
+export const LOANED_IN: readonly string[] = [
+  'Ronald Araujo', // from Barcelona, 10/08/2026
+];
+
+/**
  * Clubs that would never sell to Liverpool at any price (Sam,
  * 12/07/2026): every player at these clubs is locked regardless of value.
  */

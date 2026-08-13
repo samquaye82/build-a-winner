@@ -71,15 +71,20 @@ export function advanceWindow(state: GameState): GameState {
   const seasonBoundary =
     nextWindow.seasonStartYear > currentWindow(state).seasonStartYear;
 
-  // 1. Contract expiry (season boundaries only).
+  // 1. Contract expiry (season boundaries only). Loanees leave on the same
+  // schedule but by a different route: their deal was never the club's, so
+  // they return to their parent club rather than reaching free agency.
   const expired: DepartedPlayer[] = [];
+  const returned: DepartedPlayer[] = [];
   let squad: SquadPlayer[] = [];
   if (seasonBoundary) {
     for (const player of state.squad) {
-      if (player.contract.expiryYear <= nextWindow.seasonStartYear) {
-        expired.push({ player, reason: 'expired', windowIndex: nextIndex });
-      } else {
+      if (player.contract.expiryYear > nextWindow.seasonStartYear) {
         squad.push(player);
+      } else if (player.onLoan === true) {
+        returned.push({ player, reason: 'loan-ended', windowIndex: nextIndex });
+      } else {
+        expired.push({ player, reason: 'expired', windowIndex: nextIndex });
       }
     }
   } else {
@@ -133,7 +138,7 @@ export function advanceWindow(state: GameState): GameState {
     squad,
     market,
     academy,
-    departed: [...state.departed, ...expired],
+    departed: [...state.departed, ...expired, ...returned],
   };
 }
 
