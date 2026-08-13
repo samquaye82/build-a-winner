@@ -218,10 +218,19 @@
       "homegrown": true
     },
     {
+      "id": "ifeanyi-ndukwe",
+      "name": "Ifeanyi Ndukwe",
+      "group": "DEFENDER",
+      "position": "CB",
+      "DOB": "03/03/2008",
+      "age": 18,
+      "homegrown": true
+    },
+    {
       "id": "josh-abe",
       "name": "Josh Abe",
-      "group": "MIDFIELDER",
-      "position": "AM",
+      "group": "FORWARD",
+      "position": "RW",
       "DOB": "17/07/2010",
       "age": 16,
       "homegrown": true
@@ -401,7 +410,7 @@
       "id": "lewis-koumas",
       "name": "Lewis Koumas",
       "group": "FORWARD",
-      "position": "AM",
+      "position": "ST",
       "DOB": "19/09/2005",
       "age": 20,
       "homegrown": true
