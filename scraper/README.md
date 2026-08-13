@@ -65,6 +65,15 @@ invented, since both drive scoring. `pipeline.profiles` tries to recover
 those two fields from player profile pages, but most such players have no
 player record on the site at all (an unknown slug returns the player
 index with HTTP 200 rather than a 404), so its yield is near zero.
+`pipeline.wikipedia` recovers rather more, from the per-country transfer
+lists and the players' own articles, and doubles as corroboration.
+
+**Status of the summer 2026 hold-backs (Sam, 13/08/2026): the remaining
+38 stay out of the dataset.** Wikipedia confirms the transfers are real,
+but 24 of the 26 it cannot find are free transfers of youth and squad
+players it does not record either, and six went to Portuguese clubs,
+where no list exists. They are listed in
+`output/held_back_additions.csv` if the decision is ever revisited.
 
 Note that the feed's endpoint is disallowed by the site's robots.txt, as
 is every other data-bearing endpoint there (the visible pages render
