@@ -170,6 +170,25 @@ describe('SELL', () => {
     );
   });
 
+  it('allows_selling_a_locked_player_once_his_lock_lifts', () => {
+    // Protection is a decision deferred, not an exemption: the board
+    // holds the spine through the opening window and then listens.
+    const config = makeThreeWindowConfig();
+    const state = createGame({
+      ...config,
+      initialSquad: config.initialSquad.map((p) =>
+        p.id === 'cb1' ? { ...p, unlocksInWindow: 1 } : p,
+      ),
+    });
+    expect(() => applyAction(state, { type: 'SELL', playerId: 'cb1' })).toThrowError(
+      /board will not sanction/,
+    );
+
+    const january = applyAction(state, { type: 'ADVANCE_WINDOW' });
+    const sold = applyAction(january, { type: 'SELL', playerId: 'cb1' });
+    expect(sold.squad.find((p) => p.id === 'cb1')).toBeUndefined();
+  });
+
   it('rejects_renewing_a_player_who_is_on_loan', () => {
     // Renewing someone else's player is nonsense, and would otherwise be
     // an easy way to farm the contract-health score.

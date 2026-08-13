@@ -8,9 +8,15 @@ import {
   computeSquadCost,
   countRegistration,
   createGame,
+  isLocked,
   validateState,
 } from '../../src/engine';
 import { realConfig } from '../../src/data/realConfig';
+import {
+  LIVERPOOL_LOCKED_ALWAYS,
+  LIVERPOOL_LOCKED_UNTIL_JANUARY,
+  LOANED_IN,
+} from '../../src/data/lockedLists';
 
 describe('realConfig', () => {
   it('builds_a_playable_three_window_game', () => {
@@ -58,9 +64,18 @@ describe('realConfig', () => {
 
   it('honours_named_unlock_exceptions_over_the_value_threshold', () => {
     const state = createGame(realConfig);
+    const exception = state.market.find((p) => p.name === 'Yan Diomande');
+    expect(exception).toBeDefined();
+    expect(exception?.locked).toBe(false);
+  });
+
+  it('locks_the_value_threshold_players_without_a_named_exception', () => {
+    // Vinicius signed to 2032 and came off the exceptions list, so the
+    // EUR 150m threshold now covers him (Sam, 13/08/2026).
+    const state = createGame(realConfig);
     const vinicius = state.market.find((p) => p.name === 'Vinicius Junior');
     expect(vinicius).toBeDefined();
-    expect(vinicius?.locked).toBe(false);
+    expect(vinicius?.locked).toBe(true);
   });
 
   it('starts_with_a_believable_scr_position', () => {
@@ -107,6 +122,51 @@ describe('realConfig', () => {
     }
   });
 
+  it('matches_every_name_on_the_liverpool_lock_lists_to_a_real_player', () => {
+    // A mistyped slug fails silently: the player is simply never locked,
+    // and a supposedly protected star is quietly on sale. Szoboszlai was
+    // added under a guessed slug and slipped through exactly this way.
+    const state = createGame(realConfig);
+    const squad = state.squad;
+    for (const entry of [
+      ...LIVERPOOL_LOCKED_ALWAYS,
+      ...LIVERPOOL_LOCKED_UNTIL_JANUARY,
+    ]) {
+      const player = squad.find((p) => p.id === entry || p.name === entry);
+      expect(player, `no squad player matches "${entry}"`).toBeDefined();
+      expect(player?.locked).toBe(true);
+    }
+  });
+
+  it('matches_every_loaned_in_player_to_a_real_market_entry', () => {
+    const state = createGame(realConfig);
+    for (const loan of LOANED_IN) {
+      const player = state.squad.find(
+        (p) => p.id === loan.player || p.name === loan.player,
+      );
+      expect(player, `no squad player matches "${loan.player}"`).toBeDefined();
+      expect(player?.onLoan).toBe(true);
+    }
+  });
+
+  it('unlocks_the_protected_spine_from_january_but_not_the_untouchables', () => {
+    // The board holds firm through the summer, then listens to offers
+    // (Sam, 13/08/2026). The academy jewels never come up for sale.
+    const state = createGame(realConfig);
+    const isak = state.squad.find((p) => p.name === 'Alexander Isak');
+    const leoni = state.squad.find((p) => p.name === 'Giovanni Leoni');
+    expect(isak).toBeDefined();
+    expect(leoni).toBeDefined();
+
+    expect(isLocked(isak!, 0)).toBe(true);
+    expect(isLocked(isak!, 1)).toBe(false);
+    expect(isLocked(isak!, 2)).toBe(false);
+
+    expect(isLocked(leoni!, 0)).toBe(true);
+    expect(isLocked(leoni!, 1)).toBe(true);
+    expect(isLocked(leoni!, 2)).toBe(true);
+  });
+
   it('sends_loanees_back_to_their_parent_club_after_the_season', () => {
     const state = createGame(realConfig);
     const loaneeIds = state.squad
@@ -118,11 +178,17 @@ describe('realConfig', () => {
     );
     for (const id of loaneeIds) {
       expect(summer2027.squad.find((p) => p.id === id)).toBeUndefined();
-      // Crucially not a free agent: he is under contract elsewhere.
-      expect(summer2027.market.find((p) => p.id === id)).toBeUndefined();
       expect(
         summer2027.departed.find((d) => d.player.id === id)?.reason,
       ).toBe('loan-ended');
+
+      // He goes back to the club that owns him and can be bought from
+      // them, for a fee. Not a free agent: he is under contract there.
+      const listing = summer2027.market.find((p) => p.id === id);
+      expect(listing).toBeDefined();
+      expect(listing?.club).not.toBe('Liverpool');
+      expect(listing?.club).not.toBe('Free agent');
+      expect(listing?.fee).toBeGreaterThan(0);
     }
   });
 

@@ -74,6 +74,7 @@ export {
   requireSquadPlayer,
 } from './state';
 export { validateState, isSubmittable } from './validate';
+export { isLocked } from './rules/lock';
 export { countRegistration, isU21 } from './rules/registration';
 export { priceRenewal } from './rules/renewal';
 export { computeSquadCost, type SquadCostBreakdown } from './rules/scr';

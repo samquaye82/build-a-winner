@@ -2,7 +2,12 @@
  * Player card components (design.md §3): notched muted cards with oversized
  * quality numbers, metadata rows, and the buy / sell / renew / undo actions.
  */
-import { currentWindow, type MarketPlayer, type SquadPlayer } from '../../engine';
+import {
+  currentWindow,
+  isLocked,
+  type MarketPlayer,
+  type SquadPlayer,
+} from '../../engine';
 import { useGame } from '../GameContext';
 import {
   formatExpiry,
@@ -40,15 +45,17 @@ export function SquadCard({ player }: { player: SquadPlayer }): React.JSX.Elemen
     player.acquisition?.windowIndex === state.windowIndex;
   const promotedThisWindow =
     player.promotion?.windowIndex === state.windowIndex;
+  // A lock can lift mid-game, so it is a question about this window.
+  const locked = isLocked(player, state.windowIndex);
 
   return (
     <article
-      className={`player-card${player.locked ? ' locked' : ''}${boughtThisWindow || promotedThisWindow ? ' selected-buy' : ''}`}
+      className={`player-card${locked ? ' locked' : ''}${boughtThisWindow || promotedThisWindow ? ' selected-buy' : ''}`}
     >
       <div className="quality">{player.quality}</div>
       <h3 className="name">
         {player.name}
-        {player.locked ? ' 🔒' : ''}
+        {locked ? ' 🔒' : ''}
       </h3>
       <div className="meta">
         <span>{player.position}</span>
@@ -60,7 +67,7 @@ export function SquadCard({ player }: { player: SquadPlayer }): React.JSX.Elemen
         {formatExpiry(player.contract.expiryYear)}
       </div>
       <div className="actions">
-        {player.locked ? (
+        {locked ? (
           <span className="fee">🔒 Locked</span>
         ) : player.onLoan === true ? (
           // A loanee belongs to another club: no sale value, no sale. The

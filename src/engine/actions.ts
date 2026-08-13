@@ -13,6 +13,7 @@
 import { EngineError } from './errors';
 import { roundMoney } from './money';
 import { advanceWindow } from './progression';
+import { isLocked } from './rules/lock';
 import { priceRenewal } from './rules/renewal';
 import { computeSaleValue } from './rules/value';
 import { validateXI } from './scoring';
@@ -205,7 +206,7 @@ function undoBuy(state: GameState, playerId: string): GameState {
  */
 function sell(state: GameState, playerId: string): GameState {
   const player = requireSquadPlayer(state, playerId);
-  if (player.locked) {
+  if (isLocked(player, state.windowIndex)) {
     throw new EngineError(
       'PLAYER_LOCKED',
       `The board will not sanction the sale of ${player.name}`,

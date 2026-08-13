@@ -113,6 +113,13 @@ export interface SquadPlayerSeed extends PlayerCore {
   /** True when the board refuses to sanction a sale. */
   locked: boolean;
   /**
+   * Window index from which a locked player becomes sellable. Absent means
+   * the lock never lifts. The board protects the spine through the opening
+   * window and then listens to offers, so protection is a decision deferred
+   * rather than a permanent exemption.
+   */
+  unlocksInWindow?: number;
+  /**
    * True when the player is at the club on loan for the season. He fills a
    * registration slot and plays, but he is not the club's to sell: the game
    * models no loan mechanics beyond this, so he simply cannot be traded.

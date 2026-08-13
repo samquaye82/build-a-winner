@@ -28,7 +28,8 @@ import type {
   WindowConfig,
 } from '../engine';
 import {
-  LIVERPOOL_LOCKED,
+  LIVERPOOL_LOCKED_ALWAYS,
+  LIVERPOOL_LOCKED_UNTIL_JANUARY,
   LOANED_IN,
   MARKET_LOCKED_CLUBS,
   MARKET_LOCKED_EXTRA,
@@ -113,10 +114,18 @@ function namedIn(list: readonly string[], id: string, name: string): boolean {
 /** The season a 2026/27 loan runs to, as a contract expiry year. */
 const LOAN_EXPIRY_YEAR = 2027;
 
-const initialSquad: SquadPlayerSeed[] = (
+/** Window index from which the board will listen to offers (January 2027). */
+const JANUARY_WINDOW_INDEX = 1;
+
+const ownedSquad: SquadPlayerSeed[] = (
   gameData.squad as GeneratedSquadPlayer[]
 ).map((player) => {
-  const onLoan = namedIn(LOANED_IN, player.id, player.name);
+  const lockedAlways = namedIn(LIVERPOOL_LOCKED_ALWAYS, player.id, player.name);
+  const lockedUntilJanuary = namedIn(
+    LIVERPOOL_LOCKED_UNTIL_JANUARY,
+    player.id,
+    player.name,
+  );
   return {
     id: player.id,
     name: player.name,
@@ -125,16 +134,11 @@ const initialSquad: SquadPlayerSeed[] = (
     homegrown: player.homegrown,
     quality: player.quality,
     baseValue: player.baseValue,
-    locked: namedIn(LIVERPOOL_LOCKED, player.id, player.name),
-    onLoan,
-    // The dataset carries the loanee's contract with his PARENT club,
-    // which runs years beyond the loan (Araujo's to 2031). Left alone it
-    // would tell the player his squad is secure when the man leaves in
-    // twelve months, and inflate contract health, which is a fifth of the
-    // final rating. The loan's own end date is the honest figure.
-    contract: onLoan
-      ? { ...player.contract, expiryYear: LOAN_EXPIRY_YEAR }
-      : player.contract,
+    locked: lockedAlways || lockedUntilJanuary,
+    ...(lockedUntilJanuary
+      ? { unlocksInWindow: JANUARY_WINDOW_INDEX }
+      : {}),
+    contract: player.contract,
   };
 });
 
@@ -192,6 +196,52 @@ const marketByWindow: MarketPlayer[][] = [0, 1, 2].map((windowIndex) =>
     ];
   }),
 );
+
+/**
+ * Players borrowed for 2026/27, lifted out of the market into the squad.
+ *
+ * They stay listed at their parent club in the dataset, which is what
+ * makes the return work: the engine hides squad players from the market
+ * while they are here, and when the loan expires they are already sitting
+ * in the Summer 2027 pool at their owner's club, buyable for a fee. The
+ * alternative, moving them to Liverpool in the data, stranded them: the
+ * player left the squad and existed nowhere.
+ *
+ * Their contract carries the loan's end date rather than the parent
+ * club's, which is both what the squad view should say and what keeps
+ * contract health honest.
+ */
+const loanedIn: SquadPlayerSeed[] = LOANED_IN.flatMap((loan) => {
+  const source = generatedMarket.find(
+    (player) => player.id === loan.player || player.name === loan.player,
+  );
+  if (source === undefined) {
+    // A loan naming nobody is a dataset error, not a reason to crash a
+    // game: the squad simply goes without him.
+    console.warn(`Loaned-in player not found in the market: ${loan.player}`);
+    return [];
+  }
+  const terms = source.windows[0];
+  return [
+    {
+      id: source.id,
+      name: source.name,
+      position: source.position as Position,
+      age: source.age,
+      homegrown: source.homegrown,
+      quality: source.quality,
+      baseValue: terms?.baseValue ?? 0,
+      locked: false,
+      onLoan: true,
+      contract: {
+        expiryYear: LOAN_EXPIRY_YEAR,
+        salary: loan.salaryEurM,
+      },
+    },
+  ];
+});
+
+const initialSquad: SquadPlayerSeed[] = [...ownedSquad, ...loanedIn];
 
 /**
  * The academy pool: promotable youngsters, all sharing the fixed attributes
