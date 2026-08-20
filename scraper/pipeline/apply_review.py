@@ -24,11 +24,12 @@ Usage (from scraper/, venv active):
 """
 
 import re
+import unicodedata
 from pathlib import Path
 
 import pandas as pd
 
-from .corrections import ADDITIONS
+from .corrections import ADDITIONS, BIRTH_DATES
 
 ROOT = Path(__file__).resolve().parent.parent
 REVIEW_CSV = ROOT / "review.csv"
@@ -42,6 +43,27 @@ _NUMERIC = ["age", "quality", "true_value_m", "salary_eur_m", "expiry_year"]
 def slugify(name: str) -> str:
     """Synthesises a stable slug for rows with no enriched match."""
     return re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-") + "-review"
+
+
+def fold_accents(name: str) -> str:
+    """Strips accents and case, for matching names spelled two ways.
+
+    Sam types names as the club does, enrichment stores them as Capology
+    does, and the two disagree over accents: 'Martin Dúbravka' against
+    'Martin Dubravka'. Left unmatched he lost his id, his date of birth,
+    and slipped past the post-review league union's duplicate check to
+    appear at two clubs at once (Sam, 20/08/2026).
+
+    Args:
+        name: A player's name.
+
+    Returns:
+        The name folded to unaccented lower case.
+    """
+    return "".join(
+        c for c in unicodedata.normalize("NFD", str(name))
+        if unicodedata.category(c) != "Mn"
+    ).lower().strip()
 
 
 def parse_bool(value: object) -> bool:
@@ -71,6 +93,15 @@ def attach_ids(review: pd.DataFrame, enriched: pd.DataFrame) -> pd.DataFrame:
         enriched.name.map(name_counts) == 1
     ].set_index("name")
 
+    # Last resort before synthesising: the same name spelled without its
+    # accents. Only unambiguous folded names are used, so two players who
+    # differ only by accent are never merged.
+    folded = enriched.assign(_folded=enriched.name.map(fold_accents))
+    folded_counts = folded._folded.value_counts()
+    by_folded_name = folded[
+        folded._folded.map(folded_counts) == 1
+    ].set_index("_folded")
+
     slugs: list[str] = []
     club_slugs: list[str] = []
     births: list[str] = []
@@ -90,6 +121,12 @@ def attach_ids(review: pd.DataFrame, enriched: pd.DataFrame) -> pd.DataFrame:
             club_slugs.append(slugify(str(row.club)).removesuffix("-review"))
             births.append(_birth_date(hit))
             synthesised += 0
+        elif fold_accents(row.name) in by_folded_name.index:
+            # Same player, spelled with or without accents.
+            hit = by_folded_name.loc[fold_accents(row.name)]
+            slugs.append(str(hit.player_slug))
+            club_slugs.append(slugify(str(row.club)).removesuffix("-review"))
+            births.append(_birth_date(hit))
         else:
             slugs.append(slugify(str(row.name)))
             club_slugs.append(slugify(str(row.club)).removesuffix("-review"))
@@ -222,6 +259,36 @@ def append_post_review_leagues(
     return pd.concat([final, extra], ignore_index=True), len(extra)
 
 
+def apply_birth_dates(final: pd.DataFrame) -> tuple[pd.DataFrame, int, list[str]]:
+    """Applies the hand-entered dates of birth from corrections.py.
+
+    Run after the additions and the league union so it reaches every row,
+    including players who exist only because corrections.py added them.
+
+    Args:
+        final: The assembled dataset.
+
+    Returns:
+        A triple of (dataset, how many were applied, slugs that matched
+        nothing). An entry matching nothing is reported rather than
+        ignored: it means the player has been renamed or removed, and a
+        silently dead correction is worse than a noisy one.
+    """
+    if not BIRTH_DATES:
+        return final, 0, []
+    result = final.copy()
+    if "date_of_birth" not in result.columns:
+        result["date_of_birth"] = ""
+    known = set(result.player_slug)
+    applied = 0
+    for slug, date in BIRTH_DATES.items():
+        if slug not in known:
+            continue
+        result.loc[result.player_slug == slug, "date_of_birth"] = date
+        applied += 1
+    return result, applied, sorted(set(BIRTH_DATES) - known)
+
+
 def main() -> int:
     """Rebuilds the final dataset from the reviewed file."""
     review = pd.read_csv(REVIEW_CSV)
@@ -239,6 +306,12 @@ def main() -> int:
     if extra_count > 0:
         print(f"Unioned {extra_count} players from post-review leagues "
               f"({', '.join(sorted(POST_REVIEW_LEAGUES))})")
+
+    final, dated, unknown = apply_birth_dates(final)
+    if dated > 0:
+        print(f"Applied {dated} hand-entered dates of birth")
+    for slug in unknown:
+        print(f"WARNING: hand-entered date of birth for unknown player: {slug}")
 
     # Last, so the reviewed rows, corrections.py's ADDITIONS and the
     # unioned post-review leagues are all covered.

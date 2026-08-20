@@ -89,3 +89,33 @@ def apply_corrections(players: pd.DataFrame) -> pd.DataFrame:
             result.loc[mask, field] = value
         print(f"Corrected {slug}: {', '.join(overrides)}")
     return result
+
+
+#: Dates of birth for players no source carries one for, found by hand
+#: (Sam, 20/08/2026). Keyed by player_slug, as ISO YYYY-MM-DD.
+#:
+#: The age profile chart needs a date of birth to place a player exactly;
+#: without one it falls back to his whole-year age and draws him hollow.
+#: These fill the gaps at the clubs Sam follows most closely. The generator
+#: cross-checks every date against the recorded age and drops any that
+#: disagree by more than eighteen months, so a typo here shows up as a
+#: dropped date rather than a wrong dot.
+BIRTH_DATES: dict[str, str] = {
+    # Chelsea
+    "denner-39503": "2008-02-25",
+    "emanuel-emegha-37655": "2003-02-03",
+    # Liverpool
+    "lewis-koumas-review": "2005-09-19",
+    "james-mcconnell-review": "2004-09-13",
+    "luke-chambers-review": "2004-06-24",
+    "victor-munoz-osasuna": "2004-07-13",
+    # Manchester City
+    "jeremy-monga-review": "2009-07-10",
+    "pierce-charles-review": "2005-07-21",
+    # Tottenham
+    "min-hyeok-yang-38823": "2006-04-16",
+    "savio-38087": "2004-04-10",
+    # Martin Dubravka is not listed: folding accents in apply_review
+    # reunites Sam's "Martin Dúbravka" with the enriched row that already
+    # carries his date, and removes his duplicate at Burnley with it.
+}

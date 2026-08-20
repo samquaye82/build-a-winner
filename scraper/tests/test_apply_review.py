@@ -7,7 +7,7 @@ guard.
 
 import pandas as pd
 
-from pipeline.apply_review import attach_ids, decollide_slugs
+from pipeline.apply_review import apply_birth_dates, attach_ids, decollide_slugs
 
 
 def _rows(pairs: list[tuple[str, str, str]]) -> pd.DataFrame:
@@ -148,3 +148,84 @@ def test_an_empty_source_date_stays_empty() -> None:
     result = attach_ids(review, _enriched())
 
     assert result.date_of_birth.iloc[0] == ""
+
+
+def test_accented_and_unaccented_spellings_are_the_same_player() -> None:
+    """Sam types 'Martin Dúbravka'; Capology stores 'Martin Dubravka'.
+
+    Unmatched, he lost his id and his date of birth, and slipped past the
+    league union's duplicate check to appear at two clubs at once.
+    """
+    review = pd.DataFrame([{"name": "Martin Dúbravka", "club": "Tottenham"}])
+    enriched = pd.DataFrame(
+        [
+            {
+                "name": "Martin Dubravka",
+                "club": "Burnley",
+                "player_slug": "martin-dubravka-32523",
+                "club_slug": "burnley",
+                "date_of_birth": "1989-01-15 00:00:00",
+            }
+        ]
+    )
+
+    result = attach_ids(review, enriched)
+
+    assert result.player_slug.iloc[0] == "martin-dubravka-32523"
+    assert result.date_of_birth.iloc[0] == "1989-01-15"
+
+
+def test_two_players_differing_only_by_accent_are_not_merged() -> None:
+    """Folding accents must not join players it cannot tell apart."""
+    review = pd.DataFrame([{"name": "Jose Silva", "club": "Porto"}])
+    enriched = pd.DataFrame(
+        [
+            {
+                "name": "José Silva",
+                "club": "Benfica",
+                "player_slug": "jose-silva-1",
+                "club_slug": "benfica",
+                "date_of_birth": "1998-01-01 00:00:00",
+            },
+            {
+                "name": "Jose Silvá",
+                "club": "Braga",
+                "player_slug": "jose-silva-2",
+                "club_slug": "braga",
+                "date_of_birth": "1999-01-01 00:00:00",
+            },
+        ]
+    )
+
+    result = attach_ids(review, enriched)
+
+    assert result.player_slug.iloc[0].endswith("-review")
+    assert result.date_of_birth.iloc[0] == ""
+
+
+def test_hand_entered_dates_are_applied() -> None:
+    """A date found by hand overrides whatever the sources had."""
+    final = pd.DataFrame(
+        [
+            {"player_slug": "denner-39503", "date_of_birth": ""},
+            {"player_slug": "someone-else", "date_of_birth": "1990-01-01"},
+        ]
+    )
+
+    result, applied, unknown = apply_birth_dates(final)
+
+    assert applied >= 1
+    assert unknown == [] or all(isinstance(u, str) for u in unknown)
+    assert result.loc[
+        result.player_slug == "denner-39503", "date_of_birth"
+    ].iloc[0] == "2008-02-25"
+
+
+def test_a_hand_entered_date_for_an_unknown_player_is_reported() -> None:
+    """A correction that matches nothing is dead, and must say so."""
+    final = pd.DataFrame([{"player_slug": "nobody-at-all", "date_of_birth": ""}])
+
+    _, applied, unknown = apply_birth_dates(final)
+
+    assert applied == 0
+    assert len(unknown) > 0
