@@ -10,10 +10,17 @@ so this module splits the array into per-player chunks by brace counting
 and pulls each field out with a targeted regular expression. Raw amounts
 are the unformatted strings inside those calls, which is exactly what we
 want: clean integers in EUR.
+
+Text pulled out of that markup is HTML-escaped, so names and clubs are
+unescaped on the way through: without it Nico O'Reilly reaches the game
+as "Nico O&#39;Reilly" (Sam, 20/08/2026).
 """
 
 import re
 from dataclasses import dataclass
+# Imported by name: the parsing functions below take the page's HTML in a
+# parameter called `html`, which would shadow the module.
+from html import unescape
 
 #: Matches the start of the embedded dataset.
 _DATA_START = "var data = ["
@@ -165,9 +172,9 @@ def parse_record(record: str) -> RawPlayer | None:
 
     return RawPlayer(
         player_slug=name_match.group(1),
-        name=name_match.group(2).strip(),
+        name=unescape(name_match.group(2)).strip(),
         club_slug=club_match.group(1),
-        club=club_match.group(2).strip(),
+        club=unescape(club_match.group(2)).strip(),
         country=_search(_COUNTRY_RE, record) or "",
         position_group=_search(_POSITION_RE, record) or "",
         position_detail=_search(_POSITION_DETAIL_RE, record) or "",

@@ -111,7 +111,7 @@ Morgan Gibbs-White,Nottingham Forest,premier-league,AM,26,82,fc26,45.0,65.0,6.7,
 Dejan Kulusevski,Tottenham,premier-league,AM,26,83,fc26,45.0,45.0,6.7,False,2028,False,appearances,Sweden
 Micky van de Ven,Tottenham,premier-league,CB,25,82,fc26,45.0,55.0,5.5,False,2029,False,appearances,Netherlands
 Diogo Costa,Porto,primeira-liga,GK,26,84,fc26,45.0,40.0,4.8,False,2030,False,appearances,Portugal
-Ousmane Diomande,Nottingham Forest,premier-league,CB,22,80,fc26,45.0,45.0,3.5,False,2030,False,appearances,Cote d&#39;Ivoire
+Ousmane Diomande,Nottingham Forest,premier-league,CB,22,80,fc26,45.0,45.0,3.5,False,2030,False,appearances,Cote d'Ivoire
 Mike Maignan,AC Milan,serie-a,GK,30,87,fc26,45.0,38.0,6.4,False,2031,False,appearances,France
 Moise Kean,Fiorentina,serie-a,ST,26,83,fc26,45.0,45.0,5.8,False,2029,False,appearances,Italy
 Malik Tillman,Bayer Leverkusen,bundesliga,AM,24,82,fc26,40.0,35.0,4.2,False,2030,False,appearances,United States
@@ -166,7 +166,7 @@ Jamie Bynoe-Gittens,Chelsea,premier-league,LW,21,78,fc26,35.0,40.0,6.6,False,203
 Nicolas Jackson,Chelsea,premier-league,ST,25,80,fc26,35.0,45.0,6.1,False,2033,False,appearances,Senegal
 Geovany Quenda,Chelsea,premier-league,RW,19,76,fc26,35.0,45.0,3.1,False,2032,False,appearances,Portugal
 Rayan Aït-Nouri,Manchester City,premier-league,LB,25,81,fc26,35.0,40.0,7.3,False,2030,False,appearances,Algeria
-Amad Diallo,Manchester United,premier-league,RW,23,79,fc26,35.0,50.0,7.3,False,2030,True,appearances,Cote d&#39;Ivoire
+Amad Diallo,Manchester United,premier-league,RW,23,79,fc26,35.0,50.0,7.3,False,2030,True,appearances,Cote d'Ivoire
 Sven Botman,Newcastle,premier-league,CB,26,82,fc26,35.0,35.0,8.5,False,2030,False,appearances,Netherlands
 Tino Livramento,Newcastle,premier-league,RB,23,80,fc26,35.0,40.0,3.0,False,2028,True,appearances,England
 Pedro Porro,Tottenham,premier-league,RB,26,82,fc26,35.0,40.0,9.1,False,2031,False,appearances,Spain
@@ -189,7 +189,7 @@ Fábio Silva,Borussia Dortmund,bundesliga,ST,23,79,fc26,30.0,28.0,4.2,False,2030
 Maximilian Beier,Borussia Dortmund,bundesliga,ST,23,79,fc26,30.0,30.0,4.2,False,2029,False,appearances,Germany
 Hugo Larsson,Eintracht Frankfurt,bundesliga,CM,22,78,fc26,30.0,40.0,2.8,False,2029,False,appearances,Sweden
 Can Uzun,Eintracht Frankfurt,bundesliga,AM,20,74,fc26,30.0,45.0,1.3,False,2029,False,appearances,Turkey
-Yan Diomande,Real Madrid,la-liga,LW,19,66,fc26,100.0,45.0,10.4,False,2030,False,appearances,Cote d&#39;Ivoire
+Yan Diomande,Real Madrid,la-liga,LW,19,66,fc26,100.0,45.0,10.4,False,2030,False,appearances,Cote d'Ivoire
 Dávid Hancko,Atletico Madrid,la-liga,CB,28,83,fc26,30.0,30.0,6.7,False,2030,False,appearances,Slovakia
 Robin Le Normand,Atletico Madrid,la-liga,CB,29,83,fc26,30.0,40.0,6.2,False,2029,False,appearances,Spain
 Johnny,Atletico Madrid,la-liga,CM,24,81,fc26,30.0,25.0,4.2,False,2030,False,appearances,United States
@@ -263,7 +263,7 @@ Guillaume Restes,Toulouse,ligue-1,GK,21,78,fc26,25.0,20.0,1.0,False,2028,False,a
 Mikel Merino,Arsenal,premier-league,CM,30,83,fc26,25.0,30.0,7.9,False,2028,False,appearances,Spain
 Cristhian Mosquera,Arsenal,premier-league,CB,22,77,fc26,25.0,35.0,3.4,False,2030,False,appearances,Spain
 Ian Maatsen,Aston Villa,premier-league,LB,24,79,fc26,25.0,25.0,6.1,False,2030,False,appearances,Netherlands
-Evann Guessand,Aston Villa,premier-league,RW,25,79,fc26,25.0,28.0,4.6,False,2030,False,appearances,Cote d&#39;Ivoire
+Evann Guessand,Aston Villa,premier-league,RW,25,79,fc26,25.0,28.0,4.6,False,2030,False,appearances,Cote d'Ivoire
 Bafodé Diakité,Bournemouth,premier-league,CB,25,79,fc26,25.0,35.0,4.3,False,2030,False,appearances,France
 Djordje Petrovic,Bournemouth,premier-league,GK,26,80,fc26,25.0,28.0,3.7,False,2030,False,appearances,Serbia
 Dango Ouattara,Brentford,premier-league,RW,24,77,fc26,25.0,35.0,4.0,False,2030,False,appearances,Burkina Faso
@@ -283,7 +283,7 @@ Harvey Elliott,Liverpool,premier-league,AM,23,78,fc26,25.0,30.0,4.0,False,2027,T
 Matheus Nunes,Manchester City,premier-league,RB,27,79,fc26,25.0,38.0,7.9,False,2028,False,appearances,Portugal
 Sávio,Manchester City,premier-league,LW,22,78,salary-fit,25.0,,4.9,False,2031,False,citizenship-no-tm,Brazil
 Abdukodir Khusanov,Manchester City,premier-league,CB,22,77,fc26,25.0,35.0,3.0,False,2029,False,appearances,Uzbekistan
-Nico O&#39;Reilly,Manchester City,premier-league,LB,21,73,fc26,25.0,40.0,1.8,False,2030,True,citizenship-plus-appearances,England
+Nico O'Reilly,Manchester City,premier-league,LB,21,73,fc26,25.0,40.0,1.8,False,2030,True,citizenship-plus-appearances,England
 Marcus Rashford,Manchester United,premier-league,LW,28,80,fc26,25.0,40.0,18.3,False,2028,True,appearances,England
 Manuel Ugarte,Manchester United,premier-league,CM,25,79,fc26,25.0,30.0,7.3,False,2029,False,appearances,Uruguay
 Senne Lammens,Manchester United,premier-league,GK,23,78,fc26,25.0,25.0,3.7,False,2030,False,appearances,Belgium
@@ -305,7 +305,7 @@ Youssouf Fofana,AC Milan,serie-a,CM,27,81,fc26,25.0,30.0,5.6,False,2028,False,ap
 Ardon Jashari,AC Milan,serie-a,CM,23,77,fc26,25.0,32.0,4.6,False,2030,False,appearances,Switzerland
 Fikayo Tomori,AC Milan,serie-a,CB,28,81,fc26,25.0,40.0,4.5,False,2027,True,appearances,England
 Gianluca Scamacca,Atalanta,serie-a,ST,27,79,fc26,25.0,35.0,5.9,False,2028,False,appearances,Italy
-Odilon Kossounou,Atalanta,serie-a,CB,25,80,fc26,25.0,22.0,1.9,False,2029,False,appearances,Cote d&#39;Ivoire
+Odilon Kossounou,Atalanta,serie-a,CB,25,80,fc26,25.0,22.0,1.9,False,2029,False,appearances,Cote d'Ivoire
 Marco Carnesecchi,Atalanta,serie-a,GK,26,84,fc26,25.0,16.0,1.5,False,2028,False,appearances,Italy
 Hakan Çalhanoğlu,Inter Milan,serie-a,CM,32,86,fc26,25.0,22.0,11.1,False,2027,False,appearances,Turkey
 Benjamin Pavard,Inter Milan,serie-a,CB,30,84,fc26,25.0,20.0,6.4,False,2028,False,appearances,France
@@ -369,7 +369,7 @@ Denis Zakaria,Monaco,ligue-1,CM,29,82,fc26,20.0,25.0,4.6,False,2028,False,appear
 Mika Biereth,Monaco,ligue-1,ST,23,78,fc26,20.0,22.0,2.9,False,2030,False,appearances,Denmark
 Kang-in Lee,PSG,ligue-1,AM,25,79,fc26,45.0,25.0,4.5,False,2028,False,appearances,South Korea
 Diego Moreira,Strasbourg,ligue-1,LW,21,77,fc26,20.0,18.0,1.3,False,2029,False,appearances,Belgium
-Guéla Doué,Strasbourg,ligue-1,RB,23,77,fc26,20.0,18.0,1.3,False,2029,False,appearances,Cote d&#39;Ivoire
+Guéla Doué,Strasbourg,ligue-1,RB,23,77,fc26,20.0,18.0,1.3,False,2029,False,appearances,Cote d'Ivoire
 Leandro Trossard,Arsenal,premier-league,LW,31,83,fc26,20.0,20.0,11.0,False,2027,False,appearances,Belgium
 Pau Torres,Aston Villa,premier-league,CB,29,80,fc26,20.0,25.0,6.1,False,2028,False,appearances,Spain
 Justin Kluivert,Bournemouth,premier-league,AM,27,79,fc26,20.0,32.0,4.9,False,2028,False,appearances,Netherlands
@@ -384,7 +384,7 @@ Sepp van den Berg,Brentford,premier-league,CB,24,77,fc26,20.0,28.0,1.2,False,202
 Kevin Schade,Brentford,premier-league,LW,24,78,fc26,20.0,22.0,0.6,False,2028,False,appearances,Germany
 Ferdi Kadıoğlu,Brighton,premier-league,LB,26,79,fc26,20.0,28.0,5.3,False,2028,False,appearances,Turkey
 Georginio Rutter,Brighton,premier-league,ST,24,77,fc26,20.0,32.0,4.6,False,2028,False,appearances,France
-Matt O&#39;Riley,Brighton,premier-league,CM,25,78,fc26,20.0,20.0,4.0,False,2029,False,appearances,Denmark
+Matt O'Riley,Brighton,premier-league,CM,25,78,fc26,20.0,20.0,4.0,False,2029,False,appearances,Denmark
 Mats Wieffer,Brighton,premier-league,RB,26,78,fc26,20.0,25.0,3.7,False,2029,False,appearances,Netherlands
 Brajan Gruda,Brighton,premier-league,AM,22,74,fc26,20.0,28.0,3.0,False,2028,False,appearances,Germany
 Jack Hinshelwood,Brighton,premier-league,CM,21,75,fc26,20.0,22.0,1.8,False,2029,True,appearances,England
@@ -457,7 +457,7 @@ Ansgar Knauff,Eintracht Frankfurt,bundesliga,RW,24,77,fc26,15.0,15.0,0.9,False,2
 Noah Atubolu,Freiburg,bundesliga,GK,24,77,fc26,15.0,20.0,1.1,False,2027,False,appearances,Germany
 Rouven Tarnutzer,Freiburg,bundesliga,CM,18,72,position-median,15.0,,1.3,False,2027,False,appearances,Switzerland
 Adam Hlozek,Hoffenheim,bundesliga,ST,23,77,fc26,15.0,15.0,2.8,False,2029,False,appearances,Czech Republic
-Bazoumana Touré,Newcastle,premier-league,LW,20,70,fc26,30.0,25.0,1.2,False,2029,False,appearances,Cote d&#39;Ivoire
+Bazoumana Touré,Newcastle,premier-league,LW,20,70,fc26,30.0,25.0,1.2,False,2029,False,appearances,Cote d'Ivoire
 Patrick Wimmer,Hoffenheim,bundesliga,RW,25,77,fc26,15.0,15.0,2.9,False,2031,False,appearances,Austria
 Natnael Abraha,Hoffenheim,bundesliga,RB,18,72,position-median,15.0,,1.3,False,2027,False,citizenship-no-tm,Germany
 Benjamin Henrichs,Leipzig,bundesliga,RB,29,80,fc26,15.0,20.0,7.5,False,2028,False,appearances,Germany
@@ -541,7 +541,7 @@ Igor Paixão,Marseille,ligue-1,LW,26,80,fc26,15.0,14.0,5.1,False,2030,False,appe
 Nayef Aguerd,Marseille,ligue-1,CB,30,81,fc26,15.0,22.0,4.9,False,2030,False,appearances,Morocco
 Timothy Weah,Marseille,ligue-1,RW,26,77,fc26,15.0,20.0,4.5,False,2030,False,appearances,United States
 Facundo Medina,Bayer Leverkusen,bundesliga,CB,27,79,fc26,15.0,20.0,4.2,False,2030,False,appearances,Argentina
-Hamed Junior Traorè,Genoa,serie-a,LW,26,77,fc26,15.0,17.0,4.0,False,2030,False,appearances,Cote d&#39;Ivoire
+Hamed Junior Traorè,Genoa,serie-a,LW,26,77,fc26,15.0,17.0,4.0,False,2030,False,appearances,Cote d'Ivoire
 Angel Gomes,Marseille,ligue-1,AM,25,76,fc26,15.0,18.0,4.0,False,2028,True,appearances,England
 Aleksandr Golovin,Monaco,ligue-1,AM,30,79,fc26,15.0,18.0,4.4,False,2029,False,appearances,Russia
 Thilo Kehrer,Monaco,ligue-1,CB,29,79,fc26,15.0,18.0,3.7,False,2028,False,appearances,Germany
@@ -596,7 +596,7 @@ Jordan Pickford,Everton,premier-league,GK,32,84,fc26,15.0,15.0,9.1,False,2029,Tr
 James Garner,Everton,premier-league,CM,25,76,fc26,15.0,25.0,4.9,False,2030,True,citizenship-plus-appearances,England
 Vitaliy Mykolenko,Everton,premier-league,LB,27,78,fc26,15.0,25.0,4.9,False,2029,False,appearances,Ukraine
 Beto,Everton,premier-league,ST,28,76,fc26,15.0,20.0,3.7,False,2027,False,appearances,Guinea-Bissau
-Jake O&#39;Brien,Everton,premier-league,RB,25,76,fc26,15.0,16.0,2.1,False,2028,False,appearances,Ireland
+Jake O'Brien,Everton,premier-league,RB,25,76,fc26,15.0,16.0,2.1,False,2028,False,appearances,Ireland
 Dwight McNeil,Everton,premier-league,LW,26,78,fc26,15.0,20.0,1.5,False,2027,True,appearances,England
 Carlos Alcaraz,Everton,premier-league,CM,23,75,fc26,15.0,15.0,1.2,False,2027,False,appearances,Argentina
 Joachim Andersen,Fulham,premier-league,CB,30,78,fc26,15.0,25.0,5.5,False,2029,False,appearances,Denmark
@@ -621,7 +621,7 @@ James Trafford,Leeds,premier-league,GK,23,76,fc26,46.7,18.0,4.6,False,2030,True,
 Claudio Echeverri,Manchester City,premier-league,AM,20,74,fc26,15.0,,0.9,False,2028,False,appearances,Argentina
 Lewis Miley,Newcastle,premier-league,CM,20,72,fc26,15.0,20.0,2.7,False,2032,True,appearances,England
 Jacob Murphy,Newcastle,premier-league,RW,31,81,fc26,15.0,15.0,2.1,False,2027,True,citizenship-plus-appearances,England
-Ibrahim Sangaré,Nottingham Forest,premier-league,CM,28,77,fc26,15.0,22.0,4.6,False,2028,False,appearances,Cote d&#39;Ivoire
+Ibrahim Sangaré,Nottingham Forest,premier-league,CM,28,77,fc26,15.0,22.0,4.6,False,2028,False,appearances,Cote d'Ivoire
 Neco Williams,Nottingham Forest,premier-league,LB,25,78,fc26,15.0,17.0,4.0,False,2029,True,citizenship-plus-appearances,Wales
 Ola Aina,Nottingham Forest,premier-league,RB,29,80,fc26,15.0,20.0,3.7,False,2028,False,appearances,Nigeria
 Igor Jesus,Nottingham Forest,premier-league,ST,25,77,fc26,15.0,,3.0,False,2029,False,appearances,Brazil
@@ -632,7 +632,7 @@ Nordi Mukiele,Sunderland,premier-league,RB,28,79,fc26,15.0,15.0,6.1,False,2029,F
 Enzo Le Fée,Sunderland,premier-league,CM,26,76,fc26,15.0,20.0,4.6,False,2029,False,appearances,France
 Brian Brobbey,Sunderland,premier-league,ST,24,77,fc26,15.0,20.0,3.7,False,2029,False,appearances,Netherlands
 Chemsdine Talbi,Sunderland,premier-league,RW,21,73,fc26,15.0,22.0,2.4,False,2030,False,appearances,Morocco
-Simon Adingra,Sunderland,premier-league,LW,24,76,fc26,15.0,22.0,2.1,False,2030,False,appearances,Cote d&#39;Ivoire
+Simon Adingra,Sunderland,premier-league,LW,24,76,fc26,15.0,22.0,2.1,False,2030,False,appearances,Cote d'Ivoire
 Marcos Senesi,Tottenham,premier-league,CB,29,78,fc26,15.0,22.0,9.1,False,2030,False,appearances,Argentina
 Radu Drăgușin,Tottenham,premier-league,CB,24,75,fc26,15.0,25.0,5.2,False,2030,False,appearances,Romania
 Mikey Moore,Tottenham,premier-league,LW,18,72,fc26,15.0,,0.3,False,2030,True,citizenship-plus-appearances,England
@@ -678,7 +678,7 @@ Nicolò Fagioli,Fiorentina,serie-a,CM,25,77,fc26,15.0,20.0,3.3,False,2028,False,
 Dodô,Fiorentina,serie-a,RB,27,78,fc26,15.0,18.0,1.9,False,2027,False,appearances,Brazil
 Pietro Comuzzo,Fiorentina,serie-a,CB,21,74,fc26,15.0,23.0,1.9,False,2029,False,appearances,Italy
 Marcelo Vaz,Genoa,serie-a,LB,18,72,position-median,15.0,,1.2,False,2029,False,citizenship-no-tm,Guinea-Bissau
-Ange-Yoan Bonny,Inter Milan,serie-a,ST,22,76,fc26,15.0,,3.7,False,2030,False,appearances,Cote d&#39;Ivoire
+Ange-Yoan Bonny,Inter Milan,serie-a,ST,22,76,fc26,15.0,,3.7,False,2030,False,appearances,Cote d'Ivoire
 Federico Gatti,Juventus,serie-a,CB,28,80,fc26,15.0,20.0,5.7,False,2030,False,appearances,Italy
 Weston McKennie,Juventus,serie-a,CM,27,78,fc26,15.0,22.0,5.4,False,2030,False,appearances,United States
 Edon Zhegrova,Juventus,serie-a,RW,27,79,fc26,15.0,20.0,4.6,False,2030,False,appearances,Kosovo
@@ -695,7 +695,7 @@ Jesper Lindstrøm,Napoli,serie-a,RW,26,75,fc26,15.0,22.0,3.0,False,2028,False,ap
 Mathías Olivera,Napoli,serie-a,LB,28,78,fc26,15.0,18.0,2.6,False,2030,False,appearances,Uruguay
 Zion Suzuki,Parma,serie-a,GK,23,74,fc26,15.0,20.0,0.9,False,2029,False,appearances,Japan
 Gianluca Mancini,Roma,serie-a,CB,30,83,fc26,15.0,15.0,6.5,False,2027,False,appearances,Italy
-Evan N&#39;Dicka,Roma,serie-a,CB,26,79,salary-fit,15.0,,5.1,False,2028,False,citizenship-no-tm,Cote d&#39;Ivoire
+Evan N'Dicka,Roma,serie-a,CB,26,79,salary-fit,15.0,,5.1,False,2028,False,citizenship-no-tm,Cote d'Ivoire
 Angeliño,Roma,serie-a,LB,29,79,fc26,15.0,17.0,3.7,False,2028,False,appearances,Spain
 Armand Laurienté,Sassuolo,serie-a,LW,27,80,fc26,15.0,10.0,1.5,False,2029,False,appearances,France
 Ivan Ilić,Torino,serie-a,CM,25,76,fc26,15.0,18.0,1.5,False,2027,False,appearances,Serbia
@@ -712,7 +712,7 @@ Bryan Zaragoza,Bayern Munich,bundesliga,LW,24,77,fc26,10.0,10.0,6.6,False,2029,F
 Luca Reggiani,Borussia Dortmund,bundesliga,CB,18,71,position-median,10.0,,1.1,False,2027,False,citizenship-window-invisible,Italy
 Mathis Albert,Borussia Dortmund,bundesliga,LW,17,71,position-median,10.0,,1.2,False,2027,False,citizenship-window-invisible,United States
 Samuele Inácio,Borussia Dortmund,bundesliga,ST,18,71,position-median,10.0,,1.1,False,2029,False,citizenship-window-invisible,Italy
-Elye Wahi,Eintracht Frankfurt,bundesliga,ST,23,75,fc26,10.0,12.0,3.4,False,2030,False,appearances,Cote d&#39;Ivoire
+Elye Wahi,Eintracht Frankfurt,bundesliga,ST,23,75,fc26,10.0,12.0,3.4,False,2030,False,appearances,Cote d'Ivoire
 Farès Chaïbi,Eintracht Frankfurt,bundesliga,AM,23,74,fc26,10.0,15.0,1.9,False,2028,False,appearances,Algeria
 Malik Pimpong,Eintracht Frankfurt,bundesliga,LW,18,71,position-median,10.0,,1.1,False,2031,False,citizenship-window-invisible,Denmark
 Philipp Lienhart,Freiburg,bundesliga,CB,29,79,fc26,10.0,12.0,5.3,False,2027,False,appearances,Austria
@@ -776,7 +776,7 @@ Bradley Locko,Brest,ligue-1,LB,24,75,fc26,10.0,12.0,0.6,False,2027,False,appeara
 Alexsandro,Lille,ligue-1,CB,26,80,fc26,10.0,8.0,2.2,False,2028,False,appearances,Brazil
 Berke Özer,Lille,ligue-1,GK,26,77,fc26,10.0,10.0,1.6,False,2029,False,appearances,Turkey
 Osame Sahraoui,Lille,ligue-1,LW,25,76,fc26,10.0,10.0,1.4,False,2029,False,appearances,Morocco
-Ngal&#39;ayel Mukau,Lille,ligue-1,CM,21,74,fc26,10.0,12.0,1.0,False,2028,False,appearances,Democratic Republic of the Congo
+Ngal'ayel Mukau,Lille,ligue-1,CM,21,74,fc26,10.0,12.0,1.0,False,2028,False,appearances,Democratic Republic of the Congo
 Moussa Niakhaté,Lyon,ligue-1,CB,30,77,fc26,10.0,16.0,5.5,False,2028,False,appearances,Senegal
 Tanner Tessmann,Lyon,ligue-1,CM,24,75,fc26,10.0,12.0,2.9,False,2029,False,appearances,United States
 Steeve Kango,Lyon,ligue-1,RB,19,72,position-median,10.0,,1.1,False,2027,False,appearances,France
@@ -787,7 +787,7 @@ Yehvann Diouf,Nice,ligue-1,GK,26,78,fc26,10.0,8.0,2.9,False,2030,False,appearanc
 Hicham Boudaoui,Nice,ligue-1,CM,26,77,fc26,10.0,12.0,1.8,False,2027,False,appearances,Algeria
 Dro Fernández,PSG,ligue-1,AM,18,71,salary-fit,10.0,,1.8,False,2030,False,citizenship-window-invisible,Spain
 Otávio,Paris FC,ligue-1,CB,24,75,fc26,10.0,10.0,2.2,False,2030,False,appearances,Brazil
-Patrick Zabi,Paris FC,ligue-1,CM,19,72,position-median,25.0,,1.1,False,2027,False,appearances,Cote d&#39;Ivoire
+Patrick Zabi,Paris FC,ligue-1,CM,19,72,position-median,25.0,,1.1,False,2027,False,appearances,Cote d'Ivoire
 Ludovic Blas,Rennes,ligue-1,RW,28,77,fc26,10.0,15.0,4.5,False,2027,False,appearances,France
 Mahdi Camara,Rennes,ligue-1,CM,28,78,fc26,10.0,10.0,2.9,False,2029,False,appearances,France
 Quentin Merlin,Rennes,ligue-1,LB,24,76,fc26,10.0,12.0,2.7,False,2029,False,appearances,France
@@ -809,14 +809,14 @@ Vitaly Janelt,Brentford,premier-league,CM,28,76,fc26,10.0,18.0,3.0,False,2030,Fa
 Fábio Carvalho,Brentford,premier-league,AM,23,74,fc26,10.0,14.0,2.4,False,2029,False,appearances,Portugal
 Diego Coppola,Paris FC,ligue-1,CB,22,74,fc26,10.0,10.0,1.5,False,2030,False,appearances,Italy
 Ibrahim Osman,Brighton,premier-league,LW,21,72,fc26,10.0,12.0,1.2,False,2029,False,appearances,Ghana
-Malick Yalcouyé,Brighton,premier-league,CM,20,71,fc26,10.0,14.0,0.9,False,2029,False,appearances,Cote d&#39;Ivoire
+Malick Yalcouyé,Brighton,premier-league,CM,20,71,fc26,10.0,14.0,0.9,False,2029,False,appearances,Cote d'Ivoire
 Liam Delap,Chelsea,premier-league,ST,23,78,fc26,10.0,7.0,6.1,False,2031,True,citizenship-plus-appearances,England
 Axel Disasi,Chelsea,premier-league,CB,28,77,fc26,10.0,15.0,4.9,False,2029,False,appearances,France
 Eddie Nketiah,Crystal Palace,premier-league,ST,27,74,fc26,10.0,16.0,5.5,False,2029,True,appearances,England
 Tim Iroegbunam,Everton,premier-league,CM,23,74,fc26,10.0,12.0,1.2,False,2027,True,appearances,England
 Merlin Röhl,Everton,premier-league,AM,23,74,fc26,25.0,16.0,2.2,False,2027,False,appearances,Germany
 Saša Lukić,Fulham,premier-league,CM,29,78,fc26,10.0,12.0,3.8,False,2027,False,appearances,Serbia
-Dara O&#39;Shea,Ipswich Town,premier-league,CB,27,75,fc26,10.0,15.0,2.1,False,2030,False,appearances,Ireland
+Dara O'Shea,Ipswich Town,premier-league,CB,27,75,fc26,10.0,15.0,2.1,False,2030,False,appearances,Ireland
 Jack Clarke,Ipswich Town,premier-league,LW,25,74,fc26,10.0,15.0,1.5,False,2029,True,citizenship-plus-appearances,England
 Jacob Greaves,Ipswich Town,premier-league,CB,25,74,fc26,10.0,16.0,1.5,False,2029,True,citizenship-plus-appearances,England
 Dominic Calvert-Lewin,Leeds,premier-league,ST,29,74,fc26,10.0,15.0,6.1,False,2028,True,citizenship-plus-appearances,England
@@ -852,7 +852,7 @@ Georgios Vagiannidis,Sporting Lisbon,primeira-liga,RB,24,75,fc26,10.0,11.0,1.0,F
 João Simões,Sporting Lisbon,primeira-liga,CM,19,69,fc26,10.0,15.0,0.5,False,2030,False,appearances,Portugal
 Salvador Blopa,Sporting Lisbon,primeira-liga,RB,19,72,position-median,10.0,,0.6,False,2030,False,appearances,Portugal
 Mario Stroeykens,Anderlecht,pro-league,AM,21,74,fc26,10.0,8.0,0.7,False,2028,False,appearances,Democratic Republic of the Congo
-Tibe S&#39;Jongers,Beveren,pro-league,CM,19,72,position-median,10.0,,0.5,False,2027,False,citizenship-no-tm,Belgium
+Tibe S'Jongers,Beveren,pro-league,CM,19,72,position-median,10.0,,0.5,False,2027,False,citizenship-no-tm,Belgium
 Junior Diouf,Beveren,pro-league,ST,18,71,position-median,10.0,,0.4,False,2028,False,citizenship-no-tm,Senegal
 Naël Piron,Charleroi,pro-league,CB,17,71,position-median,10.0,,0.4,False,2028,False,citizenship-no-tm,Belgium
 Ibrahima Cissé,Gent,pro-league,ST,18,71,position-median,10.0,,0.4,False,2028,False,appearances,Senegal
@@ -969,7 +969,7 @@ Uriël van Aalst,Willem II,eredivisie,AM,19,71,position-median,9.0,,0.5,False,20
 Dani Ceballos,Free agent,free-agent,CM,29,81,fc26,9.0,6.0,4.0,False,2026,False,appearances,Spain
 Hugo Sotelo,Celta Vigo,la-liga,CM,22,73,fc26,9.0,9.0,0.7,False,2028,False,appearances,Spain
 Pep Chavarría,Rayo Vallecano,la-liga,LB,28,77,fc26,9.0,10.0,1.7,False,2030,False,appearances,Spain
-Nicolas Pépé,Villarreal,la-liga,RW,31,80,fc26,9.0,8.5,3.5,False,2028,False,appearances,Cote d&#39;Ivoire
+Nicolas Pépé,Villarreal,la-liga,RW,31,80,fc26,9.0,8.5,3.5,False,2028,False,appearances,Cote d'Ivoire
 Ayoze Pérez,Villarreal,la-liga,ST,32,83,fc26,9.0,6.0,3.1,False,2028,False,citizenship-window-invisible,Spain
 Luiz Júnior,Villarreal,la-liga,GK,25,77,fc26,9.0,6.0,2.1,False,2030,False,appearances,Brazil
 Santiago Mouriño,Villarreal,la-liga,RB,24,74,fc26,9.0,10.0,1.2,False,2030,False,appearances,Uruguay
@@ -1072,7 +1072,7 @@ Pablo García,Real Betis,la-liga,RW,20,70,value-fit,8.0,10.0,0.6,False,2029,Fals
 Jon Aramburu,Real Sociedad,la-liga,RB,23,77,fc26,8.0,5.0,2.1,False,2030,False,appearances,Venezuela
 Arouna Sangante,Sevilla,la-liga,CB,24,73,fc26,8.0,10.0,1.1,False,2031,False,appearances,Senegal
 André Almeida,Valencia,la-liga,AM,26,75,fc26,8.0,9.0,1.7,False,2029,False,appearances,Portugal
-Clément Akpa,Auxerre,ligue-1,CB,24,74,fc26,8.0,8.0,0.9,False,2028,False,appearances,Cote d&#39;Ivoire
+Clément Akpa,Auxerre,ligue-1,CB,24,74,fc26,8.0,8.0,0.9,False,2028,False,appearances,Cote d'Ivoire
 Robin Risser,Lens,ligue-1,GK,21,71,fc26,8.0,10.0,0.7,False,2030,False,appearances,France
 Dominik Greif,Lyon,ligue-1,GK,29,78,fc26,8.0,8.0,1.8,False,2029,False,appearances,Slovakia
 Neal Maupay,Marseille,ligue-1,ST,29,75,fc26,8.0,12.0,3.0,False,2028,False,appearances,France
@@ -1179,7 +1179,7 @@ Juan Cabal,Juventus,serie-a,LB,25,74,fc26,7.5,9.0,2.2,False,2029,False,appearanc
 Milos Jovic,Lecce,serie-a,ST,20,71,position-median,7.5,,1.0,False,2029,False,citizenship-window-invisible,Serbia
 Solomon Loubao,Monza,serie-a,ST,20,71,position-median,7.5,,1.0,False,2030,False,citizenship-no-tm,France
 Jens Cajuste,Napoli,serie-a,CM,26,75,fc26,7.5,8.0,1.5,False,2028,False,appearances,Sweden
-Luigi D&#39;Avino,Napoli,serie-a,CB,20,71,position-median,7.5,,1.0,False,2027,False,citizenship-no-tm,Italy
+Luigi D'Avino,Napoli,serie-a,CB,20,71,position-median,7.5,,1.0,False,2027,False,citizenship-no-tm,Italy
 Matija Frigan,Parma,serie-a,ST,23,73,fc26,7.5,7.5,1.2,False,2030,False,appearances,Croatia
 Jacob Ondrejka,Parma,serie-a,LW,23,73,fc26,7.5,8.0,0.9,False,2029,False,appearances,Sweden
 Stefano Turati,Sassuolo,serie-a,GK,24,74,fc26,7.5,7.0,0.8,False,2028,False,appearances,Italy
@@ -1293,11 +1293,11 @@ Arthur Avom,Lorient,ligue-1,CM,21,71,fc26,6.5,,0.6,False,2027,False,appearances,
 Abner,Lyon,ligue-1,LB,26,74,fc26,6.5,7.0,2.5,False,2029,False,appearances,Brazil
 Tyler Morton,Lyon,ligue-1,CM,23,72,fc26,6.5,7.0,1.3,False,2030,True,citizenship-plus-appearances,England
 Mads Bidstrup,Lyon,ligue-1,CM,25,73,fc26,6.5,7.5,1.3,False,2031,False,appearances,Denmark
-Ange Lago,Marseille,ligue-1,ST,21,71,position-median,6.5,,1.0,False,2027,False,appearances,Cote d&#39;Ivoire
+Ange Lago,Marseille,ligue-1,ST,21,71,position-median,6.5,,1.0,False,2027,False,appearances,Cote d'Ivoire
 Eric Dier,Monaco,ligue-1,CB,32,79,fc26,6.5,7.0,3.9,False,2028,True,citizenship-plus-appearances,England
 Moses Simon,Paris FC,ligue-1,LW,30,77,fc26,6.5,7.0,2.7,False,2028,False,appearances,Nigeria
 Pierre Lees-Melou,Paris FC,ligue-1,CM,33,78,fc26,6.5,10.0,2.4,False,2027,False,citizenship-window-invisible,France
-Seko Fofana,Rennes,ligue-1,CM,31,77,fc26,6.5,8.0,5.5,False,2029,False,appearances,Cote d&#39;Ivoire
+Seko Fofana,Rennes,ligue-1,CM,31,77,fc26,6.5,8.0,5.5,False,2029,False,appearances,Cote d'Ivoire
 Abdelhamid Ait Boudlal,Rennes,ligue-1,CB,20,66,fc26,6.5,10.0,0.6,False,2028,False,appearances,Morocco
 Andrew Omobamidele,Strasbourg,ligue-1,CB,24,73,fc26,6.5,7.0,1.3,False,2029,False,appearances,Ireland
 Junior Mwanga,Le Havre,ligue-1,CM,23,72,fc26,6.5,7.0,0.9,False,2027,False,appearances,France
@@ -1314,7 +1314,7 @@ Bernd Leno,Fulham,premier-league,GK,34,80,fc26,6.5,8.0,7.9,False,2027,False,citi
 Jack Harrison,Leeds,premier-league,LW,29,74,fc26,6.5,10.0,5.5,False,2028,True,citizenship-plus-appearances,England
 Zak Johnson,Sunderland,premier-league,CB,21,71,position-median,6.5,,1.3,False,2027,False,citizenship-no-tm,England
 Ben Davies,Tottenham,premier-league,CB,33,75,fc26,6.5,10.0,4.9,False,2027,True,citizenship-window-invisible,Wales
-Lorougnon Gohi,Academico Viseu,primeira-liga,LW,21,71,position-median,6.5,,0.5,False,2029,False,citizenship-no-tm,Cote d&#39;Ivoire
+Lorougnon Gohi,Academico Viseu,primeira-liga,LW,21,71,position-median,6.5,,0.5,False,2029,False,citizenship-no-tm,Cote d'Ivoire
 Romualdas Jansonas,Arouca,primeira-liga,ST,21,71,position-median,6.5,,0.5,False,2030,False,appearances,Lithuania
 Rafa Silva,Benfica,primeira-liga,ST,33,80,salary-fit,6.5,,4.2,False,2028,False,citizenship-no-tm,Portugal
 Manu,Benfica,primeira-liga,CM,25,72,fc26,6.5,10.0,1.4,False,2030,False,appearances,Portugal
@@ -1343,7 +1343,7 @@ Nikola Krstović,Atalanta,serie-a,ST,26,75,fc26,6.5,6.0,2.2,False,2030,False,app
 Marten de Roon,Atalanta,serie-a,CM,35,81,fc26,6.5,7.0,1.9,False,2027,False,citizenship-window-invisible,Netherlands
 Niccolò Fortini,Fiorentina,serie-a,LB,20,67,fc26,6.5,10.0,0.2,False,2027,False,appearances,Italy
 Viery,Fiorentina,serie-a,CB,21,71,position-median,15.0,,1.0,False,2031,False,citizenship-window-invisible,Brazil
-Jérémie Boga,Juventus,serie-a,LW,29,76,fc26,6.5,8.0,4.6,False,2029,False,appearances,Cote d&#39;Ivoire
+Jérémie Boga,Juventus,serie-a,LW,29,76,fc26,6.5,8.0,4.6,False,2029,False,appearances,Cote d'Ivoire
 Arthur,Juventus,serie-a,CM,29,77,salary-fit,6.5,,3.2,False,2027,False,citizenship-no-tm,Brazil
 Robinio Vaz,Roma,serie-a,ST,19,63,fc26,6.5,10.0,2.8,False,2030,False,appearances,France
 Jurgen Ekkelenkamp,Udinese,serie-a,CM,26,74,fc26,6.5,7.0,1.3,False,2029,False,appearances,Netherlands
@@ -1390,7 +1390,7 @@ Ramón Terrats,Getafe,la-liga,CM,25,77,fc26,6.0,4.0,0.6,False,2027,False,appeara
 Nicolás Tagliafico,Lyon,ligue-1,LB,33,78,fc26,6.0,8.0,3.3,False,2027,False,citizenship-window-invisible,Argentina
 Salis Abdul Samed,Nice,ligue-1,CM,26,73,fc26,6.0,8.0,1.2,False,2028,False,appearances,Ghana
 Alidu Seidu,Rennes,ligue-1,CB,26,74,fc26,6.0,6.0,1.4,False,2029,False,appearances,Ghana
-Abdoul Ouattara,Strasbourg,ligue-1,RB,20,67,fc26,6.0,9.0,0.4,False,2029,False,appearances,Cote d&#39;Ivoire
+Abdoul Ouattara,Strasbourg,ligue-1,RB,20,67,fc26,6.0,9.0,0.4,False,2029,False,appearances,Cote d'Ivoire
 Alysson,Aston Villa,premier-league,RW,20,70,salary-fit,6.0,,1.2,False,2031,False,appearances,Brazil
 Alex Tóth,Bournemouth,premier-league,CM,20,70,fc26,6.0,,2.4,False,2031,False,appearances,Hungary
 Dário Essugo,Chelsea,premier-league,CM,21,75,fc26,6.0,3.5,2.4,False,2033,False,appearances,Portugal
@@ -1560,10 +1560,10 @@ Matias Fernandez-Pardo,Lille,ligue-1,ST,21,75,fc26,5.0,3.0,1.2,False,2029,False,
 Montassar Talbi,Lorient,ligue-1,CB,28,73,fc26,5.0,7.0,1.1,False,2027,False,appearances,Tunisia
 Duje Caleta-Car,Lyon,ligue-1,CB,29,74,fc26,5.0,7.0,3.3,False,2027,False,appearances,Croatia
 Noah Nartey,Lyon,ligue-1,AM,20,67,fc26,5.0,8.0,0.8,False,2030,False,appearances,Denmark
-Bamo Meïté,Marseille,ligue-1,CB,24,73,fc26,5.0,4.0,1.3,False,2028,False,appearances,Cote d&#39;Ivoire
+Bamo Meïté,Marseille,ligue-1,CB,24,73,fc26,5.0,4.0,1.3,False,2028,False,appearances,Cote d'Ivoire
 Mamadou Coulibaly,Monaco,ligue-1,CM,22,64,fc26,5.0,8.0,0.6,False,2028,False,appearances,France
 Mattia Viti,Nice,ligue-1,CB,24,72,fc26,5.0,5.0,1.1,False,2027,False,appearances,Italy
-Jean-Philippe Krasso,Paris FC,ligue-1,ST,28,74,fc26,5.0,6.0,1.4,False,2027,False,appearances,Cote d&#39;Ivoire
+Jean-Philippe Krasso,Paris FC,ligue-1,ST,28,74,fc26,5.0,6.0,1.4,False,2027,False,appearances,Cote d'Ivoire
 Przemyslaw Frankowski,Rennes,ligue-1,RB,31,75,fc26,5.0,7.0,3.1,False,2027,False,appearances,Poland
 Mousa Al-Tamari,Rennes,ligue-1,RW,29,75,fc26,5.0,6.0,2.2,False,2028,False,appearances,Jordan
 Samir El Mourabet,Strasbourg,ligue-1,CM,20,65,fc26,5.0,8.0,0.9,False,2030,False,appearances,Morocco
@@ -1574,7 +1574,7 @@ Julio Soler,Bournemouth,premier-league,LB,21,68,fc26,5.0,8.0,1.2,False,2029,Fals
 Álex Jiménez,Bournemouth,premier-league,RB,21,71,fc26,18.5,4.0,1.3,False,2027,False,appearances,Spain
 Joshua Da Silva,Brentford,premier-league,CM,27,74,salary-fit,5.0,,1.8,False,2027,False,citizenship-no-tm,England
 Adam Webster,Brighton,premier-league,CB,31,75,fc26,5.0,7.0,3.4,False,2027,True,citizenship-plus-appearances,England
-David Datro Fofana,Chelsea,premier-league,ST,23,71,value-fit,5.0,5.0,0.9,False,2029,False,appearances,Cote d&#39;Ivoire
+David Datro Fofana,Chelsea,premier-league,ST,23,71,value-fit,5.0,5.0,0.9,False,2029,False,appearances,Cote d'Ivoire
 Caleb Wiley,Chelsea,premier-league,LB,21,68,fc26,5.0,8.0,0.9,False,2030,False,appearances,United States
 Walter Benítez,Crystal Palace,premier-league,GK,33,79,fc26,5.0,5.0,2.1,False,2028,False,citizenship-window-invisible,Argentina
 Jorge Cuenca,Fulham,premier-league,CB,26,74,fc26,5.0,4.0,1.5,False,2028,False,appearances,Spain
@@ -1599,7 +1599,7 @@ Miguel Pires,Santa Clara,primeira-liga,CM,24,72,position-median,5.0,,0.5,False,2
 Tiago Ribeiro,Santa Clara,primeira-liga,CM,24,72,position-median,5.0,,0.5,False,2027,False,citizenship-no-tm,Portugal
 Luis Suárez,Sporting Lisbon,primeira-liga,ST,28,77,fc26,5.0,3.5,2.5,False,2030,False,appearances,Colombia
 César Huerta,Anderlecht,pro-league,LW,25,73,fc26,5.0,5.0,0.6,False,2029,False,appearances,Mexico
-Moussa N&#39;Diaye,Anderlecht,pro-league,LB,24,72,fc26,5.0,,0.5,False,2028,False,citizenship-no-tm,Senegal
+Moussa N'Diaye,Anderlecht,pro-league,LB,24,72,fc26,5.0,,0.5,False,2028,False,citizenship-no-tm,Senegal
 Killian Sardella,Anderlecht,pro-league,RB,24,72,fc26,5.0,5.0,0.5,False,2028,False,appearances,Belgium
 Ludovit Reis,Club Brugges,pro-league,CM,26,73,fc26,5.0,6.0,0.6,False,2029,False,appearances,Netherlands
 Bjorn Meijer,Club Brugges,pro-league,LB,23,73,fc26,5.0,3.5,0.6,False,2027,False,appearances,Netherlands
@@ -1618,7 +1618,7 @@ Gianluca Gaetano,Atalanta,serie-a,CM,26,74,fc26,5.0,4.0,0.9,False,2029,False,app
 Emil Audero,Como,serie-a,GK,29,78,fc26,5.0,3.2,1.7,False,2028,False,appearances,Indonesia
 Anastasios Douvikas,Como,serie-a,ST,26,73,fc26,5.0,6.0,1.5,False,2029,False,appearances,Greece
 David de Gea,Fiorentina,serie-a,GK,35,85,fc26,5.0,3.5,5.6,False,2028,False,citizenship-window-invisible,Spain
-M&#39;Bala Nzola,Fiorentina,serie-a,ST,29,75,fc26,5.0,6.0,2.8,False,2027,False,appearances,Angola
+M'Bala Nzola,Fiorentina,serie-a,ST,29,75,fc26,5.0,6.0,2.8,False,2027,False,appearances,Angola
 Amir Richardson,Fiorentina,serie-a,CM,24,72,fc26,5.0,4.5,2.2,False,2029,False,appearances,Morocco
 Nicolás Valentini,Alaves,la-liga,CB,25,73,fc26,5.0,5.0,1.9,False,2029,False,appearances,Argentina
 Cher Ndour,Fiorentina,serie-a,CM,21,70,fc26,5.0,5.0,1.1,False,2029,False,appearances,Italy
@@ -1655,7 +1655,7 @@ Max Finkgräfe,Leipzig,bundesliga,LB,22,69,fc26,4.5,6.0,0.8,False,2030,False,app
 Tidiam Gomis,Leipzig,bundesliga,LW,19,68,fc26,4.5,,0.6,False,2029,False,appearances,France
 Andreas Hanche-Olsen,Mainz,bundesliga,CB,29,75,fc26,4.5,5.0,2.5,False,2028,False,appearances,Norway
 Robin Zentner,Mainz,bundesliga,GK,31,78,fc26,4.5,3.0,2.5,False,2028,False,appearances,Germany
-Nathan N&#39;Goumou,Monchengladbach,bundesliga,RW,26,73,salary-fit,4.5,,1.7,False,2027,False,citizenship-no-tm,Cameroon
+Nathan N'Goumou,Monchengladbach,bundesliga,RW,26,73,salary-fit,4.5,,1.7,False,2027,False,citizenship-no-tm,Cameroon
 Philipp Sander,Monchengladbach,bundesliga,CM,28,75,fc26,4.5,4.0,1.5,False,2028,False,appearances,Germany
 Hugo Bolin,Monchengladbach,bundesliga,LW,22,70,fc26,4.5,,0.6,False,2027,False,appearances,Sweden
 Yukhym Konoplya,Monchengladbach,bundesliga,RB,26,72,fc26,4.5,5.0,1.3,False,2029,False,appearances,Ukraine
@@ -1694,13 +1694,13 @@ Isi Palazón,Rayo Vallecano,la-liga,ST,31,81,fc26,4.5,3.0,2.1,False,2028,False,a
 Aitor Ruibal,Real Betis,la-liga,RW,30,77,fc26,4.5,3.5,1.7,False,2028,False,appearances,Spain
 Adrià Pedrosa,Sevilla,la-liga,LB,28,75,fc26,4.5,4.0,1.6,False,2028,False,appearances,Spain
 Justin de Haas,Valencia,la-liga,CB,26,73,fc26,4.5,4.0,1.1,False,2030,False,appearances,Netherlands
-Sinaly Diomandé,Auxerre,ligue-1,CB,25,73,fc26,4.5,4.0,1.1,False,2027,False,appearances,Cote d&#39;Ivoire
+Sinaly Diomandé,Auxerre,ligue-1,CB,25,73,fc26,4.5,4.0,1.1,False,2027,False,appearances,Cote d'Ivoire
 Samson Baidoo,Lens,ligue-1,CB,22,70,fc26,4.5,,1.8,False,2030,False,appearances,Austria
 Saud Abdulhamid,Lens,ligue-1,RB,26,75,fc26,4.5,3.0,1.8,False,2029,False,appearances,Saudi Arabia
 Benjamin André,Lille,ligue-1,CM,35,80,fc26,4.5,4.0,4.5,False,2028,False,citizenship-window-invisible,France
 Romain Perraud,Lille,ligue-1,LB,28,74,fc26,4.5,5.0,2.4,False,2028,False,appearances,France
 Arnaud Bodart,Lille,ligue-1,GK,28,73,fc26,4.5,6.0,1.3,False,2027,False,appearances,Belgium
-Mohamed Bamba,Lorient,ligue-1,ST,24,70,fc26,4.5,6.0,0.9,False,2028,False,appearances,Cote d&#39;Ivoire
+Mohamed Bamba,Lorient,ligue-1,ST,24,70,fc26,4.5,6.0,0.9,False,2028,False,appearances,Cote d'Ivoire
 Matt Turner,Lyon,ligue-1,GK,32,74,fc26,4.5,7.0,1.6,False,2028,False,appearances,United States
 Geoffrey Kondogbia,Marseille,ligue-1,CM,33,78,fc26,4.5,5.0,5.5,False,2027,False,citizenship-window-invisible,Central African Republic
 Pierre-Emerick Aubameyang,Deportivo,la-liga,ST,37,81,fc26,4.5,5.0,4.5,False,2027,False,citizenship-window-invisible,Gabon
@@ -1708,7 +1708,7 @@ Himad Abdelli,Marseille,ligue-1,AM,26,76,fc26,4.5,3.0,0.9,False,2030,False,appea
 Adrien Thomasson,Rennes,ligue-1,CM,32,77,fc26,4.5,4.5,2.4,False,2029,False,citizenship-window-invisible,France
 Bryan Reynolds,Rennes,ligue-1,RB,25,73,fc26,4.5,3.5,1.3,False,2030,False,appearances,United States
 Issa Soumaré,Rennes,ligue-1,LW,25,72,fc26,4.5,5.0,1.1,False,2030,False,appearances,Senegal
-Martial Godo,Strasbourg,ligue-1,LW,23,63,fc26,4.5,7.0,0.9,False,2030,False,appearances,Cote d&#39;Ivoire
+Martial Godo,Strasbourg,ligue-1,LW,23,63,fc26,4.5,7.0,0.9,False,2030,False,appearances,Cote d'Ivoire
 Ross Barkley,Aston Villa,premier-league,CM,32,77,fc26,4.5,5.0,3.7,False,2027,True,citizenship-window-invisible,England
 Kaine Kesler,Coventry,premier-league,RB,23,71,salary-fit,4.5,,1.2,False,2029,False,citizenship-no-tm,England
 Adam Aznou,Everton,premier-league,LB,20,66,fc26,4.5,7.0,1.5,False,2029,False,appearances,Morocco
@@ -1832,7 +1832,7 @@ Isak Jansson,Nice,ligue-1,LW,24,71,fc26,4.0,,1.4,False,2027,False,appearances,Sw
 Antoine Mendy,Nice,ligue-1,CB,22,70,fc26,4.0,4.0,0.7,False,2028,False,appearances,Senegal
 Nhoa Sangui,Paris FC,ligue-1,LB,20,67,fc26,4.0,5.0,0.8,False,2030,False,appearances,France
 Sékou Mara,Strasbourg,ligue-1,ST,23,70,fc26,4.0,4.0,1.6,False,2029,False,appearances,France
-Abakar Sylla,Strasbourg,ligue-1,CB,23,72,fc26,4.0,3.0,1.1,False,2028,False,appearances,Cote d&#39;Ivoire
+Abakar Sylla,Strasbourg,ligue-1,CB,23,72,fc26,4.0,3.0,1.1,False,2028,False,appearances,Cote d'Ivoire
 Saïdou Sow,Strasbourg,ligue-1,CB,23,71,fc26,4.0,3.0,0.8,False,2028,False,appearances,Guinea
 Milos Lukovic,Strasbourg,ligue-1,ST,20,67,fc26,4.0,5.0,0.4,False,2028,False,appearances,Serbia
 Aron Dønnum,Toulouse,ligue-1,RW,28,75,fc26,4.0,3.5,1.6,False,2027,False,appearances,Norway
@@ -1854,14 +1854,14 @@ Denis Huseinbasic,Braga,primeira-liga,CM,25,72,fc26,4.0,4.0,0.5,False,2031,False
 Jordan Holsgrove,Estoril,primeira-liga,CM,26,73,fc26,4.0,3.5,0.3,False,2028,False,appearances,Scotland
 Ianis Stoica,Estrela Amadora,primeira-liga,LW,23,70,fc26,4.0,,0.1,False,2028,False,appearances,Romania
 Leonardo Realpe,Famalicao,primeira-liga,CB,25,72,value-fit,4.0,4.0,0.3,False,2029,False,appearances,Ecuador
-Ghislain Konan,Gil Vicente,primeira-liga,LB,30,72,fc26,4.0,6.5,0.5,False,2027,False,appearances,Cote d&#39;Ivoire
+Ghislain Konan,Gil Vicente,primeira-liga,LB,30,72,fc26,4.0,6.5,0.5,False,2027,False,appearances,Cote d'Ivoire
 Noah Madsen,Marítimo,primeira-liga,CB,24,71,position-median,4.0,,0.5,False,2027,False,citizenship-no-tm,Denmark
 Aranha,Moreirense,primeira-liga,GK,21,69,position-median,4.0,,0.3,False,2027,False,citizenship-window-invisible,Brazil
 Cezary Miszta,Rio Ave,primeira-liga,GK,24,72,fc26,4.0,3.0,0.4,False,2027,False,appearances,Poland
 Sergi Altimira,Sporting Lisbon,primeira-liga,CM,24,77,fc26,18.3,2.5,1.2,False,2031,False,appearances,Spain
 Enric Llansana,Anderlecht,pro-league,CM,25,72,fc26,4.0,3.5,0.5,False,2029,False,appearances,Netherlands
 Josua Lusamba,Beveren,pro-league,GK,21,69,position-median,4.0,,0.3,False,2027,False,citizenship-no-tm,Democratic Republic of the Congo
-Parfait Guiagon,Charleroi,pro-league,LW,25,72,fc26,4.0,4.0,0.5,False,2028,False,appearances,Cote d&#39;Ivoire
+Parfait Guiagon,Charleroi,pro-league,LW,25,72,fc26,4.0,4.0,0.5,False,2028,False,appearances,Cote d'Ivoire
 Yassine Titraoui,Charleroi,pro-league,CM,22,68,fc26,4.0,5.0,0.3,False,2027,False,appearances,Algeria
 Slobodan Stanojlovic,Charleroi,pro-league,ST,24,71,position-median,4.0,,0.4,False,2027,False,citizenship-window-invisible,Serbia
 Nicolò Tresoldi,Club Brugges,pro-league,ST,21,69,fc26,4.0,,0.3,False,2029,False,appearances,Germany
@@ -2210,7 +2210,7 @@ Oliver Provstgaard,Lazio,serie-a,CB,23,67,fc26,3.0,4.5,0.9,False,2029,False,appe
 Adrian Przyborek,Lazio,serie-a,AM,19,66,fc26,3.0,,0.6,False,2030,False,appearances,Poland
 Alfonso Pedraza,Lazio,serie-a,LB,30,75,fc26,3.0,2.5,1.8,False,2029,False,appearances,Spain
 Lameck Banda,Lecce,serie-a,LW,25,71,fc26,3.0,3.0,0.8,False,2027,False,appearances,Zambia
-Christ-Owen Kouassi,Lecce,serie-a,RB,23,69,fc26,3.0,,0.4,False,2029,False,appearances,Cote d&#39;Ivoire
+Christ-Owen Kouassi,Lecce,serie-a,RB,23,69,fc26,3.0,,0.4,False,2029,False,appearances,Cote d'Ivoire
 Alessio Zerbin,Napoli,serie-a,RW,27,73,fc26,3.0,2.2,0.3,False,2028,False,appearances,Italy
 Adrian Benedyczak,Parma,serie-a,ST,25,71,fc26,3.0,2.5,0.8,False,2028,False,appearances,Poland
 Janis Antiste,Sassuolo,serie-a,ST,23,70,fc26,3.0,2.3,0.7,False,2027,False,appearances,Martinique
@@ -2372,7 +2372,7 @@ Omar Richards,Nottingham Forest,premier-league,LB,28,72,fc26,2.5,2.0,1.8,False,2
 Tyler Bindon,Nottingham Forest,premier-league,CB,21,69,fc26,2.5,1.5,0.6,False,2028,False,appearances,New Zealand
 Arthur Masuaku,Sunderland,premier-league,LB,32,75,fc26,2.5,2.5,3.7,False,2027,False,citizenship-window-invisible,Democratic Republic of the Congo
 Romaine Mundle,Sunderland,premier-league,LW,23,71,fc26,2.5,1.5,0.6,False,2028,True,citizenship-plus-appearances,England
-Jocelin Ta Bi,Sunderland,premier-league,RW,21,67,salary-fit,2.5,,0.5,False,2030,False,appearances,Cote d&#39;Ivoire
+Jocelin Ta Bi,Sunderland,premier-league,RW,21,67,salary-fit,2.5,,0.5,False,2030,False,appearances,Cote d'Ivoire
 Cihan Kahraman,Academico Viseu,primeira-liga,AM,27,71,position-median,2.5,,0.4,False,2027,False,citizenship-no-tm,Turkey
 Igor Milioransa,Academico Viseu,primeira-liga,LB,29,72,position-median,2.5,,0.5,False,2027,False,citizenship-no-tm,Brazil
 Robinho,Academico Viseu,primeira-liga,RB,28,72,position-median,2.5,,0.5,False,2027,False,citizenship-no-tm,Portugal
@@ -2406,13 +2406,13 @@ Maxim Deman,Beveren,pro-league,GK,24,69,position-median,2.5,,0.3,False,2027,Fals
 Christophe Janssens,Beveren,pro-league,LB,28,72,position-median,2.5,,0.5,False,2027,False,citizenship-no-tm,Belgium
 Dante Vanzeir,Cercle Brugges,pro-league,ST,28,72,fc26,2.5,2.0,0.5,False,2027,False,appearances,Belgium
 Steve Ngoura,Cercle Brugges,pro-league,ST,21,67,fc26,2.5,2.0,0.2,False,2028,False,appearances,France
-Jean Thierry Lazare Amani,Cercle Brugges,pro-league,CM,28,72,position-median,2.5,,0.5,False,2028,False,citizenship-no-tm,Cote d&#39;Ivoire
+Jean Thierry Lazare Amani,Cercle Brugges,pro-league,CM,28,72,position-median,2.5,,0.5,False,2028,False,citizenship-no-tm,Cote d'Ivoire
 Patrick Pflücke,Charleroi,pro-league,RW,29,73,fc26,2.5,2.0,0.6,False,2027,False,appearances,Germany
 Martin Delavallée,Charleroi,pro-league,GK,22,70,fc26,2.5,1.5,0.4,False,2027,False,appearances,Belgium
 Zaid Romero,Getafe,la-liga,CB,26,72,fc26,2.5,2.0,0.5,False,2028,False,appearances,Argentina
 Kayembe,Genk,pro-league,LB,31,74,fc26,2.5,2.5,0.7,False,2027,False,appearances,Democratic Republic of the Congo
 Robin Mirisola,Genk,pro-league,ST,19,65,value-fit,2.5,2.5,0.2,False,2030,False,appearances,Belgium
-Wilfried Kanga,Gent,pro-league,ST,28,69,fc26,2.5,4.0,0.3,False,2028,False,appearances,Cote d&#39;Ivoire
+Wilfried Kanga,Gent,pro-league,ST,28,69,fc26,2.5,4.0,0.3,False,2028,False,appearances,Cote d'Ivoire
 Max Dean,Gent,pro-league,ST,22,67,fc26,2.5,,0.2,False,2028,True,citizenship-plus-appearances,England
 Ewoud Pletinckx,Leuven,pro-league,CB,25,70,fc26,2.5,2.0,0.4,False,2029,False,appearances,Belgium
 Viktor Damjanic,Leuven,pro-league,CB,20,66,fc26,2.5,,0.2,False,2028,False,citizenship-window-invisible,Croatia
@@ -2484,7 +2484,7 @@ Zaid Tchibara,Schalke 04,bundesliga,RW,20,65,salary-fit,2.0,,0.2,False,2028,Fals
 Johannes Siebeking,Schalke 04,bundesliga,GK,20,65,salary-fit,2.0,,0.1,False,2029,False,citizenship-no-tm,Germany
 Justin Diehl,Stuttgart,bundesliga,LW,21,66,fc26,2.0,1.8,0.6,False,2029,False,appearances,Germany
 Lazar Jovanovic,Stuttgart,bundesliga,RW,19,64,fc26,2.0,,0.6,False,2029,False,appearances,Serbia
-Chris Bedia,Union Berlin,bundesliga,ST,30,70,fc26,2.0,2.5,0.8,False,2027,False,appearances,Cote d&#39;Ivoire
+Chris Bedia,Union Berlin,bundesliga,ST,30,70,fc26,2.0,2.5,0.8,False,2027,False,appearances,Cote d'Ivoire
 Matheo Raab,Union Berlin,bundesliga,GK,27,70,fc26,2.0,,0.5,False,2027,False,appearances,Germany
 Julián Malatini,Werder Bremen,bundesliga,CB,25,69,fc26,2.0,2.0,0.7,False,2027,False,appearances,Argentina
 Rion Ichihara,AZ Alkmaar,eredivisie,CB,20,65,salary-fit,2.0,,0.2,False,2031,False,appearances,Japan
@@ -2494,7 +2494,7 @@ Jerolldino Bergraaf,Excelsior,eredivisie,ST,20,65,salary-fit,2.0,,0.1,False,2028
 Tijmen Holla,Excelsior,eredivisie,GK,19,64,salary-fit,2.0,,0.1,False,2027,False,appearances,Netherlands
 Jaden Slory,Feyenoord,eredivisie,RW,21,66,fc26,2.0,,0.7,False,2029,False,appearances,Netherlands
 Neraysho Kasanwirjo,Feyenoord,eredivisie,CB,24,69,fc26,2.0,1.8,0.5,False,2027,False,appearances,Netherlands
-Shiloh &#39;t Zand,Feyenoord,eredivisie,AM,23,67,fc26,2.0,,0.2,False,2028,False,appearances,Suriname
+Shiloh 't Zand,Feyenoord,eredivisie,AM,23,67,fc26,2.0,,0.2,False,2028,False,appearances,Suriname
 Philip Brittijn,Fortuna Sittard,eredivisie,CM,22,66,fc26,2.0,,0.3,False,2028,False,appearances,Netherlands
 Joris Kramer,Go Ahead Eagles,eredivisie,CB,29,72,fc26,2.0,1.8,0.2,False,2028,False,appearances,Netherlands
 Dean James,Go Ahead Eagles,eredivisie,LB,26,70,fc26,2.0,2.0,0.1,False,2028,False,appearances,Indonesia
@@ -2567,7 +2567,7 @@ Jim Allevinah,Angers,ligue-1,RW,31,72,fc26,2.0,2.0,1.6,False,2027,False,appearan
 Amine Sbaï,Angers,ligue-1,LW,25,68,fc26,2.0,,0.7,False,2027,False,appearances,Morocco
 Marius Louër,Angers,ligue-1,RB,19,64,salary-fit,2.0,,0.1,False,2028,False,appearances,France
 Lassine Sinayoko,Paris FC,ligue-1,ST,26,74,fc26,2.0,1.2,1.2,False,2027,False,appearances,Mali
-Lasso Coulibaly,Auxerre,ligue-1,RW,23,68,fc26,2.0,1.5,0.6,False,2028,False,appearances,Cote d&#39;Ivoire
+Lasso Coulibaly,Auxerre,ligue-1,RW,23,68,fc26,2.0,1.5,0.6,False,2028,False,appearances,Cote d'Ivoire
 Ryan Rodin,Auxerre,ligue-1,ST,20,65,salary-fit,2.0,,0.2,False,2028,False,appearances,France
 Louis Mezerette,Auxerre,ligue-1,GK,19,64,salary-fit,2.0,,0.1,False,2028,False,citizenship-window-invisible,France
 Alvin Petit Dol,Auxerre,ligue-1,CB,19,64,salary-fit,2.0,,0.1,False,2027,False,citizenship-window-invisible,France
@@ -2584,7 +2584,7 @@ Arsène Kouassi,Lorient,ligue-1,LB,22,66,fc26,2.0,,0.6,False,2029,False,appearan
 Alec Georgen,Lorient,ligue-1,RB,27,70,fc26,2.0,,0.8,False,2029,False,citizenship-no-tm,France
 Rémy Descamps,Lyon,ligue-1,GK,30,73,fc26,2.0,2.0,1.6,False,2029,False,appearances,France
 Khalis Merah,Lyon,ligue-1,CM,19,64,fc26,2.0,,0.9,False,2029,False,appearances,France
-Paul Akouokou,Lyon,ligue-1,CM,28,71,fc26,2.0,1.5,0.8,False,2027,False,appearances,Cote d&#39;Ivoire
+Paul Akouokou,Lyon,ligue-1,CM,28,71,fc26,2.0,1.5,0.8,False,2027,False,appearances,Cote d'Ivoire
 Edan Diop,Monaco,ligue-1,CM,21,66,fc26,2.0,2.0,0.6,False,2028,False,appearances,France
 Paris Brunner,Monaco,ligue-1,ST,20,66,fc26,2.0,1.5,0.5,False,2028,False,appearances,Germany
 Lucas Michal,Monaco,ligue-1,LW,21,64,fc26,2.0,2.5,0.3,False,2029,False,appearances,France
@@ -2620,14 +2620,14 @@ Rúben Pereira,Academico Viseu,primeira-liga,CB,28,71,position-median,2.0,,0.4,F
 Mateo Flores,Arouca,primeira-liga,CM,22,66,fc26,2.0,,0.2,False,2029,False,appearances,Spain
 Pau Víctor,Braga,primeira-liga,ST,24,69,fc26,2.0,1.5,0.6,False,2030,False,appearances,Spain
 João Marques,Braga,primeira-liga,LW,24,71,fc26,2.0,1.5,0.5,False,2029,False,appearances,Portugal
-Mario Dorgeles,Braga,primeira-liga,RW,21,67,fc26,2.0,1.2,0.4,False,2030,False,appearances,Cote d&#39;Ivoire
+Mario Dorgeles,Braga,primeira-liga,RW,21,67,fc26,2.0,1.2,0.4,False,2030,False,appearances,Cote d'Ivoire
 Jonatás Noro,Braga,primeira-liga,CB,20,65,salary-fit,2.0,,0.1,False,2027,False,appearances,Portugal
 Adrian Bajrami,Braga,primeira-liga,CB,24,67,fc26,2.0,3.0,0.2,False,2031,False,appearances,Switzerland
 Bartlomiej Wdowik,Braga,primeira-liga,LB,25,69,fc26,2.0,1.5,0.3,False,2028,False,appearances,Poland
 Jérémy Livolant,Casa Pia,primeira-liga,RW,28,70,fc26,2.0,2.0,0.7,False,2027,False,appearances,France
 Lawrence Ofori,Casa Pia,primeira-liga,CM,28,71,fc26,2.0,2.0,0.4,False,2027,False,appearances,Ghana
 Felix Bacher,Lyon,ligue-1,CB,25,69,fc26,2.0,2.0,0.3,False,2028,False,appearances,Austria
-Eddy Doué,Estrela Amadora,primeira-liga,CM,20,65,salary-fit,2.0,,0.1,False,2028,False,appearances,Cote d&#39;Ivoire
+Eddy Doué,Estrela Amadora,primeira-liga,CM,20,65,salary-fit,2.0,,0.1,False,2028,False,appearances,Cote d'Ivoire
 Ibrahima Ba,Sporting Lisbon,primeira-liga,CB,21,66,salary-fit,21.3,,0.3,False,2030,False,appearances,Senegal
 Umar Abubakar,Famalicao,primeira-liga,ST,20,65,salary-fit,2.0,,0.1,False,2030,False,appearances,Nigeria
 Joelson Fernandes,Gil Vicente,primeira-liga,LW,23,68,value-fit,2.0,1.8,0.4,False,2029,False,appearances,Portugal
@@ -2721,9 +2721,9 @@ Luca Moro,Sassuolo,serie-a,ST,25,68,fc26,2.0,2.8,0.2,False,2027,False,appearance
 Cristiano Biraghi,Torino,serie-a,LB,33,78,fc26,2.0,1.4,3.1,False,2027,False,citizenship-window-invisible,Italy
 Sandro Kulenović,Torino,serie-a,ST,26,69,fc26,2.0,,1.9,False,2029,False,appearances,Croatia
 Emirhan İlkhan,Torino,serie-a,CM,22,63,fc26,2.0,3.0,0.4,False,2027,False,appearances,Turkey
-Hassane Kamara,Udinese,serie-a,LB,32,72,fc26,2.0,3.0,1.1,False,2027,False,appearances,Cote d&#39;Ivoire
+Hassane Kamara,Udinese,serie-a,LB,32,72,fc26,2.0,3.0,1.1,False,2027,False,appearances,Cote d'Ivoire
 Enzo Ebosse,Udinese,serie-a,CB,27,69,fc26,2.0,2.5,1.0,False,2027,False,appearances,Cameroon
-Vakoun Issouf Bayo,Udinese,serie-a,ST,29,69,fc26,2.0,3.0,0.9,False,2028,False,appearances,Cote d&#39;Ivoire
+Vakoun Issouf Bayo,Udinese,serie-a,ST,29,69,fc26,2.0,3.0,0.9,False,2028,False,appearances,Cote d'Ivoire
 Rui Modesto,Udinese,serie-a,RW,26,69,fc26,2.0,1.8,0.7,False,2029,False,appearances,Angola
 Oier Zarraga,Udinese,serie-a,CM,27,71,fc26,2.0,1.8,0.5,False,2027,False,appearances,Spain
 John Yeboah,Venezia,serie-a,ST,26,70,fc26,2.0,1.5,1.1,False,2028,False,appearances,Ecuador
@@ -2871,7 +2871,7 @@ Kasey McAteer,Ipswich Town,premier-league,RW,24,71,fc26,1.5,0.9,1.2,False,2029,F
 Alex Palmer,Ipswich Town,premier-league,GK,29,73,fc26,1.5,0.9,0.7,False,2028,True,citizenship-plus-appearances,England
 Ali Al-Hamadi,Ipswich Town,premier-league,ST,24,66,fc26,1.5,2.0,0.6,False,2028,False,appearances,Iraq
 Mateo Joseph,Leeds,premier-league,ST,22,70,fc26,1.5,0.9,0.9,False,2028,False,appearances,Spain
-Luke O&#39;Nien,Sunderland,premier-league,CB,31,72,fc26,1.5,,1.2,False,2027,True,citizenship-plus-appearances,England
+Luke O'Nien,Sunderland,premier-league,CB,31,72,fc26,1.5,,1.2,False,2027,True,citizenship-plus-appearances,England
 Alan Browne,Sunderland,premier-league,CM,31,72,fc26,1.5,,0.9,False,2027,False,citizenship-no-tm,Ireland
 Leo Fuhr Hjelde,Sunderland,premier-league,CB,22,66,fc26,1.5,1.5,0.6,False,2028,False,appearances,Norway
 Nazarii Rusyn,Sunderland,premier-league,ST,27,69,salary-fit,1.5,,0.6,False,2027,False,citizenship-no-tm,Ukraine
@@ -2881,10 +2881,10 @@ Pedro Barcelos,Academico Viseu,primeira-liga,CB,30,71,position-median,1.5,,0.4,F
 André Ceitil,Academico Viseu,primeira-liga,CM,31,72,position-median,1.5,,0.5,False,2027,False,appearances,Portugal
 Sergi Gómez,Alverca,primeira-liga,CB,34,72,fc26,1.5,2.0,0.1,False,2027,False,citizenship-window-invisible,Spain
 Figueiredo,Alverca,primeira-liga,LW,24,66,salary-fit,1.5,,0.1,False,2028,False,appearances,Brazil
-Stéphane Diarra,Alverca,primeira-liga,RW,27,68,fc26,1.5,2.0,0.1,False,2028,False,appearances,Cote d&#39;Ivoire
+Stéphane Diarra,Alverca,primeira-liga,RW,27,68,fc26,1.5,2.0,0.1,False,2028,False,appearances,Cote d'Ivoire
 Julián Martínez,Alverca,primeira-liga,CB,22,65,salary-fit,1.5,,0.1,False,2029,False,appearances,Honduras
 Felipe Lima,Alverca,primeira-liga,ST,20,64,salary-fit,1.5,,0.0,False,2028,False,appearances,Brazil
-Davy Gui,Alverca,primeira-liga,CM,20,64,salary-fit,1.5,,0.0,False,2028,False,appearances,Cote d&#39;Ivoire
+Davy Gui,Alverca,primeira-liga,CM,20,64,salary-fit,1.5,,0.0,False,2028,False,appearances,Cote d'Ivoire
 Cédric Nuozzi,Alverca,primeira-liga,LW,20,64,salary-fit,1.5,,0.0,False,2028,False,appearances,Belgium
 Nico Mantl,Arouca,primeira-liga,GK,26,72,fc26,1.5,1.0,0.7,False,2028,False,appearances,Germany
 José Fontán,Arouca,primeira-liga,CB,26,70,fc26,1.5,1.0,0.6,False,2027,False,appearances,Spain
@@ -2911,7 +2911,7 @@ Pedro Bondo,Famalicao,primeira-liga,LB,21,65,salary-fit,1.5,,0.1,False,2029,Fals
 Lucão,Gil Vicente,primeira-liga,GK,25,67,salary-fit,1.5,,0.3,False,2028,False,appearances,Brazil
 Murilo de Souza,Gil Vicente,primeira-liga,RW,31,71,fc26,1.5,1.2,0.3,False,2028,False,appearances,Brazil
 Marvin Elimbi,Gil Vicente,primeira-liga,CB,23,64,fc26,1.5,2.5,0.1,False,2028,False,appearances,France
-Mohamed Bamba,Gil Vicente,primeira-liga,CM,21,65,salary-fit,1.5,,0.1,False,2027,False,appearances,Cote d&#39;Ivoire
+Mohamed Bamba,Gil Vicente,primeira-liga,CM,21,65,salary-fit,1.5,,0.1,False,2027,False,appearances,Cote d'Ivoire
 Carlos Daniel,Marítimo,primeira-liga,AM,31,71,position-median,1.5,,0.4,False,2027,False,citizenship-no-tm,Portugal
 Igor Julião,Marítimo,primeira-liga,RB,31,72,position-median,1.5,,0.5,False,2027,False,citizenship-no-tm,Brazil
 Maxime Dominguez,Marítimo,primeira-liga,AM,30,71,fc26,1.5,1.2,0.4,False,2027,False,appearances,Switzerland
@@ -3015,7 +3015,7 @@ Anthony Partipilo,Parma,serie-a,RW,31,71,fc26,1.5,,0.3,False,2027,False,appearan
 Jan Ziolkowski,Roma,serie-a,CB,21,65,fc26,1.5,,1.3,False,2030,False,appearances,Poland
 Edoardo Iannoni,Sassuolo,serie-a,CM,25,67,fc26,1.5,,0.8,False,2028,False,appearances,Italy
 Darryl Bakola,Sassuolo,serie-a,AM,18,62,fc26,1.5,,0.7,False,2030,False,appearances,France
-Luca D&#39;Andrea,Sassuolo,serie-a,RW,21,64,fc26,1.5,,0.4,False,2027,False,citizenship-no-tm,Italy
+Luca D'Andrea,Sassuolo,serie-a,RW,21,64,fc26,1.5,,0.4,False,2027,False,citizenship-no-tm,Italy
 Riccardo Ciervo,Sassuolo,serie-a,LW,24,66,fc26,1.5,,0.3,False,2027,False,citizenship-no-tm,Italy
 Flavio Russo,Sassuolo,serie-a,ST,21,64,fc26,1.5,,0.2,False,2027,False,citizenship-no-tm,Italy
 Tino Anjorin,Torino,serie-a,AM,24,68,fc26,1.5,1.0,0.6,False,2028,True,citizenship-plus-appearances,England
@@ -3214,7 +3214,7 @@ Sam Byram,Leeds,premier-league,LB,32,72,fc26,1.0,1.0,1.5,False,2027,True,citizen
 Charlie Crew,Leeds,premier-league,CM,20,62,fc26,1.0,,0.1,False,2028,True,citizenship-plus-appearances,Wales
 Rhys Williams,Free agent,free-agent,CB,25,61,fc26,1.0,1.8,0.6,False,2026,True,citizenship-plus-appearances,England
 Max Alleyne,Manchester City,premier-league,CB,20,64,fc26,1.0,0.8,0.5,False,2030,True,citizenship-plus-appearances,England
-Willy Boly,Nottingham Forest,premier-league,CB,35,73,fc26,1.0,0.8,2.4,False,2027,False,citizenship-window-invisible,Cote d&#39;Ivoire
+Willy Boly,Nottingham Forest,premier-league,CB,35,73,fc26,1.0,0.8,2.4,False,2027,False,citizenship-window-invisible,Cote d'Ivoire
 Eric da Silva Moreira,Nottingham Forest,premier-league,RB,20,61,fc26,1.0,1.0,0.5,False,2028,False,appearances,Germany
 Eliezer Mayenda,Rennes,ligue-1,ST,21,71,fc26,22.0,0.7,1.8,False,2030,False,appearances,Spain
 Robin Roefs,Sunderland,premier-league,GK,23,74,fc26,1.0,0.6,1.8,False,2030,False,appearances,Netherlands
@@ -3291,14 +3291,14 @@ Majeed Ashimeru,Anderlecht,pro-league,CM,28,69,fc26,1.0,0.7,0.3,False,2027,False
 Lennart Mertens,Beveren,pro-league,ST,33,71,position-median,1.0,,0.4,False,2027,False,citizenship-no-tm,Belgium
 Charles Herrmann,Cercle Brugges,pro-league,RW,20,62,fc26,1.0,1.0,0.1,False,2029,False,appearances,Germany
 Heriberto Jurado,Cercle Brugges,pro-league,LW,21,65,fc26,1.0,0.8,0.2,False,2028,False,appearances,Mexico
-Emmanuel Kakou,Cercle Brugges,pro-league,CB,21,62,fc26,1.0,1.5,0.1,False,2027,False,appearances,Cote d&#39;Ivoire
-Valy Konaté,Cercle Brugges,pro-league,LB,19,62,fc26,1.0,,0.1,False,2027,False,appearances,Cote d&#39;Ivoire
+Emmanuel Kakou,Cercle Brugges,pro-league,CB,21,62,fc26,1.0,1.5,0.1,False,2027,False,appearances,Cote d'Ivoire
+Valy Konaté,Cercle Brugges,pro-league,LB,19,62,fc26,1.0,,0.1,False,2027,False,appearances,Cote d'Ivoire
 Jakob Napoleon Romsaas,Charleroi,pro-league,AM,22,63,fc26,1.0,,0.1,False,2027,False,appearances,Norway
 Antoine Bernier,Charleroi,pro-league,RW,28,70,fc26,1.0,0.7,0.3,False,2028,False,appearances,Belgium
 Mardochée Nzita,Charleroi,pro-league,LB,26,65,fc26,1.0,1.5,0.1,False,2028,False,appearances,Belgium
 Anthony Descotte,Charleroi,pro-league,ST,22,64,fc26,1.0,0.55,0.1,False,2027,False,appearances,Belgium
 Massamba Sow,Charleroi,pro-league,CB,22,64,fc26,1.0,0.5,0.1,False,2027,False,appearances,France
-Severin Nioule,Charleroi,pro-league,LW,21,63,fc26,1.0,,0.1,False,2029,False,citizenship-window-invisible,Cote d&#39;Ivoire
+Severin Nioule,Charleroi,pro-league,LW,21,63,fc26,1.0,,0.1,False,2029,False,citizenship-window-invisible,Cote d'Ivoire
 Joaquin Seys,Club Brugges,pro-league,LB,21,72,fc26,1.0,0.6,0.5,False,2029,False,appearances,Belgium
 Nordin Jackers,Club Brugges,pro-league,GK,28,68,fc26,1.0,0.9,0.2,False,2029,False,appearances,Belgium
 Hendrik Van Crombrugge,Genk,pro-league,GK,33,69,fc26,1.0,1.5,0.3,False,2027,False,citizenship-window-invisible,Belgium
@@ -3306,7 +3306,7 @@ Ayumu Yokoyama,Genk,pro-league,LW,23,65,fc26,1.0,,0.1,False,2029,False,appearanc
 Ibrahima Sory Bangoura,Genk,pro-league,CM,22,70,fc26,1.0,0.5,0.4,False,2028,False,appearances,Guinea
 Josué Kongolo,Genk,pro-league,CB,20,62,fc26,1.0,1.0,0.1,False,2028,False,appearances,Belgium
 Pieter Gerkens,Gent,pro-league,AM,31,69,fc26,1.0,0.8,0.3,False,2027,False,appearances,Belgium
-Hyllarion Goore,Gent,pro-league,ST,20,62,fc26,1.0,,0.1,False,2029,False,appearances,Cote d&#39;Ivoire
+Hyllarion Goore,Gent,pro-league,ST,20,62,fc26,1.0,,0.1,False,2029,False,appearances,Cote d'Ivoire
 Aimé Omgba,Gent,pro-league,AM,23,66,fc26,1.0,1.0,0.2,False,2029,False,appearances,Netherlands
 Boris Lambert,Kortrijk,pro-league,CM,26,68,value-fit,1.0,0.7,0.2,False,2029,False,appearances,Belgium
 Gilles Ruyssen,Kortrijk,pro-league,CB,32,71,value-fit,1.0,0.6,0.4,False,2028,False,appearances,Belgium
@@ -3332,7 +3332,7 @@ Keano Vanrafelghem,Mechelen,pro-league,ST,22,63,fc26,1.0,,0.1,False,2029,False,a
 Lovro Golic,Mechelen,pro-league,CB,20,62,fc26,1.0,,0.1,False,2029,False,citizenship-window-invisible,Slovenia
 Semm Renders,Royal Antwerp,pro-league,RB,18,62,fc26,1.0,1.2,0.1,False,2027,False,appearances,Belgium
 Mukhammadali Urinboev,Royal Antwerp,pro-league,RW,21,63,fc26,1.0,,0.1,False,2029,False,appearances,Uzbekistan
-Farouck Adekami,Royal Antwerp,pro-league,AM,19,58,fc26,1.0,1.8,0.1,False,2027,False,appearances,Cote d&#39;Ivoire
+Farouck Adekami,Royal Antwerp,pro-league,AM,19,58,fc26,1.0,1.8,0.1,False,2027,False,appearances,Cote d'Ivoire
 Abdoulaye Sissako,Sint-Truidense,pro-league,CM,28,67,fc26,1.0,0.9,0.2,False,2028,False,appearances,France
 Casper Nielsen,Standard Liege,pro-league,CM,32,70,fc26,1.0,1.5,0.3,False,2028,False,appearances,Denmark
 Mo El Hankouri,Standard Liege,pro-league,AM,29,71,fc26,1.0,0.8,0.4,False,2027,False,appearances,Morocco
@@ -3614,7 +3614,7 @@ Carlos López,Malaga,la-liga,GK,21,61,fc26,0.5,,0.1,False,2029,False,citizenship
 Asier Osambela,Osasuna,la-liga,CM,21,61,fc26,0.5,1.0,0.4,False,2029,False,appearances,Spain
 Iñigo Arguibide,Osasuna,la-liga,RB,21,59,fc26,0.5,0.5,0.2,False,2027,False,appearances,Spain
 Jorge Salinas,Racing Santander,la-liga,LB,19,57,fc26,0.5,,0.2,False,2029,False,citizenship-no-tm,Spain
-Etienne Eto&#39;o,Rayo Vallecano,la-liga,ST,23,62,fc26,0.5,0.3,0.2,False,2027,False,appearances,Cameroon
+Etienne Eto'o,Rayo Vallecano,la-liga,ST,23,62,fc26,0.5,0.3,0.2,False,2027,False,appearances,Cameroon
 Guilherme Fernandes,Real Betis,la-liga,GK,25,65,value-fit,0.5,0.15,0.3,False,2027,False,citizenship-window-invisible,Portugal
 Carlos Fernández,Real Sociedad,la-liga,ST,30,68,fc26,0.5,,1.0,False,2027,False,citizenship-no-tm,Spain
 Iñaki Rupérez,Real Sociedad,la-liga,RB,23,64,fc26,0.5,0.3,0.2,False,2029,False,appearances,Spain
@@ -3630,8 +3630,8 @@ Oumar Pona,Angers,ligue-1,GK,20,57,fc26,0.5,,0.2,False,2027,False,appearances,Ma
 Kévin Danois,Auxerre,ligue-1,CM,22,74,fc26,0.5,0.1,1.0,False,2029,False,appearances,France
 Eros Maddy,Auxerre,ligue-1,RW,25,63,fc26,0.5,0.25,0.3,False,2027,False,appearances,Netherlands
 Telli Siwe,Auxerre,ligue-1,CB,21,57,fc26,0.5,1.0,0.2,False,2029,False,appearances,France
-Aristide Zossou,Auxerre,ligue-1,LW,21,61,fc26,0.5,,0.1,False,2029,False,appearances,Cote d&#39;Ivoire
-Luck Zogbé,Brest,ligue-1,RB,21,68,fc26,0.5,0.1,0.6,False,2029,False,appearances,Cote d&#39;Ivoire
+Aristide Zossou,Auxerre,ligue-1,LW,21,61,fc26,0.5,,0.1,False,2029,False,appearances,Cote d'Ivoire
+Luck Zogbé,Brest,ligue-1,RB,21,68,fc26,0.5,0.1,0.6,False,2029,False,appearances,Cote d'Ivoire
 Pathé Mboup,Brest,ligue-1,LW,22,69,fc26,0.5,0.4,0.6,False,2030,False,appearances,Senegal
 Grégoire Coudert,Brest,ligue-1,GK,27,66,fc26,0.5,0.4,0.4,False,2027,False,appearances,France
 Noah Jauny,Brest,ligue-1,GK,21,58,fc26,0.5,,0.2,False,2027,False,citizenship-window-invisible,Ireland
@@ -3640,7 +3640,7 @@ Lionel Mpasi-Nzau,Le Havre,ligue-1,GK,31,67,fc26,0.5,0.7,0.6,False,2027,False,ap
 Simon Ebonog,Le Havre,ligue-1,CM,21,64,fc26,0.5,0.1,0.6,False,2029,False,appearances,France
 Daren Mosengo,Le Havre,ligue-1,CM,19,60,fc26,0.5,,0.2,False,2027,False,appearances,France
 Paul Argney,Le Havre,ligue-1,GK,20,60,fc26,0.5,0.15,0.1,False,2027,False,appearances,France
-Guy-Noël Zohouri,Le Havre,ligue-1,CM,19,59,fc26,0.5,,0.1,False,2027,False,citizenship-window-invisible,Cote d&#39;Ivoire
+Guy-Noël Zohouri,Le Havre,ligue-1,CM,19,59,fc26,0.5,,0.1,False,2027,False,citizenship-window-invisible,Cote d'Ivoire
 Ismaïl Bouneb,Le Havre,ligue-1,AM,20,61,value-fit,0.5,0.1,0.2,False,2028,False,citizenship-window-invisible,France
 Elysée Logbo,Le Havre,ligue-1,ST,22,65,fc26,0.5,0.3,0.3,False,2027,False,appearances,France
 Antoine Rabillard,Le Mans,ligue-1,ST,30,65,fc26,0.5,,0.2,False,2027,False,citizenship-no-tm,France
@@ -3692,7 +3692,7 @@ Pape Demba Diop,Strasbourg,ligue-1,CM,22,69,fc26,0.5,0.3,0.6,False,2030,False,ap
 Yoni Gomis,Strasbourg,ligue-1,CB,20,62,value-fit,0.5,0.35,0.2,False,2029,False,citizenship-window-invisible,France
 Ylies Aradj,Toulouse,ligue-1,LB,21,62,fc26,0.5,0.3,0.1,False,2027,False,citizenship-window-invisible,France
 Mathis Saka,Toulouse,ligue-1,AM,19,60,fc26,0.5,0.15,0.2,False,2029,False,appearances,France
-Junior Diaz,Troyes,ligue-1,CB,22,69,fc26,0.5,0.4,0.6,False,2029,False,appearances,Cote d&#39;Ivoire
+Junior Diaz,Troyes,ligue-1,CB,22,69,fc26,0.5,0.4,0.6,False,2029,False,appearances,Cote d'Ivoire
 Adrien Monfray,Troyes,ligue-1,CB,35,69,fc26,0.5,,0.6,False,2027,False,citizenship-no-tm,France
 Alexandre Phliponeau,Troyes,ligue-1,CM,26,64,fc26,0.5,,0.3,False,2028,False,citizenship-no-tm,France
 Lucas Maronnier,Troyes,ligue-1,RB,26,65,fc26,0.5,,0.3,False,2027,False,citizenship-no-tm,France
@@ -3878,7 +3878,7 @@ Gilles De Meyer,Gent,pro-league,RB,19,61,fc26,0.5,0.5,0.1,False,2028,False,appea
 Gilles Dewaele,Kortrijk,pro-league,RB,30,69,value-fit,0.5,0.25,0.3,False,2027,False,appearances,Belgium
 James Ndjeungoue,Kortrijk,pro-league,CB,23,60,fc26,0.5,0.7,0.1,False,2028,False,appearances,Cameroon
 Ebbe De Vlaeminck,Kortrijk,pro-league,GK,20,61,value-fit,0.5,0.25,0.1,False,2028,False,citizenship-window-invisible,Belgium
-Mohamed Fofana,Kortrijk,pro-league,RB,20,61,value-fit,0.5,0.25,0.1,False,2028,False,citizenship-window-invisible,Cote d&#39;Ivoire
+Mohamed Fofana,Kortrijk,pro-league,RB,20,61,value-fit,0.5,0.25,0.1,False,2028,False,citizenship-window-invisible,Cote d'Ivoire
 Rudy Kohon,Kortrijk,pro-league,CB,22,63,value-fit,0.5,0.1,0.1,False,2029,False,appearances,France
 Sixtus Ogbuehi,Kortrijk,pro-league,ST,23,64,value-fit,0.5,0.2,0.1,False,2028,False,appearances,Nigeria
 Suf Podgoreanu,Kortrijk,pro-league,LW,24,65,value-fit,0.5,0.3,0.1,False,2030,False,appearances,Israel
@@ -3994,7 +3994,7 @@ Kevin Barcella,Frosinone,serie-a,RW,20,59,fc26,0.5,,0.3,False,2029,False,citizen
 Lorenzo Palmisani,Frosinone,serie-a,GK,22,57,fc26,0.5,,0.3,False,2029,False,citizenship-no-tm,Italy
 Jérémy Oyono,Frosinone,serie-a,RB,25,63,fc26,0.5,,0.2,False,2027,False,citizenship-no-tm,Gabon
 Matteo Cichella,Frosinone,serie-a,CM,20,61,fc26,0.5,,0.1,False,2027,False,citizenship-no-tm,Italy
-Ben Lhassine Kone,Frosinone,serie-a,CM,26,66,fc26,0.5,0.5,0.4,False,2029,False,appearances,Cote d&#39;Ivoire
+Ben Lhassine Kone,Frosinone,serie-a,CM,26,66,fc26,0.5,0.5,0.4,False,2029,False,appearances,Cote d'Ivoire
 Patrizio Masini,Genoa,serie-a,CM,25,61,fc26,0.5,,0.3,False,2028,False,appearances,Italy
 Franz Stolz,Genoa,serie-a,GK,25,66,fc26,0.5,0.2,0.3,False,2027,False,citizenship-window-invisible,Austria
 Gabriele Calvani,Genoa,serie-a,CB,22,58,fc26,0.5,,0.2,False,2027,False,citizenship-no-tm,Italy
