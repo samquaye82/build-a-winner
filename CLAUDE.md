@@ -34,6 +34,13 @@ Determinism is a hard requirement. Identical action sequences must always produc
 
 - **Budgets** are per-window; unspent funds and sale proceeds roll forward. The **squad cost ratio (SCR) rolls across windows**: wages + amortisation (fee ÷ contract years) vs `squadCostCapBase × SCR_LIMIT`. The starting squad has no per-player book values; a club-level `baselineAmortisation` (GameConfig) provides the starting position and is never reduced by sales. No amortisation re-spreading on renewal.
 - **Contract renewals**: salary uplift scaled by urgency (remaining years), years added, and quality. **One renewal per player per game** (undoable within its window). Renewing also restores sale value (running-down discount by remaining months: ×0.9 at 24, ×0.75 at 18, ×0.5 at 12, ×0.25 at 6, ×0.95 at 30; January windows sit six months into the season, so 18/30/6-month rungs only arise there).
+- **Loans out are listed at the borrowing club** in the dataset (Sam,
+  20/08/2026): a club's list should show who it actually has available, so
+  a player out on loan sits in the borrower's squad, not the owner's. The
+  exception is a player loaned *to* Liverpool, whose row stays at the owning
+  club so the engine can return him when the loan ends (`LOANED_IN` in
+  `lockedLists.ts`); `realConfig` lifts him into the squad, so the game
+  still shows him at Liverpool.
 - **Sale values are derived, never authored**: `saleValue = baseValue × contract discount`. Authored data supplies `baseValue` (see `SquadPlayerSeed`).
 - **Window advancement is one-way** (`ADVANCE_WINDOW`), blocked while violations exist. Progression order between windows: expiry → age tick → value drift → market swap → funds. Expiry and ageing apply only at season boundaries (`seasonStartYear` increases); value drift applies at every transition at half the annual age/quality curve rate. Market pools are authored per window; the engine filters out players already at the club (buy-backs of sold players are allowed).
 - Players carry age, position, home-grown status (U21 derived from age ≤ 21) and contract data.

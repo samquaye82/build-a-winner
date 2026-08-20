@@ -292,7 +292,7 @@ Jacob Ramsey,Newcastle,premier-league,CM,25,78,fc26,25.0,35.0,7.3,False,2030,Tru
 Dilane Bakwa,Nottingham Forest,premier-league,RW,23,78,fc26,25.0,32.0,4.3,False,2030,False,appearances,France
 Habib Diarra,Sunderland,premier-league,CM,22,77,fc26,25.0,32.0,3.0,False,2030,False,appearances,Senegal
 Dominic Solanke,Tottenham,premier-league,ST,28,80,fc26,25.0,40.0,8.5,False,2030,True,citizenship-plus-appearances,England
-Guglielmo Vicario,Tottenham,premier-league,GK,29,82,fc26,25.0,30.0,4.6,False,2028,False,appearances,Italy
+Guglielmo Vicario,Juventus,serie-a,GK,29,82,fc26,25.0,30.0,4.6,False,2028,False,appearances,Italy
 Mathys Tel,Tottenham,premier-league,ST,21,77,fc26,25.0,30.0,3.4,False,2031,False,appearances,France
 Luka Vuskovic,Brighton,premier-league,CB,19,72,fc26,40.0,40.0,1.6,False,2030,False,appearances,Croatia
 Mateus Fernandes,Tottenham,premier-league,CM,21,76,fc26,50.0,32.0,3.0,False,2031,False,appearances,Portugal
@@ -799,7 +799,7 @@ Tammy Abraham,Aston Villa,premier-league,ST,28,77,fc26,10.0,14.0,8.5,False,2030,
 Emiliano Buendía,Aston Villa,premier-league,LW,29,77,fc26,10.0,18.0,4.6,False,2027,False,appearances,Argentina
 Samuel Iling-Junior,Aston Villa,premier-league,LW,22,74,fc26,10.0,10.0,1.8,False,2027,True,citizenship-plus-appearances,England
 Lewis Cook,Bournemouth,premier-league,CM,29,79,fc26,10.0,13.0,3.7,False,2028,True,citizenship-plus-appearances,England
-Romain Faivre,Bournemouth,premier-league,AM,27,76,fc26,10.0,15.0,2.1,False,2028,False,appearances,France
+Romain Faivre,Auxerre,ligue-1,AM,27,76,fc26,10.0,15.0,2.1,False,2028,False,appearances,France
 Rico Henry,Brentford,premier-league,LB,28,76,fc26,10.0,15.0,3.0,False,2027,False,appearances,Jamaica
 Keane Lewis-Potter,Brentford,premier-league,LW,25,76,fc26,10.0,15.0,3.0,False,2031,True,citizenship-plus-appearances,England
 Kristoffer Ajer,Brentford,premier-league,CB,28,75,fc26,10.0,16.0,3.0,False,2030,False,appearances,Norway
@@ -1393,7 +1393,7 @@ Alysson,Aston Villa,premier-league,RW,20,70,salary-fit,6.0,,1.2,False,2031,False
 Alex Tóth,Bournemouth,premier-league,CM,20,70,fc26,6.0,,2.4,False,2031,False,appearances,Hungary
 Dário Essugo,Chelsea,premier-league,CM,21,75,fc26,6.0,3.5,2.4,False,2033,False,appearances,Portugal
 Largie Ramazani,Leeds,premier-league,LW,25,74,fc26,6.0,5.0,1.1,False,2028,False,appearances,Belgium
-Altay Bayındır,Manchester United,premier-league,GK,28,75,fc26,6.0,7.0,2.1,False,2027,False,appearances,Turkey
+Altay Bayındır,Celta Vigo,la-liga,GK,28,75,fc26,6.0,7.0,2.1,False,2027,False,appearances,Turkey
 Luca Netz,Nottingham Forest,premier-league,LB,23,72,fc26,6.0,6.0,2.1,False,2030,False,appearances,Germany
 Bright Arrey-Mbi,Braga,primeira-liga,CB,23,71,fc26,6.0,7.0,1.0,False,2029,False,appearances,Germany
 Gorby,Braga,primeira-liga,CM,23,71,fc26,6.0,7.0,0.5,False,2028,False,appearances,France
@@ -2364,7 +2364,7 @@ Cody Drameh,Hull City,premier-league,RB,24,69,fc26,2.5,,0.5,False,2027,False,cit
 Enis Destan,Hull City,premier-league,ST,24,68,fc26,2.5,2.5,0.4,False,2028,False,appearances,Turkey
 Jack Taylor,Ipswich Town,premier-league,CM,28,70,fc26,2.5,3.0,1.1,False,2028,False,appearances,Ireland
 Josh Wilson-Esbrand,Manchester City,premier-league,LB,23,67,fc26,2.5,3.0,0.4,False,2027,True,citizenship-plus-appearances,England
-Odysseas Vlachodimos,Newcastle,premier-league,GK,32,72,fc26,2.5,4.0,3.0,False,2028,False,appearances,Greece
+Odysseas Vlachodimos,Sevilla,la-liga,GK,32,72,fc26,2.5,4.0,3.0,False,2028,False,appearances,Greece
 Omar Richards,Nottingham Forest,premier-league,LB,28,72,fc26,2.5,2.0,1.8,False,2027,True,citizenship-plus-appearances,England
 Tyler Bindon,Nottingham Forest,premier-league,CB,21,69,fc26,2.5,1.5,0.6,False,2028,False,appearances,New Zealand
 Arthur Masuaku,Sunderland,premier-league,LB,32,75,fc26,2.5,2.5,3.7,False,2027,False,citizenship-window-invisible,Democratic Republic of the Congo
