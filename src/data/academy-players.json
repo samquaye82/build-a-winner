@@ -74,15 +74,6 @@
       "homegrown": true
     },
     {
-      "id": "luke-chambers",
-      "name": "Luke Chambers",
-      "group": "DEFENDER",
-      "position": "LB",
-      "DOB": "24/06/2004",
-      "age": 22,
-      "homegrown": true
-    },
-    {
       "id": "prince-cisse",
       "name": "Prince Cisse",
       "group": "DEFENDER",
@@ -404,15 +395,6 @@
       "position": "AM",
       "DOB": "01/10/2008",
       "age": 17,
-      "homegrown": true
-    },
-    {
-      "id": "lewis-koumas",
-      "name": "Lewis Koumas",
-      "group": "FORWARD",
-      "position": "ST",
-      "DOB": "19/09/2005",
-      "age": 20,
       "homegrown": true
     },
     {
