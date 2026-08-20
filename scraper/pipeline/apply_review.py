@@ -50,14 +50,20 @@ def parse_bool(value: object) -> bool:
 
 
 def attach_ids(review: pd.DataFrame, enriched: pd.DataFrame) -> pd.DataFrame:
-    """Re-attaches player_slug and club_slug to reviewed rows.
+    """Re-attaches player_slug, club_slug and date_of_birth to reviewed rows.
+
+    The date of birth rides along on the same lookup as the slug: it is the
+    only place exact ages can come from, review.csv carrying whole years
+    only, and the squad age profile chart needs them (Sam, 20/08/2026). A
+    row with no enriched match has no date of birth, and the chart falls
+    back to the whole-year age for those players.
 
     Args:
         review: The hand-edited table.
         enriched: The machine table carrying slugs.
 
     Returns:
-        review with player_slug and club_slug columns.
+        review with player_slug, club_slug and date_of_birth columns.
     """
     by_name_club = enriched.set_index(["name", "club"])
     name_counts = enriched.name.value_counts()
@@ -67,6 +73,7 @@ def attach_ids(review: pd.DataFrame, enriched: pd.DataFrame) -> pd.DataFrame:
 
     slugs: list[str] = []
     club_slugs: list[str] = []
+    births: list[str] = []
     synthesised = 0
     for row in review.itertuples():
         key = (row.name, row.club)
@@ -75,20 +82,24 @@ def attach_ids(review: pd.DataFrame, enriched: pd.DataFrame) -> pd.DataFrame:
             hit = hit.iloc[0] if isinstance(hit, pd.DataFrame) else hit
             slugs.append(str(hit.player_slug))
             club_slugs.append(str(hit.club_slug))
+            births.append(_birth_date(hit))
         elif row.name in by_unique_name.index:
             # Sam moved this player: keep his identity, adopt the new club.
             hit = by_unique_name.loc[row.name]
             slugs.append(str(hit.player_slug))
             club_slugs.append(slugify(str(row.club)).removesuffix("-review"))
+            births.append(_birth_date(hit))
             synthesised += 0
         else:
             slugs.append(slugify(str(row.name)))
             club_slugs.append(slugify(str(row.club)).removesuffix("-review"))
+            births.append("")
             synthesised += 1
 
     result = review.copy()
     result["player_slug"] = slugs
     result["club_slug"] = club_slugs
+    result["date_of_birth"] = births
     if synthesised > 0:
         print(f"NOTE: {synthesised} review rows had no enriched match; slugs synthesised")
     return result
@@ -130,6 +141,23 @@ def decollide_slugs(rows: pd.DataFrame) -> pd.DataFrame:
     if collisions:
         print(f"NOTE: {len(collisions)} slug collisions renamed: {', '.join(collisions)}")
     return result
+
+
+def _birth_date(hit: "pd.Series[object]") -> str:
+    """Reads an enriched row's date of birth as a plain YYYY-MM-DD string.
+
+    Args:
+        hit: The matched enriched row.
+
+    Returns:
+        The date as YYYY-MM-DD, or "" when the source has none. Enrichment
+        stores it as a timestamp ("2001-09-05 00:00:00"), of which only the
+        date half is wanted.
+    """
+    raw = getattr(hit, "date_of_birth", "")
+    if raw is None or (isinstance(raw, float) and pd.isna(raw)):
+        return ""
+    return str(raw).strip()[:10]
 
 
 def normalise(review: pd.DataFrame) -> pd.DataFrame:

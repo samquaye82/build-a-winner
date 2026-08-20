@@ -90,6 +90,8 @@ interface Row {
   slug: string; name: string; league: string; club: string;
   position: Position; age: number; quality: number; value: number;
   salary: number; expiryYear: number; homegrown: boolean; isLiverpool: boolean;
+  /** YYYY-MM-DD, or '' where no source carries one. */
+  birthDate: string;
 }
 
 function toRow(record: Record<string, string>): Row {
@@ -106,6 +108,7 @@ function toRow(record: Record<string, string>): Row {
     expiryYear: Number(record.expiry_year),
     homegrown: record.homegrown === 'True',
     isLiverpool: record.club_slug === 'liverpool',
+    birthDate: (record.date_of_birth ?? '').slice(0, 10),
   };
 }
 
@@ -191,12 +194,48 @@ function main(): void {
     };
   });
 
+  // Dates of birth ride alongside rather than on the player records: they
+  // are presentation data for the age profile chart, with no bearing on any
+  // rule, so the engine's player types stay as they are. Keyed by player id,
+  // and only players who have a trustworthy one appear.
+  //
+  // Trustworthy means it agrees with the whole-year age from the same
+  // source. A handful of rows contradict themselves: Kevin Sánchez is aged
+  // 21 with a date of birth implying 23, and the two different players
+  // called Moussa Diarra share one date between them. A date that cannot be
+  // squared with the age cannot give an exact age either, so it is dropped
+  // and the chart falls back to whole years for that player.
+  const generatedAt = new Date().toISOString().slice(0, 10);
+  const referenceMs = Date.parse(`${generatedAt}T00:00:00Z`);
+  const MS_PER_YEAR = 31_557_600_000;
+  const AGE_TOLERANCE_YEARS = 1.5;
+
+  const birthDates: Record<string, string> = {};
+  let contradictory = 0;
+  for (const row of rows) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(row.birthDate)) {
+      continue;
+    }
+    const derived = (referenceMs - Date.parse(`${row.birthDate}T00:00:00Z`)) / MS_PER_YEAR;
+    if (Math.abs(derived - row.age) > AGE_TOLERANCE_YEARS) {
+      contradictory += 1;
+      continue;
+    }
+    birthDates[row.slug] = row.birthDate;
+  }
+  if (contradictory > 0) {
+    console.log(
+      `Dropped ${String(contradictory)} dates of birth that contradict the recorded age`,
+    );
+  }
+
   mkdirSync(OUT_DIR, { recursive: true });
   const payload = {
-    generatedAt: new Date().toISOString().slice(0, 10),
+    generatedAt,
     windows: WINDOWS,
     squad: squadOut,
     market: marketOut,
+    birthDates,
   };
   writeFileSync(join(OUT_DIR, 'gameData.json'), JSON.stringify(payload));
 
