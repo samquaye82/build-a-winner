@@ -172,20 +172,8 @@ describe('realConfig', () => {
     const loaneeIds = state.squad
       .filter((p) => p.onLoan === true)
       .map((p) => p.id);
-
-    // Promoting Chambers, McConnell and Koumas (Sam, 20/08/2026) leaves
-    // the squad on exactly 25 over-21s, and McConnell turns 22 at the
-    // season boundary. Advancing untouched now breaches the registration
-    // limit, which is a real constraint rather than a fixture problem, so
-    // this test frees one slot before travelling.
-    const spare = state.squad
-      .filter((p) => p.age > 21 && !isLocked(p, 0) && p.onLoan !== true)
-      .sort((a, b) => a.quality - b.quality)[0];
-    expect(spare).toBeDefined();
-    const sold = applyAction(state, { type: 'SELL', playerId: spare!.id });
-
     const summer2027 = applyAction(
-      applyAction(sold, { type: 'ADVANCE_WINDOW' }),
+      applyAction(state, { type: 'ADVANCE_WINDOW' }),
       { type: 'ADVANCE_WINDOW' },
     );
     for (const id of loaneeIds) {
