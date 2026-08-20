@@ -350,3 +350,79 @@ def test_a_signing_without_age_or_position_is_held_back_not_invented():
     new_players, skipped = build_new_players(decisions, _master(), _attributes())
     assert len(new_players) == 0
     assert list(skipped.player) == ["Faceless Signing"]
+
+
+def test_addition_of_an_existing_player_becomes_a_club_move() -> None:
+    """A signing already in the master must move, not be added twice.
+
+    The Bernardo Silva case: the reconciliation called him "absent from
+    master" and proposed adding him at Real Madrid while his Manchester
+    City row was still there, leaving him in the game twice.
+    """
+    master = _master()
+    decisions = pd.DataFrame(
+        [
+            _decision(
+                category="missing_player",
+                action="Add player",
+                player="Stale Player",
+                master_club="",
+                proposed_club="Chelsea",
+            )
+        ]
+    )
+
+    result, counts, _ = apply_decisions(master, decisions, _attributes())
+
+    assert counts["redirected"] == 1
+    assert counts["added"] == 0
+    assert len(result[result.name == "Stale Player"]) == 1
+    assert result[result.name == "Stale Player"].club.iloc[0] == "Chelsea"
+
+
+def test_addition_of_a_genuinely_new_player_still_adds() -> None:
+    """The guard must not block real arrivals."""
+    master = _master()
+    decisions = pd.DataFrame(
+        [
+            _decision(
+                category="missing_player",
+                action="Add player",
+                player="New Signing",
+                master_club="",
+                proposed_club="Chelsea",
+            )
+        ]
+    )
+
+    result, counts, _ = apply_decisions(master, decisions, _attributes())
+
+    assert counts["redirected"] == 0
+    assert counts["added"] == 1
+    assert "New Signing" in set(result.name)
+
+
+def test_addition_matching_two_namesakes_is_left_alone() -> None:
+    """Two real players can share a name, so ambiguity is never guessed.
+
+    Nicolás González is the live case: a Manchester City midfielder and a
+    Juventus winger. Silently moving one onto the other's row would
+    corrupt the master, so the decision is left as an addition and
+    reported instead.
+    """
+    master = pd.concat([_master(), _master().iloc[[0]]], ignore_index=True)
+    decisions = pd.DataFrame(
+        [
+            _decision(
+                category="missing_player",
+                action="Add player",
+                player="Stale Player",
+                master_club="",
+                proposed_club="Chelsea",
+            )
+        ]
+    )
+
+    _, counts, _ = apply_decisions(master, decisions, _attributes())
+
+    assert counts["redirected"] == 0

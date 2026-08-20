@@ -13,6 +13,8 @@ where the model disagrees. This stage:
    numerics are coerced with a report of anything unparseable.
 3. Applies ADDITIONS from corrections.py (players missing from every
    source, e.g. Victor Munoz's July 2026 move to Liverpool).
+4. Makes player_slug unique, since Capology occasionally issues one slug
+   to two different players and the slug becomes the engine's player id.
 
 Output: output/final_players.csv, the generator's input.
 
@@ -89,6 +91,44 @@ def attach_ids(review: pd.DataFrame, enriched: pd.DataFrame) -> pd.DataFrame:
     result["club_slug"] = club_slugs
     if synthesised > 0:
         print(f"NOTE: {synthesised} review rows had no enriched match; slugs synthesised")
+    return result
+
+
+def decollide_slugs(rows: pd.DataFrame) -> pd.DataFrame:
+    """Makes player_slug unique, suffixing later rows with their club.
+
+    Capology occasionally issues one slug to two different players. The
+    live case is Nicolás González: a 24-year-old Manchester City midfielder
+    and a 28-year-old Juventus winger, two real people sharing
+    ``nicolas-gonzalez-35891`` (Sam, 20/08/2026). The slug becomes the
+    engine's player id, which identifies players in the game, so a
+    collision means buying one and getting the other.
+
+    The first row to claim a slug keeps it, so existing ids are stable;
+    every later row takes ``<slug>-<club_slug>``. review.csv is
+    version-controlled and its order is stable, which makes this
+    deterministic across runs.
+
+    Args:
+        rows: The reviewed table with slugs attached.
+
+    Returns:
+        The table with unique player_slug values.
+    """
+    result = rows.copy()
+    seen: set[str] = set()
+    slugs: list[str] = []
+    collisions: list[str] = []
+    for slug, club_slug in zip(result.player_slug, result.club_slug):
+        slug = str(slug)
+        if slug in seen:
+            slug = f"{slug}-{club_slug}"
+            collisions.append(slug)
+        seen.add(slug)
+        slugs.append(slug)
+    result["player_slug"] = slugs
+    if collisions:
+        print(f"NOTE: {len(collisions)} slug collisions renamed: {', '.join(collisions)}")
     return result
 
 
@@ -171,6 +211,10 @@ def main() -> int:
     if extra_count > 0:
         print(f"Unioned {extra_count} players from post-review leagues "
               f"({', '.join(sorted(POST_REVIEW_LEAGUES))})")
+
+    # Last, so the reviewed rows, corrections.py's ADDITIONS and the
+    # unioned post-review leagues are all covered.
+    final = decollide_slugs(final)
 
     dropped = len(enriched) - len(review)
     final.to_csv(FINAL_CSV, index=False)

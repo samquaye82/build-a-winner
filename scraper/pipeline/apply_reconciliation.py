@@ -356,6 +356,88 @@ def build_new_players(
     return new_players, skipped
 
 
+def redirect_existing_additions(
+    master: pd.DataFrame, decisions: pd.DataFrame
+) -> tuple[pd.DataFrame, int, list[str]]:
+    """Turns "Add player" into a club move when the player already exists.
+
+    The reconciliation calls a signing "absent from master" whenever it
+    could not match the transfer to a master row. That judgement can be
+    wrong, and when it is, adding the player leaves him in the dataset
+    twice: once at his old club, once at his new one. Four players reached
+    the game that way (Bernardo Silva at both Manchester City and Real
+    Madrid, Enzo Barrenechea at both Aston Villa and Benfica, plus two
+    loans) before Sam spotted it on 20/08/2026.
+
+    The existing guard only caught a player already sitting at the
+    PROPOSED club, which is the re-run case; it could not see him at his
+    old one. This one looks him up by name across the whole master:
+
+    * exactly one match, and the ages agree within a year where both are
+      known: rewrite the decision as a club move, which relocates the
+      existing row instead of adding a second;
+    * more than one match, or ages that disagree: leave it alone and name
+      him in the returned list, because two players can genuinely share a
+      name (Nicolás González) and guessing would corrupt the master.
+
+    Args:
+        master: The existing player master.
+        decisions: The live decisions.
+
+    Returns:
+        A triple of (decisions, redirected count, names left ambiguous).
+    """
+    additions = decisions[decisions.action == "Add player"]
+    if additions.empty:
+        return decisions, 0, []
+
+    positions_by_name: dict[str, list[int]] = {}
+    for position, name in enumerate(master["name"]):
+        positions_by_name.setdefault(normalise_name(str(name)), []).append(position)
+
+    result = decisions.copy()
+    redirected = 0
+    ambiguous: list[str] = []
+    for index, row in additions.iterrows():
+        matches = positions_by_name.get(normalise_name(str(row.player)), [])
+        if not matches:
+            continue
+        if len(matches) > 1:
+            ambiguous.append(str(row.player))
+            continue
+        existing = master.iloc[matches[0]]
+        if str(existing.club) == str(row.proposed_club):
+            # Already where the decision wants him: the re-run case, which
+            # build_new_players filters out on its own.
+            continue
+        if not _ages_agree(existing, row):
+            ambiguous.append(str(row.player))
+            continue
+        result.loc[index, "action"] = "Change club"
+        result.loc[index, "master_club"] = str(existing.club)
+        redirected += 1
+    return result, redirected, ambiguous
+
+
+def _ages_agree(existing: pd.Series, decision: pd.Series) -> bool:
+    """Whether a master row and a decision describe the same-aged player.
+
+    Args:
+        existing: The master row.
+        decision: The decision row.
+
+    Returns:
+        True when both ages are known and within a year, or when the
+        decision carries no age to check against.
+    """
+    decision_age = getattr(decision, "age", None)
+    if decision_age is None or pd.isna(decision_age):
+        return True
+    if pd.isna(existing.age):
+        return True
+    return abs(float(existing.age) - float(decision_age)) <= 1
+
+
 def apply_decisions(
     master: pd.DataFrame, decisions: pd.DataFrame, attributes: pd.DataFrame
 ) -> tuple[pd.DataFrame, dict[str, int], pd.DataFrame]:
@@ -375,6 +457,19 @@ def apply_decisions(
     """
     result = master.copy()
     counts: dict[str, int] = {}
+
+    # A signing the reconciliation could not match is proposed as an
+    # addition. If he is in fact already in the master under his old club,
+    # adding him duplicates him, so those decisions become club moves
+    # before anything else runs.
+    decisions, redirected, ambiguous = redirect_existing_additions(master, decisions)
+    counts["redirected"] = redirected
+    if ambiguous:
+        print(
+            f"NOTE: {len(ambiguous)} additions name someone already in the "
+            f"master but could not be matched safely, so they were left as "
+            f"additions: {', '.join(sorted(ambiguous))}"
+        )
 
     # Master rows are addressed by name plus current club: names alone are
     # not unique across 4,000 players, and every decision carries both.

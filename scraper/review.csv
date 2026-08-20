@@ -280,7 +280,6 @@ Antonee Robinson,Fulham,premier-league,LB,28,82,fc26,25.0,30.0,3.7,False,2028,Fa
 Virgil van Dijk,Liverpool,premier-league,CB,34,90,fc26,25.0,18.0,21.3,False,2027,False,citizenship-window-invisible,Netherlands
 Alisson,Liverpool,premier-league,GK,33,89,fc26,25.0,17.0,9.1,False,2027,False,citizenship-window-invisible,Brazil
 Harvey Elliott,Liverpool,premier-league,AM,23,78,fc26,25.0,30.0,4.0,False,2027,True,appearances,England
-Bernardo Silva,Manchester City,premier-league,AM,31,84,fc26,25.0,27.0,18.3,False,2027,False,appearances,Portugal
 Matheus Nunes,Manchester City,premier-league,RB,27,79,fc26,25.0,38.0,7.9,False,2028,False,appearances,Portugal
 Sávio,Manchester City,premier-league,LW,22,78,salary-fit,25.0,,4.9,False,2031,False,citizenship-no-tm,Brazil
 Abdukodir Khusanov,Manchester City,premier-league,CB,22,77,fc26,25.0,35.0,3.0,False,2029,False,appearances,Uzbekistan
@@ -569,7 +568,6 @@ John McGinn,Aston Villa,premier-league,CM,31,81,fc26,15.0,15.0,7.9,False,2028,Fa
 Leon Bailey,Aston Villa,premier-league,RW,28,79,fc26,15.0,18.0,7.3,False,2027,False,appearances,Jamaica
 Victor Lindelöf,Aston Villa,premier-league,CB,31,81,value-fit,15.0,15.0,7.3,False,2027,False,appearances,Sweden
 Matty Cash,Aston Villa,premier-league,RB,28,79,fc26,15.0,22.0,6.1,False,2029,False,appearances,Poland
-Enzo Barrenechea,Aston Villa,premier-league,CM,25,77,fc26,15.0,15.0,2.1,False,2029,False,appearances,Argentina
 Marcus Tavernier,Bournemouth,premier-league,AM,27,76,fc26,15.0,20.0,4.0,False,2029,True,citizenship-plus-appearances,England
 Amine Adli,Bournemouth,premier-league,LW,26,78,fc26,15.0,20.0,3.7,False,2030,False,appearances,Morocco
 Rayan,Bournemouth,premier-league,RW,19,73,salary-fit,130.0,,7.5,False,2031,False,appearances,Brazil
@@ -773,7 +771,6 @@ José Ángel Carmona,Sevilla,la-liga,RB,24,76,fc26,10.0,12.0,2.5,False,2028,Fals
 Isaac Romero,Sevilla,la-liga,ST,26,74,fc26,10.0,18.0,2.3,False,2028,False,appearances,Spain
 César Tárrega,Valencia,la-liga,CB,24,75,fc26,10.0,15.0,1.7,False,2030,False,appearances,Spain
 Thiago Fernández,Villarreal,la-liga,LW,22,74,fc26,10.0,,0.2,False,2031,False,appearances,Argentina
-Romain Faivre,Auxerre,ligue-1,AM,27,76,fc26,10.0,15.0,1.8,False,2027,False,appearances,France
 Xiangxin Wei,Auxerre,ligue-1,ST,18,71,position-median,10.0,,1.0,False,2027,False,citizenship-no-tm,China
 Bradley Locko,Brest,ligue-1,LB,24,75,fc26,10.0,12.0,0.6,False,2027,False,appearances,France
 Alexsandro,Lille,ligue-1,CB,26,80,fc26,10.0,8.0,2.2,False,2028,False,appearances,Brazil
@@ -2317,7 +2314,6 @@ Asier Villalibre,Racing Santander,la-liga,ST,28,72,fc26,2.5,2.5,0.9,False,2029,F
 Dani Cárdenas,Rayo Vallecano,la-liga,GK,29,75,fc26,2.5,1.8,0.6,False,2027,False,appearances,Spain
 Jozhua Vertrouwd,Rayo Vallecano,la-liga,CB,21,67,fc26,2.5,,0.3,False,2027,False,appearances,Netherlands
 Pablo Marín,Real Sociedad,la-liga,AM,22,73,fc26,2.5,1.5,1.0,False,2029,False,appearances,Spain
-Odysseas Vlachodimos,Sevilla,la-liga,GK,32,72,fc26,2.5,4.0,3.0,False,2027,False,appearances,Greece
 Tani Oluwaseyi,Villarreal,la-liga,ST,26,70,fc26,2.5,,2.7,False,2030,False,appearances,Canada
 Haris Belkebla,Angers,ligue-1,CM,32,74,fc26,2.5,2.5,2.2,False,2028,False,appearances,Algeria
 Harouna Djibirin,Angers,ligue-1,RW,19,65,salary-fit,2.5,,0.3,False,2028,False,appearances,Cameroon
