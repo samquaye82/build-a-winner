@@ -36,6 +36,7 @@ import {
   MARKET_UNLOCKED_EXCEPTIONS,
   MARKET_UNTOUCHABLE_MIN_VALUE_M,
 } from './lockedLists';
+import { LOANED_OUT } from './loansOut';
 import gameData from './generated/gameData.json';
 import academyData from './academy-players.json';
 
@@ -170,12 +171,63 @@ function isUntouchable(player: GeneratedMarketPlayer): boolean {
 
 const generatedMarket = gameData.market as GeneratedMarketPlayer[];
 
+/** The window from which every 2026/27 loan has ended and the player is home. */
+const LOAN_RETURN_WINDOW_INDEX = 2;
+
+/**
+ * Where each loaned-out player spends the 2026/27 season, by player id.
+ *
+ * Built once, and verified as it is built: an entry naming a player the
+ * dataset does not hold, or naming an owner he does not belong to, or
+ * sending him to a club the dataset does not model, is reported and
+ * dropped. Applying it regardless would move the wrong player, or move him
+ * somewhere the game cannot show.
+ */
+const loanDestinations = new Map<string, { club: string; league: string }>();
+{
+  const leagueByClub = new Map<string, string>();
+  for (const player of generatedMarket) {
+    leagueByClub.set(player.club, player.league);
+  }
+
+  for (const loan of LOANED_OUT) {
+    const source = generatedMarket.find(
+      (player) => player.id === loan.player || player.name === loan.player,
+    );
+    if (source === undefined) {
+      console.warn(`Loaned-out player not found: ${loan.player}`);
+      continue;
+    }
+    if (source.club !== loan.from) {
+      console.warn(
+        `Loaned-out player ${loan.player} is listed at ${source.club}, not ${loan.from}; skipped`,
+      );
+      continue;
+    }
+    const league = leagueByClub.get(loan.to);
+    if (league === undefined) {
+      console.warn(
+        `Loaned-out player ${loan.player} sent to ${loan.to}, which the dataset does not hold; skipped`,
+      );
+      continue;
+    }
+    loanDestinations.set(source.id, { club: loan.to, league });
+  }
+}
+
 const marketByWindow: MarketPlayer[][] = [0, 1, 2].map((windowIndex) =>
   generatedMarket.flatMap((player) => {
     const terms = player.windows[windowIndex];
     if (terms === undefined) {
       return [];
     }
+    // On loan for 2026/27, home again by summer 2027. Ownership is not
+    // touched: `locked` is computed from the owning club above, so a
+    // Manchester United player on loan elsewhere stays unavailable.
+    const loan =
+      windowIndex < LOAN_RETURN_WINDOW_INDEX
+        ? loanDestinations.get(player.id)
+        : undefined;
     return [
       {
         id: player.id,
@@ -190,8 +242,8 @@ const marketByWindow: MarketPlayer[][] = [0, 1, 2].map((windowIndex) =>
         contractYears: terms.years,
         baseValue: terms.baseValue,
         locked: isUntouchable(player),
-        club: player.club,
-        league: player.league,
+        club: loan?.club ?? player.club,
+        league: loan?.league ?? player.league,
       },
     ];
   }),

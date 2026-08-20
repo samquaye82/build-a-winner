@@ -11,6 +11,7 @@ import {
   isLocked,
   validateState,
 } from '../../src/engine';
+import { LOANED_OUT } from '../../src/data/loansOut';
 import { realConfig } from '../../src/data/realConfig';
 import {
   LIVERPOOL_LOCKED_ALWAYS,
@@ -199,6 +200,55 @@ describe('realConfig', () => {
     // Free agents still cost wages.
     for (const p of frees.slice(0, 50)) {
       expect(p.wageDemand).toBeGreaterThan(0);
+    }
+  });
+});
+
+describe('loans out', () => {
+  /** Finds a player in one window's market pool. */
+  function inWindow(windowIndex: number, name: string) {
+    return (realConfig.marketByWindow[windowIndex] ?? []).find(
+      (p) => p.name === name,
+    );
+  }
+
+  it('puts a loaned-out player at the club he plays for', () => {
+    // Altay Bayındır is Manchester United's, on loan at Celta Vigo for
+    // 2026/27 (Sam, 20/08/2026).
+    expect(inWindow(0, 'Altay Bayındır')?.club).toBe('Celta Vigo');
+    expect(inWindow(1, 'Altay Bayındır')?.club).toBe('Celta Vigo');
+  });
+
+  it('moves him into the borrowing club’s league too', () => {
+    expect(inWindow(0, 'Altay Bayındır')?.league).toBe('la-liga');
+  });
+
+  it('sends him back to his parent club when the loan ends', () => {
+    expect(inWindow(2, 'Altay Bayındır')?.club).toBe('Manchester United');
+    expect(inWindow(2, 'Altay Bayındır')?.league).toBe('premier-league');
+  });
+
+  it('keeps ownership with the parent club, so locks still apply', () => {
+    // Manchester United will not sell to Liverpool. Being out on loan at a
+    // club that would sell must not make him buyable.
+    expect(inWindow(0, 'Altay Bayındır')?.locked).toBe(true);
+  });
+
+  it('leaves a loaned-out player in the dataset exactly once', () => {
+    for (const windowIndex of [0, 1, 2]) {
+      const pool = realConfig.marketByWindow[windowIndex] ?? [];
+      const listings = pool.filter((p) => p.name === 'Altay Bayındır');
+      expect(listings).toHaveLength(1);
+    }
+  });
+
+  it('applies to every loan in the list', () => {
+    for (const loan of LOANED_OUT) {
+      const listed = inWindow(0, loan.player);
+      expect(listed?.club, `${loan.player} in window 0`).toBe(loan.to);
+      expect(inWindow(2, loan.player)?.club, `${loan.player} in window 2`).toBe(
+        loan.from,
+      );
     }
   });
 });
