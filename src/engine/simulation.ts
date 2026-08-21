@@ -6,9 +6,9 @@
  * 0-100 squad rating in scoring.ts: it never feeds into that score.
  *
  * Both our team and each rival are reduced to a single strength via the same
- * full-squad methodology used for Squad quality (Sam, 25/07/2026): 0.6 x the
- * average quality of the best/chosen XI plus 0.4 x the average of the rest of
- * the squad. Per fixture (each rival home and away) expected goals for each
+ * full-squad methodology used for Squad quality (Sam, 25/07/2026):
+ * SQUAD_QUALITY_XI_WEIGHT x the average quality of the best/chosen XI plus
+ * SQUAD_QUALITY_DEPTH_WEIGHT x the average of the rest of the squad. Per fixture (each rival home and away) expected goals for each
  * side come from the strength ratio with a home-field swing, and a Poisson
  * model turns those into win/draw/loss probabilities. Summed over the season
  * they give the projected record, points and goals.
@@ -45,7 +45,7 @@ export interface SeasonProjection {
   goalsFor: number;
   goalsAgainst: number;
   goalDiff: number;
-  /** Our full-squad strength (0-100): 0.6 x XI + 0.4 x rest of squad. */
+  /** Our full-squad strength (0-100), XI blended with the rest of the squad. */
   strength: number;
   /** Verdict band label for the projected points (see SIM_VERDICT_BANDS). */
   verdict: string;
@@ -173,11 +173,15 @@ export function fullSquadStrength(
  * the clustered full-squad strengths gain realistic separation. Floored at
  * SIM_MIN_EFFECTIVE_STRENGTH so a far-below-average side stays positive.
  *
+ * Exported so an analysis of the whole league can run the same model the
+ * game's own projection runs, rather than a second copy of it that could
+ * drift.
+ *
  * @param strength - The raw team strength.
  * @param leagueMean - The mean strength across the league.
  * @returns The stretched, floored effective strength.
  */
-function stretchStrength(strength: number, leagueMean: number): number {
+export function stretchStrength(strength: number, leagueMean: number): number {
   const stretched = leagueMean + (strength - leagueMean) * SIM_STRENGTH_SPREAD;
   return Math.max(SIM_MIN_EFFECTIVE_STRENGTH, stretched);
 }
@@ -190,7 +194,7 @@ function stretchStrength(strength: number, leagueMean: number): number {
  * @param atHome - Whether we are playing at home.
  * @returns Expected goals for us and the opponent.
  */
-function expectedGoals(
+export function expectedGoals(
   strength: number,
   rivalStrength: number,
   atHome: boolean,
@@ -218,7 +222,7 @@ function expectedGoals(
  * @param oppGoals - The opponent's expected goals (Poisson mean).
  * @returns Probabilities summing to 1.
  */
-function matchOutcome(
+export function matchOutcome(
   ourGoals: number,
   oppGoals: number,
 ): { win: number; draw: number; loss: number } {
@@ -273,7 +277,7 @@ function poissonPmf(mean: number): number[] {
  * @param total - Games played, which the rounded record must sum to.
  * @returns Whole [won, drawn, lost] summing to total.
  */
-function roundRecord(
+export function roundRecord(
   wins: number,
   draws: number,
   losses: number,

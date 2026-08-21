@@ -56,7 +56,17 @@ export {
   validateXI,
   type ScoreBreakdown,
 } from './scoring';
-export { simulateSeason, type SeasonProjection } from './simulation';
+export {
+  simulateSeason,
+  // Building blocks, exported so a whole-league projection can run the very
+  // model the game's own projection runs.
+  expectedGoals,
+  fullSquadStrength,
+  matchOutcome,
+  roundRecord,
+  stretchStrength,
+  type SeasonProjection,
+} from './simulation';
 export {
   MIN_VIABLE_SQUAD_SIZE,
   UNVIABLE_SQUAD_MAX_SCORE,

@@ -12,7 +12,8 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "generate:data": "vite build --ssr scripts/generate-data.ts --outDir node_modules/.tmp/gen --emptyOutDir && node node_modules/.tmp/gen/generate-data.js",
-    "data:rebuild": "cd scraper && .venv/bin/python -m pipeline.apply_review && cd .. && npm run generate:data"
+    "data:rebuild": "cd scraper && .venv/bin/python -m pipeline.apply_review && cd .. && npm run generate:data",
+    "project:table": "vite build --ssr scripts/project-table.ts --outDir node_modules/.tmp/proj --emptyOutDir && node node_modules/.tmp/proj/project-table.js"
   },
   "dependencies": {
     "react": "^19.2.7",
