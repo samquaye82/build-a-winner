@@ -134,6 +134,13 @@ function buy(state: GameState, playerId: string): GameState {
     age: marketPlayer.age,
     homegrown: marketPlayer.homegrown,
     quality: marketPlayer.quality,
+    // Training history belongs to the player and comes with him. Tenure
+    // does not: whatever spell he had elsewhere, his time at this club
+    // starts in this window.
+    ...(marketPlayer.uefaTraining !== undefined && {
+      uefaTraining: marketPlayer.uefaTraining,
+    }),
+    joined: { season: window.seasonStartYear, midSeason: window.midSeason },
     baseValue,
     saleValue: computeSaleValue(
       baseValue,

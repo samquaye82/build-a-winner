@@ -27,6 +27,34 @@ export type Position =
 export type WindowId = 'january-2027' | 'summer-2027' | 'january-2028';
 
 /**
+ * UEFA locally-trained status, relative to the club that holds the player.
+ *
+ * Locally trained means registered for three entire seasons, or 36 months,
+ * between the ages of 15 and 21:
+ * - 'club': with the club itself (club-trained);
+ * - 'association': with another club in the same national association
+ *   (association-trained);
+ * - 'none': neither.
+ *
+ * Distinct from `homegrown`, the Premier League's rule, which does not
+ * tell the two kinds apart. UEFA does: List A reserves eight places for
+ * locally trained players, and at most four of them may be
+ * association-trained.
+ */
+export type UefaTraining = 'club' | 'association' | 'none';
+
+/**
+ * A point in the game calendar, in the same terms the windows use: the
+ * season's start year, and whether the point falls mid-season (January)
+ * rather than at the season's opening (summer). 2026/27's January window
+ * is { season: 2026, midSeason: true }.
+ */
+export interface SeasonPoint {
+  season: number;
+  midSeason: boolean;
+}
+
+/**
  * A player's employment terms with the club.
  */
 export interface Contract {
@@ -62,6 +90,19 @@ export interface PlayerCore {
    * as part of making informed decisions.
    */
   quality: number;
+  /**
+   * UEFA locally-trained status relative to the player's current club.
+   * Absent means 'none'. Static across the game: no player can complete
+   * three seasons' training inside its eighteen months.
+   */
+  uefaTraining?: UefaTraining;
+  /**
+   * When the player's current, uninterrupted spell at his club began. Sets
+   * UEFA List B tenure, which needs two years. Absent means unknown, and an
+   * unknown spell never counts as long enough. A signing's spell starts in
+   * the window he joins in, so the engine stamps it on purchase.
+   */
+  joined?: SeasonPoint;
 }
 
 /**

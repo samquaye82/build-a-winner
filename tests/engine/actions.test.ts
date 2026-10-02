@@ -8,7 +8,11 @@ import {
   EngineError,
   type GameState,
 } from '../../src/engine';
-import { makeTestConfig, makeThreeWindowConfig } from './fixtures';
+import {
+  makeMarketPlayer,
+  makeTestConfig,
+  makeThreeWindowConfig,
+} from './fixtures';
 
 /** Fresh game state from the standard fixture config. */
 function freshGame(): GameState {
@@ -53,6 +57,43 @@ describe('BUY', () => {
       windowIndex: 0,
       contractYears: 5,
     });
+  });
+
+  it('starts_the_signings_spell_at_the_club_in_the_buying_window', () => {
+    // The fixture window is a summer window in the 2026/27 season.
+    const signed = play({ type: 'BUY', playerId: 'buy-st' }).squad.find(
+      (p) => p.id === 'buy-st',
+    );
+    expect(signed?.joined).toEqual({ season: 2026, midSeason: false });
+  });
+
+  it('resets_a_signings_spell_whatever_his_listing_said', () => {
+    // Time at his old club is not time at this one.
+    const config = makeTestConfig();
+    const listing = makeMarketPlayer({
+      id: 'veteran',
+      joined: { season: 2015, midSeason: false },
+    });
+    const state = applyAction(
+      createGame({ ...config, marketByWindow: [[listing]] }),
+      { type: 'BUY', playerId: 'veteran' },
+    );
+    expect(state.squad.find((p) => p.id === 'veteran')?.joined).toEqual({
+      season: 2026,
+      midSeason: false,
+    });
+  });
+
+  it('carries_uefa_training_status_onto_the_signing', () => {
+    const config = makeTestConfig();
+    const listing = makeMarketPlayer({ id: 'graduate', uefaTraining: 'club' });
+    const state = applyAction(
+      createGame({ ...config, marketByWindow: [[listing]] }),
+      { type: 'BUY', playerId: 'graduate' },
+    );
+    expect(state.squad.find((p) => p.id === 'graduate')?.uefaTraining).toBe(
+      'club',
+    );
   });
 
   it('allows_funds_to_go_negative_while_planning', () => {

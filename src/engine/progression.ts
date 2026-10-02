@@ -110,6 +110,11 @@ export function advanceWindow(state: GameState): GameState {
       age,
       homegrown: player.homegrown,
       quality: player.quality,
+      // Kept so re-signing a released academy graduate restores him as
+      // club-trained. His spell is not kept: leaving interrupted it.
+      ...(player.uefaTraining !== undefined && {
+        uefaTraining: player.uefaTraining,
+      }),
       fee: 0,
       baseValue: driftBaseValue(player.baseValue, age, player.quality),
       wageDemand: roundMoney(player.contract.salary * FREE_AGENT_WAGE_PREMIUM),

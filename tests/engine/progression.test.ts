@@ -103,6 +103,21 @@ describe('January 2027 -> Summer 2027 (season boundary)', () => {
     expect(player?.contract.salary).toBe(12);
   });
 
+  it('keeps_uefa_training_status_on_a_released_player', () => {
+    // A released academy graduate is still club-trained if re-signed.
+    const config = makeThreeWindowConfig();
+    const graduate = config.initialSquad.map((p) =>
+      p.id === 'cm1' ? { ...p, uefaTraining: 'club' as const } : p,
+    );
+    const state = applyAction(
+      createGame({ ...config, initialSquad: graduate }),
+      advance,
+    );
+    expect(state.market.find((p) => p.id === 'cm1')?.uefaTraining).toBe(
+      'club',
+    );
+  });
+
   it('returns_a_loanee_to_his_parent_club_rather_than_free_agency', () => {
     // cb2's deal ends at the boundary. As an ordinary player he would
     // become a free agent anyone could sign; as a loanee he belongs to
