@@ -50,6 +50,20 @@ export const UCL_MIN_GOALKEEPERS = 3;
  */
 export const UCL_LIST_B_TENURE_YEARS = 2;
 
+/**
+ * Deregistration (Sam, 02/10/2026). Leaving a player off a registration
+ * list instead of selling him is a real tactic for making a squad comply,
+ * but it costs: a player still off a list when a window closes loses this
+ * share of his value, once per game.
+ */
+export const DEREGISTRATION_VALUE_DROP = 0.2;
+
+/**
+ * Points taken off the value-created component (0-100) for each player
+ * penalised for deregistration (Sam, 02/10/2026: 10 each).
+ */
+export const DEREGISTRATION_SCORE_PENALTY = 10;
+
 /** Longest contract a player may hold, in years (mirrors the real fee
  * amortisation cap). Renewals may not extend beyond this many years from
  * the start of the current season. */

@@ -24,8 +24,10 @@ import {
   requireMarketPlayer,
   requireSquadPlayer,
 } from './state';
+import { isRegisteredFor } from './rules/deregistration';
 import type {
   Action,
+  Competition,
   GameConfig,
   GameState,
   MarketPlayer,
@@ -88,11 +90,89 @@ function reduce(state: GameState, action: Action): GameState {
       return promote(state, action.playerId);
     case 'UNDO_PROMOTE':
       return undoPromote(state, action.playerId);
+    case 'DEREGISTER':
+      return deregister(state, action.playerId, action.competition);
+    case 'REREGISTER':
+      return reregister(state, action.playerId, action.competition);
     case 'ADVANCE_WINDOW':
       return advanceWindow(state);
     case 'PICK_XI':
       return pickXI(state, action.selection);
   }
+}
+
+/** Display names for competitions in error messages. */
+const COMPETITION_NAMES: Readonly<Record<Competition, string>> = {
+  PL: 'Premier League',
+  UCL: 'Champions League',
+};
+
+/**
+ * Leaves a squad player off a competition's registration list. Nothing is
+ * charged now: the penalty falls only if a window closes with him still off
+ * (see rules/deregistration.ts).
+ */
+function deregister(
+  state: GameState,
+  playerId: string,
+  competition: Competition,
+): GameState {
+  const player = requireSquadPlayer(state, playerId);
+  if (!isRegisteredFor(player, competition)) {
+    throw new EngineError(
+      'ALREADY_DEREGISTERED',
+      `${player.name} is already off the ${COMPETITION_NAMES[competition]} list`,
+    );
+  }
+  // A player off the Premier League list cannot play, so he cannot stay in
+  // a picked eleven. Refused rather than silently wiping the selection.
+  if (competition === 'PL' && state.xi?.playerIds.includes(playerId) === true) {
+    throw new EngineError(
+      'PLAYER_IN_XI',
+      `${player.name} is in your starting eleven; take him out of it first`,
+    );
+  }
+  const deregisteredFrom = [...(player.deregisteredFrom ?? []), competition];
+  return {
+    ...state,
+    squad: state.squad.map((p) =>
+      p.id === playerId ? { ...p, deregisteredFrom } : p,
+    ),
+  };
+}
+
+/**
+ * Puts a squad player back on a competition's registration list. Free
+ * within the window he was left off in; a penalty already taken at an
+ * earlier window's close is not refunded.
+ */
+function reregister(
+  state: GameState,
+  playerId: string,
+  competition: Competition,
+): GameState {
+  const player = requireSquadPlayer(state, playerId);
+  if (isRegisteredFor(player, competition)) {
+    throw new EngineError(
+      'NOT_DEREGISTERED',
+      `${player.name} is already on the ${COMPETITION_NAMES[competition]} list`,
+    );
+  }
+  const remaining = (player.deregisteredFrom ?? []).filter(
+    (c) => c !== competition,
+  );
+  return {
+    ...state,
+    squad: state.squad.map((p) => {
+      if (p.id !== playerId) {
+        return p;
+      }
+      // Drop the field once he is back on every list, so a registered
+      // player looks the same whether or not he was ever left off.
+      const { deregisteredFrom: _dropped, ...rest } = p;
+      return remaining.length > 0 ? { ...rest, deregisteredFrom: remaining } : rest;
+    }),
+  };
 }
 
 /**

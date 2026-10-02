@@ -31,6 +31,7 @@ import {
   SQUAD_QUALITY_XI_WEIGHT,
 } from './constants';
 import { EngineError } from './errors';
+import { registeredFor } from './rules/deregistration';
 import { validateXI } from './scoring';
 import type { GameState, RivalTeam, SquadPlayer } from './types';
 
@@ -76,7 +77,8 @@ export function simulateSeason(state: GameState): SeasonProjection {
   const xiPlayers = state.xi.playerIds
     .map((id) => byId.get(id))
     .filter((p): p is SquadPlayer => p !== undefined);
-  const rest = state.squad.filter((p) => !xiIds.has(p.id));
+  // Players off the Premier League list cannot play, so they add no depth.
+  const rest = registeredFor(state.squad, 'PL').filter((p) => !xiIds.has(p.id));
 
   // Our strength via the full-squad methodology: the chosen XI blended with
   // the whole of the rest of the squad, exactly as Squad quality is scored.

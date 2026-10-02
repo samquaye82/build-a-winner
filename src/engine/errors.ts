@@ -25,7 +25,10 @@ export type EngineErrorCode =
   | 'WINDOW_NOT_SUBMITTABLE'
   | 'NOT_FINAL_WINDOW'
   | 'INVALID_XI'
-  | 'XI_NOT_PICKED';
+  | 'XI_NOT_PICKED'
+  | 'ALREADY_DEREGISTERED'
+  | 'NOT_DEREGISTERED'
+  | 'PLAYER_IN_XI';
 
 /**
  * Error thrown by reducers for structurally invalid actions.

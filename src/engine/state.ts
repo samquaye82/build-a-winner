@@ -95,6 +95,7 @@ export function createGame(config: GameConfig): GameState {
     market: config.marketByWindow[0] ?? [],
     academy,
     loanedOut,
+    deregistrationPenalties: [],
     departed: [],
     actionLog: [],
   };

@@ -28,6 +28,7 @@ import {
   CONTRACT_QUALITY_PIVOT,
   CONTRACT_QUALITY_SCALE,
   CONTRACT_WAGE_PENALTY_PER_M,
+  DEREGISTRATION_SCORE_PENALTY,
   MIN_VIABLE_SQUAD_SIZE,
   SCORING_WEIGHTS,
   SQUAD_QUALITY_DEPTH_WEIGHT,
@@ -39,6 +40,12 @@ import {
 import { EngineError } from './errors';
 import { FORMATIONS, type Formation, type FormationId } from './formations';
 import { roundMoney } from './money';
+import {
+  droppedValue,
+  isDuePenalty,
+  isRegisteredFor,
+  registeredFor,
+} from './rules/deregistration';
 import { remainingMonths } from './rules/value';
 import { currentWindow } from './state';
 import type { GameState, SquadPlayer, XISelection } from './types';
@@ -49,7 +56,15 @@ export interface ScoreBreakdown {
   balance: { score: number };
   ageProfile: { score: number };
   contractHealth: { score: number };
-  valueCreated: { ratio: number; score: number };
+  valueCreated: {
+    ratio: number;
+    /** The component score, after any deregistration penalty. */
+    score: number;
+    /** Players penalised for deregistration this game. */
+    deregistered: number;
+    /** Points taken off the component for them. */
+    penalty: number;
+  };
   /**
    * The weighted rating before the squad-size cap. Equals total unless the
    * squad is below MIN_VIABLE_SQUAD_SIZE.
@@ -67,8 +82,9 @@ export interface ScoreBreakdown {
  * @param state - The current game state.
  * @param selection - The proposed starting eleven.
  * @throws {EngineError} INVALID_XI when the selection is malformed: unknown
- *   formation, wrong length, duplicates, players not in the squad, or a
- *   player in a slot their position cannot fill.
+ *   formation, wrong length, duplicates, players not in the squad, a
+ *   player off the Premier League list, or a player in a slot their
+ *   position cannot fill.
  */
 export function validateXI(state: GameState, selection: XISelection): void {
   // Typed as possibly-undefined deliberately: a replayed action log from an
@@ -100,6 +116,12 @@ export function validateXI(state: GameState, selection: XISelection): void {
         `Player ${String(playerId)} is not in the squad`,
       );
     }
+    if (!isRegisteredFor(player, 'PL')) {
+      throw new EngineError(
+        'INVALID_XI',
+        `${player.name} is off the Premier League list and cannot play`,
+      );
+    }
     if (!slot.eligible.includes(player.position)) {
       throw new EngineError(
         'INVALID_XI',
@@ -127,12 +149,16 @@ export function scoreGame(state: GameState): ScoreBreakdown {
   // may also be called on replayed or reconstructed states.
   validateXI(state, state.xi);
 
+  // Only players on the Premier League list can play, so only they count
+  // towards quality, depth, balance and the size cap. Age, contracts and
+  // value judge the whole squad: a deregistered player is still the club's.
+  const playable = registeredFor(state.squad, 'PL');
   const xiIds = new Set(state.xi.playerIds);
-  const xiPlayers = state.squad.filter((p) => xiIds.has(p.id));
-  const rest = state.squad.filter((p) => !xiIds.has(p.id));
+  const xiPlayers = playable.filter((p) => xiIds.has(p.id));
+  const rest = playable.filter((p) => !xiIds.has(p.id));
 
   const squadQuality = scoreSquadQuality(xiPlayers, rest);
-  const balance = scoreBalance(state.squad);
+  const balance = scoreBalance(playable);
   const ageProfile = scoreAgeProfile(state.squad);
   const contractHealth = scoreContractHealth(state);
   const valueCreated = scoreValueCreated(state);
@@ -147,7 +173,7 @@ export function scoreGame(state: GameState): ScoreBreakdown {
 
   // A squad too small to cover the healthy-squad template is not fit for
   // purpose: cap the rating however good the eleven picked from it looks.
-  const squadSizeCapped = state.squad.length < MIN_VIABLE_SQUAD_SIZE;
+  const squadSizeCapped = playable.length < MIN_VIABLE_SQUAD_SIZE;
   const total = squadSizeCapped
     ? Math.min(rawTotal, UNVIABLE_SQUAD_MAX_SCORE)
     : rawTotal;
@@ -196,7 +222,8 @@ export function autoPickBestXI(state: GameState): XISelection {
   const weightById = new Map(
     byId.map((p, index) => [p.id, p.quality + (count - index) / (count + 1)]),
   );
-  const players: WeightedPlayer[] = state.squad.map((p) => ({
+  // Players off the Premier League list cannot be picked.
+  const players: WeightedPlayer[] = registeredFor(state.squad, 'PL').map((p) => ({
     id: p.id,
     position: p.position,
     quality: p.quality,
@@ -520,16 +547,31 @@ function scoreValueCreated(
     state.config.initialSquad.reduce((sum, p) => sum + p.baseValue, 0) +
     (state.config.loanedOut ?? []).reduce((sum, l) => sum + l.player.baseValue, 0) +
     state.config.windows.reduce((sum, w) => sum + w.budget, 0);
+  // The game's end closes the final window, so a player still off a list
+  // then is penalised as any earlier close would have done: his value drops
+  // and he joins those already penalised (Sam, 02/10/2026).
+  const dueAtEnd = state.squad.filter((p) => isDuePenalty(state, p));
+  const dueIds = new Set(dueAtEnd.map((p) => p.id));
   const finalWorth =
-    state.squad.reduce((sum, p) => sum + p.baseValue, 0) +
+    state.squad.reduce(
+      (sum, p) => sum + (dueIds.has(p.id) ? droppedValue(p.baseValue) : p.baseValue),
+      0,
+    ) +
     state.loanedOut.reduce((sum, l) => sum + l.player.baseValue, 0) +
     state.funds;
 
   const ratio = finalWorth / startingWorth;
-  const score = Math.min(
+  const earned = Math.min(
     100,
     Math.max(0, VALUE_CREATED_BASE + (ratio - 1) * VALUE_CREATED_SLOPE),
   );
+  const deregistered = state.deregistrationPenalties.length + dueAtEnd.length;
+  const penalty = deregistered * DEREGISTRATION_SCORE_PENALTY;
 
-  return { ratio: Math.round(ratio * 1000) / 1000, score: roundMoney(score) };
+  return {
+    ratio: Math.round(ratio * 1000) / 1000,
+    score: roundMoney(Math.max(0, earned - penalty)),
+    deregistered,
+    penalty,
+  };
 }

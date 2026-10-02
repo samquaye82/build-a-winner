@@ -150,7 +150,12 @@ describe('scoreGame', () => {
     expect(breakdown.balance.score).toBe(46.2);
     expect(breakdown.ageProfile.score).toBe(94.1);
     expect(breakdown.contractHealth.score).toBe(55);
-    expect(breakdown.valueCreated).toEqual({ ratio: 1, score: 50 });
+    expect(breakdown.valueCreated).toEqual({
+      ratio: 1,
+      score: 50,
+      deregistered: 0,
+      penalty: 0,
+    });
     expect(breakdown.total).toBe(65);
   });
 
@@ -209,7 +214,12 @@ describe('scoreGame', () => {
     // Worth 488 against 498 handed over: ratio 0.98, score 50 - 2 x 2.5.
     const state = play({ type: 'PICK_XI', selection: fixtureXI });
     const breakdown = scoreGame({ ...state, funds: 90 });
-    expect(breakdown.valueCreated).toEqual({ ratio: 0.98, score: 45 });
+    expect(breakdown.valueCreated).toEqual({
+      ratio: 0.98,
+      score: 45,
+      deregistered: 0,
+      penalty: 0,
+    });
   });
 });
 

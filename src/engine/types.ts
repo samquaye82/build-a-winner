@@ -55,6 +55,12 @@ export interface SeasonPoint {
 }
 
 /**
+ * The competitions a squad is registered for: the Premier League's 25-man
+ * list, and UEFA's Champions League Lists A and B.
+ */
+export type Competition = 'PL' | 'UCL';
+
+/**
  * A player's employment terms with the club.
  */
 export interface Contract {
@@ -222,6 +228,13 @@ export interface SquadPlayer extends SquadPlayerSeed {
    * add wages but no amortisation to the squad cost.
    */
   promotion?: Promotion;
+  /**
+   * Competitions the player has been left off (Sam, 02/10/2026): still
+   * under contract and counted in every financial figure, but outside that
+   * competition's registration rules, and, for the Premier League, unable
+   * to play. Absent when he is registered for everything.
+   */
+  deregisteredFrom?: readonly Competition[];
 }
 
 /**
@@ -417,6 +430,14 @@ export type Action =
   | { type: 'PROMOTE'; playerId: string }
   | { type: 'UNDO_PROMOTE'; playerId: string }
   /**
+   * Leaves a squad player off a competition's registration list, or puts
+   * him back. Free within the window it is made in; a window that closes
+   * with him still off any list costs him 20% of his value and the final
+   * score a penalty (see rules/deregistration.ts).
+   */
+  | { type: 'DEREGISTER'; playerId: string; competition: Competition }
+  | { type: 'REREGISTER'; playerId: string; competition: Competition }
+  /**
    * Submits the current window and opens the next. One-way: earlier windows
    * cannot be reopened. Rejected while soft-constraint violations remain.
    */
@@ -455,6 +476,12 @@ export interface GameState {
    * `squad` at the opening of their return window.
    */
   loanedOut: readonly LoanedOutPlayer[];
+  /**
+   * Ids of players penalised for deregistration: each was still off a list
+   * when a window closed. Append-only, and a player appears at most once,
+   * so the value drop and the score penalty are taken once per game.
+   */
+  deregistrationPenalties: readonly string[];
   departed: readonly DepartedPlayer[];
   /** The chosen starting eleven; set by PICK_XI in the final window. */
   xi?: XISelection;

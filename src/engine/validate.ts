@@ -6,6 +6,7 @@
  * only allowed when the list is empty.
  */
 import { validateBudget } from './rules/budget';
+import { registeredFor } from './rules/deregistration';
 import { validateRegistration } from './rules/registration';
 import { validateScr } from './rules/scr';
 import { validateUefaRegistration } from './rules/uefa';
@@ -22,8 +23,12 @@ import type { GameState } from './types';
 export function validateState(state: GameState): Violation[] {
   return [
     ...validateBudget(state),
-    ...validateRegistration(state.squad),
-    ...validateUefaRegistration(state.squad, currentWindow(state)),
+    // Each competition's rules judge only the players registered for it.
+    ...validateRegistration(registeredFor(state.squad, 'PL')),
+    ...validateUefaRegistration(
+      registeredFor(state.squad, 'UCL'),
+      currentWindow(state),
+    ),
     ...validateScr(state),
   ];
 }

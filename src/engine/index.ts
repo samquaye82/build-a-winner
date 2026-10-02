@@ -19,12 +19,13 @@
  * Bump whenever a rules change would make scores incomparable with earlier
  * versions; a future leaderboard must only compare like-for-like versions.
  */
-export const ENGINE_VERSION = '0.15.0';
+export const ENGINE_VERSION = '0.16.0';
 
 export type {
   AcademyPlayerSeed,
   Action,
   Acquisition,
+  Competition,
   Contract,
   DepartedPlayer,
   DepartureReason,
@@ -93,6 +94,11 @@ export { isLocked } from './rules/lock';
 export { countRegistration, isU21 } from './rules/registration';
 export { priceRenewal } from './rules/renewal';
 export { computeSquadCost, type SquadCostBreakdown } from './rules/scr';
+export {
+  isDeregistered,
+  isRegisteredFor,
+  registeredFor,
+} from './rules/deregistration';
 export {
   assignUefaLists,
   isListBEligible,

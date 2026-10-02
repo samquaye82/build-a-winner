@@ -3,6 +3,10 @@
  *
  * Applied when a window is submitted, in this documented order:
  *
+ *   0. Deregistration penalties: a player still off a registration list as
+ *      the window closes loses 20% of his value, once per game (see
+ *      rules/deregistration.ts).
+ *
  *   1. Contract expiry (season boundaries only): players whose deals end at
  *      or before the new season leave for free.
  *   2. Age tick (season boundaries only): every remaining player ages one
@@ -28,6 +32,7 @@
 import { FREE_AGENT_WAGE_PREMIUM } from './constants';
 import { EngineError } from './errors';
 import { roundMoney } from './money';
+import { penaliseDeregistrations } from './rules/deregistration';
 import {
   computeSaleValue,
   contractYearsDemand,
@@ -51,17 +56,17 @@ import { isSubmittable, validateState } from './validate';
  * @throws {EngineError} NO_NEXT_WINDOW when already in the final window;
  *   WINDOW_NOT_SUBMITTABLE while soft-constraint violations remain.
  */
-export function advanceWindow(state: GameState): GameState {
-  const nextIndex = state.windowIndex + 1;
-  const nextWindow = state.config.windows[nextIndex];
+export function advanceWindow(submitted: GameState): GameState {
+  const nextIndex = submitted.windowIndex + 1;
+  const nextWindow = submitted.config.windows[nextIndex];
   if (nextWindow === undefined) {
     throw new EngineError(
       'NO_NEXT_WINDOW',
       'Already in the final window; the game ends here',
     );
   }
-  if (!isSubmittable(state)) {
-    const summary = validateState(state)
+  if (!isSubmittable(submitted)) {
+    const summary = validateState(submitted)
       .map((v) => v.code)
       .join(', ');
     throw new EngineError(
@@ -69,6 +74,10 @@ export function advanceWindow(state: GameState): GameState {
       `Cannot submit the window with outstanding violations: ${summary}`,
     );
   }
+
+  // 0. The window closes: deregistration penalties fall now, before any
+  // progression, so the value drop is in place before value drift.
+  const state = penaliseDeregistrations(submitted);
 
   const seasonBoundary =
     nextWindow.seasonStartYear > currentWindow(state).seasonStartYear;
