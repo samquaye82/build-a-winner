@@ -14,8 +14,14 @@
  * - In-game signings amortise as fee / contract years at signing. Renewing
  *   a signed player does NOT re-spread the fee over the new term (no
  *   Chelsea-style amortisation games).
+ * - A player signed before the game whose fee the baseline does not cover
+ *   (SquadPlayerSeed.priorSigning) amortises the same way, from the window
+ *   he is first in the squad: a player away on loan adds nothing until he
+ *   returns (Sam, 02/10/2026).
+ * - Either way the spread is capped at MAX_CONTRACT_YEARS: a six-year deal
+ *   amortises over five.
  */
-import { SCR_LIMIT } from '../constants';
+import { MAX_CONTRACT_YEARS, SCR_LIMIT } from '../constants';
 import { roundMoney } from '../money';
 import { currentWindow } from '../state';
 import type { GameState } from '../types';
@@ -29,7 +35,10 @@ export interface SquadCostBreakdown {
   wageBill: number;
   /** Club-level amortisation from pre-game signings (EUR m per year). */
   baselineAmortisation: number;
-  /** Amortisation from in-game signings still at the club (EUR m/year). */
+  /**
+   * Amortisation from in-game signings, and from players signed before the
+   * game who carry their own fee, still at the club (EUR m/year).
+   */
   signingAmortisation: number;
   /** Total annual squad cost (EUR m). */
   total: number;
@@ -51,9 +60,9 @@ export function computeSquadCost(state: GameState): SquadCostBreakdown {
 
   for (const player of state.squad) {
     wageBill += player.contract.salary;
-    if (player.acquisition !== undefined) {
-      signingAmortisation +=
-        player.acquisition.fee / player.acquisition.contractYears;
+    const fee = player.acquisition ?? player.priorSigning;
+    if (fee !== undefined) {
+      signingAmortisation += annualAmortisation(fee.fee, fee.contractYears);
     }
   }
 
@@ -74,6 +83,18 @@ export function computeSquadCost(state: GameState): SquadCostBreakdown {
     cap: roundMoney(capBase * SCR_LIMIT),
     ratio: Math.round((total / capBase) * 1000) / 1000,
   };
+}
+
+/**
+ * The yearly amortisation of a transfer fee: spread evenly over the
+ * contract, but never over more than MAX_CONTRACT_YEARS.
+ *
+ * @param fee - Transfer fee in EUR m.
+ * @param contractYears - Contract length agreed at signing.
+ * @returns Annual amortisation in EUR m.
+ */
+export function annualAmortisation(fee: number, contractYears: number): number {
+  return fee / Math.min(contractYears, MAX_CONTRACT_YEARS);
 }
 
 /**

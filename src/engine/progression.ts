@@ -10,10 +10,12 @@
  *   3. Value drift: every player's baseValue moves along the age/quality
  *      curve at half the annual rate; saleValue is recomputed from the new
  *      baseValue and remaining contract length.
- *   4. Market swap: the next window's authored pool opens, minus anyone
+ *   4. Loan returns: club players away on loan age and drift exactly as in
+ *      steps 2 and 3, and those due back join the squad.
+ *   5. Market swap: the next window's authored pool opens, minus anyone
  *      already in the squad (a player sold earlier may be re-listed:
  *      buy-backs are allowed).
- *   5. Funds: unspent money rolls forward and the board adds the new
+ *   6. Funds: unspent money rolls forward and the board adds the new
  *      window's budget.
  *
  * A "season boundary" is a transition where seasonStartYear increases
@@ -96,7 +98,21 @@ export function advanceWindow(state: GameState): GameState {
     progressPlayer(player, seasonBoundary, nextWindow),
   );
 
-  // 4. Market swap: authored pool minus players already at the club, PLUS
+  // 4. Loan returns. A player away is still the club's, so he ages and his
+  // value drifts as if he were here; the returners then join the squad
+  // before the market opens, so it never lists them.
+  const loanedOut = state.loanedOut.map((loan) => ({
+    ...loan,
+    player: progressPlayer(loan.player, seasonBoundary, nextWindow),
+  }));
+  squad = [
+    ...squad,
+    ...loanedOut
+      .filter((loan) => loan.returnsInWindow === nextIndex)
+      .map((loan) => loan.player),
+  ];
+
+  // 5. Market swap: authored pool minus players already at the club, PLUS
   // the players who just walked: an expired contract makes a free agent,
   // not a ghost. Re-signing your own departed player is allowed, at a
   // free-agency wage premium.
@@ -135,7 +151,7 @@ export function advanceWindow(state: GameState): GameState {
     progressAcademyPlayer(player, seasonBoundary, nextWindow),
   );
 
-  // 5. Funds roll forward plus the new window's budget.
+  // 6. Funds roll forward plus the new window's budget.
   return {
     ...state,
     windowIndex: nextIndex,
@@ -143,6 +159,7 @@ export function advanceWindow(state: GameState): GameState {
     squad,
     market,
     academy,
+    loanedOut: loanedOut.filter((loan) => loan.returnsInWindow > nextIndex),
     departed: [...state.departed, ...expired, ...returned],
   };
 }

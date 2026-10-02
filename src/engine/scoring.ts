@@ -12,7 +12,8 @@
  *                       weighted by quality (a star running down their deal
  *                       hurts far more than a reserve)
  *   Value created   5%  (final squad value + funds) vs (starting squad
- *                       value + all budgets granted)
+ *                       value + all budgets granted); players away on
+ *                       loan count on both sides
  *
  * Component scores are 0-100 and rounded to one decimal; the total is a
  * whole number. A squad below MIN_VIABLE_SQUAD_SIZE is not fit for
@@ -512,11 +513,17 @@ function scoreContractHealth(
 function scoreValueCreated(
   state: GameState,
 ): ScoreBreakdown['valueCreated'] {
+  // Players away on loan are the club's from the start, so they count in
+  // what was handed over and in what is handed back (Sam, 02/10/2026).
+  // Otherwise their automatic return would read as value the player made.
   const startingWorth =
     state.config.initialSquad.reduce((sum, p) => sum + p.baseValue, 0) +
+    (state.config.loanedOut ?? []).reduce((sum, l) => sum + l.player.baseValue, 0) +
     state.config.windows.reduce((sum, w) => sum + w.budget, 0);
   const finalWorth =
-    state.squad.reduce((sum, p) => sum + p.baseValue, 0) + state.funds;
+    state.squad.reduce((sum, p) => sum + p.baseValue, 0) +
+    state.loanedOut.reduce((sum, l) => sum + l.player.baseValue, 0) +
+    state.funds;
 
   const ratio = finalWorth / startingWorth;
   const score = Math.min(

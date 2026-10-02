@@ -146,6 +146,22 @@ export interface Promotion {
 }
 
 /**
+ * A transfer agreed before the game whose fee the club baseline does not
+ * cover, so the player carries his own amortisation. Unlike an Acquisition
+ * it is not an in-game signing: no funds move, there is nothing to undo,
+ * and it never counts as money the player spent.
+ */
+export interface PriorSigning {
+  /** Transfer fee agreed, in EUR m. */
+  fee: number;
+  /**
+   * Contract length agreed, in years. Amortisation spreads the fee over
+   * this, capped at MAX_CONTRACT_YEARS like any signing.
+   */
+  contractYears: number;
+}
+
+/**
  * Authored form of a squad player, as written in the data files. The engine
  * derives the runtime SquadPlayer from this at game start.
  */
@@ -170,6 +186,11 @@ export interface SquadPlayerSeed extends PlayerCore {
    * models no loan mechanics beyond this, so he simply cannot be traded.
    */
   onLoan?: boolean;
+  /**
+   * Present for a player signed before the game whose fee is amortised
+   * individually rather than inside GameConfig.baselineAmortisation.
+   */
+  priorSigning?: PriorSigning;
   contract: Contract;
 }
 
@@ -293,6 +314,30 @@ export interface WindowConfig {
 }
 
 /**
+ * Authored form of a club player who is away on loan when the game opens.
+ * He belongs to the club but plays elsewhere, and rejoins the squad
+ * automatically at the start of a later window.
+ */
+export interface LoanedOutSeed {
+  player: SquadPlayerSeed;
+  /** The club he is on loan at, for display. */
+  club: string;
+  /** Index of the window at whose opening he rejoins the squad (1 or later). */
+  returnsInWindow: number;
+}
+
+/**
+ * A club player away on loan, as held in game state. Until he returns he
+ * is outside every rule and topline figure: no squad place, no
+ * registration, no squad cost, and he cannot be sold or renewed.
+ */
+export interface LoanedOutPlayer {
+  player: SquadPlayer;
+  club: string;
+  returnsInWindow: number;
+}
+
+/**
  * A rival club for the end-of-game season projection. Strength is a single
  * 0-100 rating in the same units as player quality; the simulation treats it
  * as both the rival's attack and defence.
@@ -320,6 +365,12 @@ export interface GameConfig {
    * Optional so configs without an academy stay valid.
    */
   academy?: readonly AcademyPlayerSeed[];
+  /**
+   * Club players away on loan when the game opens, each rejoining the squad
+   * at the window his entry names. Optional so configs without any stay
+   * valid.
+   */
+  loanedOut?: readonly LoanedOutSeed[];
   /**
    * Rival clubs for the end-of-game season projection: each is played home
    * and away, so nineteen rivals make a 38-game season. Optional; the
@@ -398,6 +449,12 @@ export interface GameState {
    * every rule and topline figure until PROMOTE moves them across.
    */
   academy: readonly SquadPlayer[];
+  /**
+   * Club players still away on loan. They age and their value drifts with
+   * every transition, exactly as squad players do, and they move into
+   * `squad` at the opening of their return window.
+   */
+  loanedOut: readonly LoanedOutPlayer[];
   departed: readonly DepartedPlayer[];
   /** The chosen starting eleven; set by PICK_XI in the final window. */
   xi?: XISelection;

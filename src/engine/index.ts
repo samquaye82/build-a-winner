@@ -19,7 +19,7 @@
  * Bump whenever a rules change would make scores incomparable with earlier
  * versions; a future leaderboard must only compare like-for-like versions.
  */
-export const ENGINE_VERSION = '0.14.0';
+export const ENGINE_VERSION = '0.15.0';
 
 export type {
   AcademyPlayerSeed,
@@ -30,9 +30,12 @@ export type {
   DepartureReason,
   GameConfig,
   GameState,
+  LoanedOutPlayer,
+  LoanedOutSeed,
   MarketPlayer,
   PlayerCore,
   Position,
+  PriorSigning,
   Promotion,
   Renewal,
   RivalTeam,

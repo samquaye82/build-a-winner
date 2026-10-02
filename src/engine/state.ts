@@ -6,6 +6,7 @@ import { computeSaleValue } from './rules/value';
 import type {
   GameConfig,
   GameState,
+  LoanedOutPlayer,
   MarketPlayer,
   SquadPlayer,
   WindowConfig,
@@ -18,8 +19,9 @@ import type {
  *   squad, market pools).
  * @returns The state at the opening of the first window: full budget, empty
  *   action log, first window's market pool available.
- * @throws {Error} If the config has no windows or the market pools are not
- *   index-aligned with the windows.
+ * @throws {Error} If the config has no windows, the market pools are not
+ *   index-aligned with the windows, or a player out on loan returns in a
+ *   window that does not exist or after his contract has run out.
  */
 export function createGame(config: GameConfig): GameState {
   const firstWindow = config.windows[0];
@@ -56,6 +58,35 @@ export function createGame(config: GameConfig): GameState {
     ),
   }));
 
+  // Players away on loan are derived the same way and held apart until
+  // their return window opens (see progression.ts).
+  const loanedOut: LoanedOutPlayer[] = (config.loanedOut ?? []).map((seed) => {
+    const returnWindow = config.windows[seed.returnsInWindow];
+    if (seed.returnsInWindow < 1 || returnWindow === undefined) {
+      throw new Error(
+        `${seed.player.name} is set to return in window ${String(seed.returnsInWindow)}, which is not a later window of this game`,
+      );
+    }
+    // A contract that ends before he is back would need him released while
+    // away, which the game does not model: reject the config instead.
+    if (seed.player.contract.expiryYear <= returnWindow.seasonStartYear) {
+      throw new Error(
+        `${seed.player.name}'s contract expires in ${String(seed.player.contract.expiryYear)}, before he returns from loan`,
+      );
+    }
+    return {
+      ...seed,
+      player: {
+        ...seed.player,
+        saleValue: computeSaleValue(
+          seed.player.baseValue,
+          seed.player.contract.expiryYear,
+          firstWindow,
+        ),
+      },
+    };
+  });
+
   return {
     config,
     windowIndex: 0,
@@ -63,6 +94,7 @@ export function createGame(config: GameConfig): GameState {
     squad,
     market: config.marketByWindow[0] ?? [],
     academy,
+    loanedOut,
     departed: [],
     actionLog: [],
   };
