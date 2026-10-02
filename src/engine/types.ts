@@ -92,8 +92,11 @@ export interface PlayerCore {
   quality: number;
   /**
    * UEFA locally-trained status relative to the player's current club.
-   * Absent means 'none'. Static across the game: no player can complete
-   * three seasons' training inside its eighteen months.
+   * Absent means 'none'. Held static across the game, and authored as the
+   * status the player has, or will have, once it can matter: training only
+   * counts on List A, and a player still accruing it is 21 or under, so he
+   * sits on List B whenever he has been at the club long enough to accrue
+   * it.
    */
   uefaTraining?: UefaTraining;
   /**
