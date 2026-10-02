@@ -155,6 +155,8 @@ export const LIVERPOOL_UEFA_REGISTRATION: readonly UefaRegistrationEntry[] = [
   { player: 'victor-munoz-osasuna', training: 'none', joined: summerOf(2026) },
   // Austria Vienna, 01/07/2026 (sweep)
   { player: 'ifeanyi-ndukwe', training: 'none', joined: summerOf(2026) },
+  // Genk, signed summer 2026 and loaned straight back (Sam, 02/10/2026).
+  { player: 'lucca-brughmans-39626', training: 'none', joined: summerOf(2026) },
 
   // --- On loan from Barcelona for 2026/27 ---------------------------------
   // 10/08/2026 (sweep).

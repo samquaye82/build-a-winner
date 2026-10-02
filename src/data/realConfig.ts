@@ -22,6 +22,7 @@
 import type {
   AcademyPlayerSeed,
   GameConfig,
+  LoanedOutSeed,
   MarketPlayer,
   Position,
   RivalTeam,
@@ -39,7 +40,11 @@ import {
   MARKET_UNLOCKED_EXCEPTIONS,
   MARKET_UNTOUCHABLE_MIN_VALUE_M,
 } from './lockedLists';
-import { LOANED_OUT } from './loansOut';
+import {
+  LIVERPOOL_OUT_ON_LOAN,
+  LOANED_OUT,
+  type PriorSigningTerms,
+} from './loansOut';
 import {
   LIVERPOOL_UEFA_REGISTRATION,
   MARKET_CLUB_TRAINED,
@@ -286,10 +291,81 @@ const loanDestinations = new Map<string, { club: string; league: string }>();
   }
 }
 
+/**
+ * A squad seed for a player Liverpool signed before the game, built from
+ * his market listing (which still shows his loan club) and the Liverpool
+ * terms authored in loansOut.ts.
+ *
+ * @param listing - His generated market entry.
+ * @param terms - His Liverpool contract and fee.
+ * @returns His squad seed.
+ */
+function priorSigningSeed(
+  listing: GeneratedMarketPlayer,
+  terms: PriorSigningTerms,
+): SquadPlayerSeed {
+  return {
+    id: listing.id,
+    name: listing.name,
+    position: listing.position as Position,
+    age: listing.age,
+    homegrown: listing.homegrown,
+    quality: listing.quality,
+    baseValue: terms.baseValue,
+    locked: false,
+    ...uefaFor(listing.id, listing.name),
+    priorSigning: { fee: terms.fee, contractYears: terms.contractYears },
+    contract: { expiryYear: terms.expiryYear, salary: terms.salary },
+  };
+}
+
+/**
+ * Liverpool players away on loan for 2026/27, rejoining the squad in
+ * Summer 2027. Each is looked up in the first team, then the academy, then
+ * the market, and verified as he is resolved (see LIVERPOOL_OUT_ON_LOAN).
+ * Whoever is resolved here is then left out of the squad, the academy and
+ * every market pool: he is Liverpool's, and away.
+ */
+const loanedOut: LoanedOutSeed[] = LIVERPOOL_OUT_ON_LOAN.flatMap((entry) => {
+  const named = (player: { id: string; name: string }): boolean =>
+    player.id === entry.player || player.name === entry.player;
+  if (!generatedMarket.some((player) => player.club === entry.to)) {
+    console.warn(
+      `Liverpool loanee ${entry.player} sent to ${entry.to}, which the dataset does not hold; skipped`,
+    );
+    return [];
+  }
+  const loan = { club: entry.to, returnsInWindow: LOAN_RETURN_WINDOW_INDEX };
+
+  const firstTeam = ownedSquad.find(named);
+  if (firstTeam !== undefined) {
+    return [{ ...loan, player: firstTeam }];
+  }
+  const youth = (academyData.players as AcademyDataPlayer[]).find(named);
+  if (youth !== undefined) {
+    return [{ ...loan, player: { ...academySeed(youth), locked: false } }];
+  }
+  const listing = generatedMarket.find(named);
+  if (listing === undefined) {
+    console.warn(`Liverpool loanee not found: ${entry.player}`);
+    return [];
+  }
+  if (entry.signing === undefined) {
+    console.warn(
+      `Liverpool loanee ${entry.player} is listed at ${listing.club} with no Liverpool terms; skipped`,
+    );
+    return [];
+  }
+  return [{ ...loan, player: priorSigningSeed(listing, entry.signing) }];
+});
+
+/** Ids of everyone in `loanedOut`, to keep them out of every other pool. */
+const awayIds = new Set(loanedOut.map((loan) => loan.player.id));
+
 const marketByWindow: MarketPlayer[][] = [0, 1, 2].map((windowIndex) =>
   generatedMarket.flatMap((player) => {
     const terms = player.windows[windowIndex];
-    if (terms === undefined) {
+    if (terms === undefined || awayIds.has(player.id)) {
       return [];
     }
     // On loan for 2026/27, home again by summer 2027. Ownership is not
@@ -367,34 +443,53 @@ const loanedIn: SquadPlayerSeed[] = LOANED_IN.flatMap((loan) => {
   ];
 });
 
-const initialSquad: SquadPlayerSeed[] = [...ownedSquad, ...loanedIn];
+const initialSquad: SquadPlayerSeed[] = [
+  ...ownedSquad.filter((player) => !awayIds.has(player.id)),
+  ...loanedIn,
+];
 
 /**
  * The academy pool: promotable youngsters, all sharing the fixed attributes
  * above. Positions, ages and home-grown status are authored in
  * academy-players.json; everything else is applied here.
  */
-const academy: AcademyPlayerSeed[] = (
-  academyData.players as AcademyDataPlayer[]
-).map((player) => ({
-  id: player.id,
-  name: player.name,
-  position: player.position as Position,
-  age: player.age,
-  homegrown: player.homegrown,
-  quality: ACADEMY_QUALITY,
-  baseValue: ACADEMY_BASE_VALUE,
-  ...uefaFor(player.id, player.name),
-  contract: {
-    expiryYear: ACADEMY_EXPIRY_YEAR,
-    salary: ACADEMY_SALARY_EUR_M,
-  },
-}));
+const academy: AcademyPlayerSeed[] = (academyData.players as AcademyDataPlayer[])
+  .filter((player) => !awayIds.has(player.id))
+  .map(academySeed);
 
-// An entry naming nobody in the squad or academy is a typo or a departed
-// player: report it rather than let it pass silently.
+/**
+ * An academy player's seed: his authored position, age and home-grown
+ * status, with the academy's fixed attributes.
+ *
+ * @param player - His entry in academy-players.json.
+ * @returns His seed.
+ */
+function academySeed(player: AcademyDataPlayer): AcademyPlayerSeed {
+  return {
+    id: player.id,
+    name: player.name,
+    position: player.position as Position,
+    age: player.age,
+    homegrown: player.homegrown,
+    quality: ACADEMY_QUALITY,
+    baseValue: ACADEMY_BASE_VALUE,
+    ...uefaFor(player.id, player.name),
+    contract: {
+      expiryYear: ACADEMY_EXPIRY_YEAR,
+      salary: ACADEMY_SALARY_EUR_M,
+    },
+  };
+}
+
+// An entry naming nobody in the squad, the academy or away on loan is a
+// typo or a departed player: report it rather than let it pass silently.
 for (const entry of LIVERPOOL_UEFA_REGISTRATION) {
-  const matched = [...initialSquad, ...academy].some(
+  const liverpool = [
+    ...initialSquad,
+    ...academy,
+    ...loanedOut.map((loan) => loan.player),
+  ];
+  const matched = liverpool.some(
     (player) => player.id === entry.player || player.name === entry.player,
   );
   if (!matched) {
@@ -444,6 +539,7 @@ export const realConfig: GameConfig = {
   initialSquad,
   marketByWindow,
   academy,
+  loanedOut,
   rivals,
   baselineAmortisation: BASELINE_AMORTISATION,
 };

@@ -136,3 +136,65 @@ export const LOANED_OUT: readonly LoanedOutPlayer[] = [
   { player: 'Yassir Zabiri', from: 'Rennes', to: 'Racing Santander' },
   { player: 'Álex Jiménez', from: 'Bournemouth', to: 'Fiorentina' },
 ];
+
+/**
+ * Terms for a player Liverpool signed before the game who is not yet in the
+ * squad data: the dataset still lists him at the club he is on loan to.
+ */
+export interface PriorSigningTerms {
+  /** Transfer fee agreed, in EUR m. */
+  fee: number;
+  /** Contract length agreed, in years; amortisation is capped at five. */
+  contractYears: number;
+  /** Season-end year his Liverpool contract runs to. */
+  expiryYear: number;
+  /** Annual salary at Liverpool, in EUR m. */
+  salary: number;
+  /** Underlying market value, in EUR m. */
+  baseValue: number;
+}
+
+/** A Liverpool player away on loan for 2026/27. */
+export interface LiverpoolLoanee {
+  /** Capology slug or exact display name, as with the other lists. */
+  player: string;
+  /** The club he plays for this season. */
+  to: string;
+  /** Present only for a signing the dataset does not yet show at Liverpool. */
+  signing?: PriorSigningTerms;
+}
+
+/**
+ * Liverpool players away on loan for 2026/27 (Sam, 02/10/2026). Each one is
+ * the club's but out of the squad for January 2027, and rejoins it in
+ * Summer 2027, when every 2026/27 loan has ended.
+ *
+ * A player is looked up in the first team, then the academy, then the
+ * market. Only a market player needs `signing` terms, since the dataset
+ * still lists him at another club. Every entry is verified as it is
+ * applied: an unknown player, a borrowing club the dataset does not hold,
+ * or a market player with no terms is reported and skipped.
+ */
+export const LIVERPOOL_OUT_ON_LOAN: readonly LiverpoolLoanee[] = [
+  // Contract to 2028 on unchanged wages (Sam, 02/10/2026; corrected in the
+  // master, where Capology had 2027).
+  { player: 'harvey-elliott-37715', to: 'Valencia' },
+  // Promoted from the academy to the first team; keeps the academy's fixed
+  // terms.
+  { player: 'ifeanyi-ndukwe', to: 'Levante' },
+  // Signed from Genk in summer 2026 for EUR 35m on a six-year deal to 2032,
+  // and loaned straight back. Paid before the game, so no funds move, but
+  // the fee amortises from his return (EUR 7m a year under the five-year
+  // cap). Valued at his fee; on the same wage as Giorgi Mamardashvili.
+  {
+    player: 'lucca-brughmans-39626',
+    to: 'Genk',
+    signing: {
+      fee: 35,
+      contractYears: 6,
+      expiryYear: 2032,
+      salary: 6.1,
+      baseValue: 35,
+    },
+  },
+];

@@ -19,7 +19,11 @@ import {
 } from '../../src/data/uefaRegistration';
 
 const state = createGame(realConfig);
-const liverpoolPlayers = [...state.squad, ...state.academy];
+const liverpoolPlayers = [
+  ...state.squad,
+  ...state.academy,
+  ...state.loanedOut.map((loan) => loan.player),
+];
 
 /**
  * Finds a Liverpool first-team or academy player by id.
@@ -37,7 +41,7 @@ function liverpoolPlayer(id: string) {
 }
 
 describe('UEFA registration data', () => {
-  it('gives_every_first_team_and_academy_player_an_entry', () => {
+  it('gives_every_first_team_academy_and_loaned_out_player_an_entry', () => {
     // A player with no entry has no known spell, so he would be put on
     // List A however long he has been at the club.
     for (const player of liverpoolPlayers) {
@@ -102,11 +106,14 @@ describe('the opening squad', () => {
   it('needs_two_more_list_a_places_than_it_has', () => {
     // The January puzzle (Sam, 02/10/2026). Jacquet and Leoni are under 21,
     // so the Premier League exempts them, but neither has List B's two
-    // years at the club, so both take List A places: 27 against 25.
+    // years at the club, so both take List A places. Elliott, away at
+    // Valencia, frees one place but takes a locally trained one with him,
+    // which cuts the limit by one: 26 against 24.
     const window = realConfig.windows[0]!;
     const lists = assignUefaLists(state.squad, window);
-    expect(lists.listA).toHaveLength(27);
-    expect(lists.listALimit).toBe(25);
+    expect(lists.listA).toHaveLength(26);
+    expect(lists.locallyTrained).toBe(7);
+    expect(lists.listALimit).toBe(24);
     expect(lists.listA).toContain('jeremy-jacquet-38546');
     expect(lists.listA).toContain('giovanni-leoni-39072');
     expect(validateUefaRegistration(state.squad, window).map((v) => v.code)).toEqual([
