@@ -1,16 +1,20 @@
 /**
- * The constraint dashboard: funds, registration counts, SCR meter and squad
- * size as muted tiles, plus the live violations panel (design.md §3).
+ * The constraint dashboard: funds, Premier League and UEFA registration
+ * counts, SCR meter and squad size as muted tiles, plus the live violations
+ * panel (design.md §3).
  */
 import {
+  assignUefaLists,
   computeSquadCost,
   countRegistration,
+  currentWindow,
   validateState,
 } from '../../engine';
 import {
   NON_HOMEGROWN_LIMIT,
   OVER21_REGISTRATION_LIMIT,
   SCR_LIMIT,
+  UCL_LOCALLY_TRAINED_PLACES,
 } from '../../engine/constants';
 import { formatMoney } from '../helpers';
 import { useGame } from '../GameContext';
@@ -23,6 +27,7 @@ import { useGame } from '../GameContext';
 export function Dashboard(): React.JSX.Element {
   const { state } = useGame();
   const counts = countRegistration(state.squad);
+  const uefa = assignUefaLists(state.squad, currentWindow(state));
   const cost = computeSquadCost(state);
   const violations = validateState(state);
 
@@ -54,6 +59,18 @@ export function Dashboard(): React.JSX.Element {
           <div className="label">Over-21 registered</div>
           <div className="value">
             {counts.over21} / {OVER21_REGISTRATION_LIMIT}
+          </div>
+        </div>
+        <div
+          className={`tile${has('UCL_LIST_A_OVER_LIMIT') || has('UCL_NOT_ENOUGH_GOALKEEPERS') ? ' violating' : ''}`}
+        >
+          <div className="label">UEFA List A</div>
+          <div className="value">
+            {uefa.listA.length} / {uefa.listALimit}
+          </div>
+          <div className="sub">
+            {uefa.locallyTrained} / {UCL_LOCALLY_TRAINED_PLACES} locally
+            trained, {uefa.listB.length} on List B
           </div>
         </div>
         <div className={`tile${has('SCR_EXCEEDED') ? ' violating' : ''}`}>
