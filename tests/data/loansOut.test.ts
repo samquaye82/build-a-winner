@@ -17,8 +17,8 @@ const state = createGame(realConfig);
 const awayIds = state.loanedOut.map((loan) => loan.player.id);
 
 /**
- * The opening January plus the two List A places it needs, then Summer
- * 2027 (see realConfig.test.ts for why the places are needed).
+ * The opening January, with the two sales its UEFA List A needs, then
+ * Summer 2027 (see realConfig.test.ts for why the sales are needed).
  *
  * @returns The state at the opening of Summer 2027.
  */

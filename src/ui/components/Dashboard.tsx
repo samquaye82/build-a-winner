@@ -14,6 +14,7 @@ import {
   NON_HOMEGROWN_LIMIT,
   OVER21_REGISTRATION_LIMIT,
   SCR_LIMIT,
+  UCL_LIST_A_LIMIT,
   UCL_LOCALLY_TRAINED_PLACES,
 } from '../../engine/constants';
 import { formatMoney } from '../helpers';
@@ -62,11 +63,11 @@ export function Dashboard(): React.JSX.Element {
           </div>
         </div>
         <div
-          className={`tile${has('UCL_LIST_A_OVER_LIMIT') || has('UCL_NOT_ENOUGH_GOALKEEPERS') ? ' violating' : ''}`}
+          className={`tile${has('UCL_LIST_A_OVER_LIMIT') || has('UCL_OPEN_PLACES_EXCEEDED') || has('UCL_NOT_ENOUGH_GOALKEEPERS') ? ' violating' : ''}`}
         >
           <div className="label">UEFA List A</div>
           <div className="value">
-            {uefa.listA.length} / {uefa.listALimit}
+            {uefa.listA.length} / {UCL_LIST_A_LIMIT}
           </div>
           <div className="sub">
             {uefa.locallyTrained} / {UCL_LOCALLY_TRAINED_PLACES} locally

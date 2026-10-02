@@ -17,6 +17,7 @@ export type ViolationCode =
   | 'BUDGET_EXCEEDED'
   | 'SCR_EXCEEDED'
   | 'UCL_LIST_A_OVER_LIMIT'
+  | 'UCL_OPEN_PLACES_EXCEEDED'
   | 'UCL_NOT_ENOUGH_GOALKEEPERS';
 
 /** A single soft-constraint breach, ready for display. */

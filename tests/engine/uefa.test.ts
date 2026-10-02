@@ -149,23 +149,24 @@ describe('assignUefaLists', () => {
     expect(lists.listA).toEqual(['gk1', 'gk2', 'gk3', 'senior', 'new-youth']);
   });
 
-  it('allows_the_full_25_with_eight_locally_trained', () => {
+  it('fills_the_eight_reserved_and_seventeen_open_places', () => {
     const lists = assignUefaLists(
       [...players('home', 8, { training: 'club' }), ...players('x', 17)],
       summer,
     );
     expect(lists.locallyTrained).toBe(8);
-    expect(lists.listALimit).toBe(25);
+    expect(lists.inOpenPlaces).toBe(17);
   });
 
-  it('cuts_the_limit_by_one_for_each_unfilled_reserved_place', () => {
-    // UEFA's own example: six locally trained players, a limit of 23.
+  it('leaves_an_unfilled_reserved_place_empty', () => {
+    // Six locally trained players fill six of the eight reserved places;
+    // the other two cannot go to anyone else.
     const lists = assignUefaLists(
       [...players('home', 6, { training: 'club' }), ...players('x', 10)],
       summer,
     );
     expect(lists.locallyTrained).toBe(6);
-    expect(lists.listALimit).toBe(23);
+    expect(lists.inOpenPlaces).toBe(10);
   });
 
   it('counts_no_more_than_four_association_trained_players', () => {
@@ -179,7 +180,8 @@ describe('assignUefaLists', () => {
     expect(lists.clubTrained).toBe(2);
     expect(lists.associationTrained).toBe(6);
     expect(lists.locallyTrained).toBe(6);
-    expect(lists.listALimit).toBe(23);
+    // The two association-trained players beyond four take open places.
+    expect(lists.inOpenPlaces).toBe(2);
   });
 
   it('fills_the_eight_with_four_of_each', () => {
@@ -191,7 +193,7 @@ describe('assignUefaLists', () => {
       summer,
     );
     expect(lists.locallyTrained).toBe(8);
-    expect(lists.listALimit).toBe(25);
+    expect(lists.inOpenPlaces).toBe(0);
   });
 
   it('never_counts_more_than_eight_however_many_are_trained', () => {
@@ -200,7 +202,8 @@ describe('assignUefaLists', () => {
       summer,
     );
     expect(lists.locallyTrained).toBe(8);
-    expect(lists.listALimit).toBe(25);
+    // The four beyond eight are registered in open places.
+    expect(lists.inOpenPlaces).toBe(4);
   });
 
   it('earns_no_quota_from_locally_trained_players_on_list_b', () => {
@@ -282,33 +285,40 @@ describe('validateUefaRegistration', () => {
     expect(validateUefaRegistration(squad, summer)).toEqual([]);
   });
 
-  it('flags_a_list_a_over_the_full_limit', () => {
+  it('flags_a_list_a_over_25', () => {
+    // 26 players can fill at most eight reserved places, so they always
+    // overfill the open places too: both are reported.
     const squad = [
       ...keepers(),
       ...players('home', 8, { training: 'club' }),
       ...players('x', 15),
     ];
     const violations = validateUefaRegistration(squad, summer);
-    expect(violations.map((v) => v.code)).toEqual(['UCL_LIST_A_OVER_LIMIT']);
+    expect(violations.map((v) => v.code)).toEqual([
+      'UCL_LIST_A_OVER_LIMIT',
+      'UCL_OPEN_PLACES_EXCEEDED',
+    ]);
     expect(violations[0]?.message).toBe(
-      'UEFA List A needs 26 places; the limit is 25',
+      'UEFA List A has 26 players; the maximum is 25',
     );
   });
 
-  it('flags_a_list_a_over_its_reduced_limit_and_says_why', () => {
-    // 24 players would fit a full list, but six locally trained cut it to 23.
+  it('flags_too_many_players_outside_the_reserved_places', () => {
+    // 24 players fit within 25, but only six are locally trained, so 18
+    // would need the 17 open places.
     const squad = [
       ...keepers(),
       ...players('home', 6, { training: 'club' }),
       ...players('x', 15),
     ];
     const violations = validateUefaRegistration(squad, summer);
+    expect(violations.map((v) => v.code)).toEqual(['UCL_OPEN_PLACES_EXCEEDED']);
     expect(violations[0]?.message).toBe(
-      'UEFA List A needs 24 places; with 6 of 8 locally trained places filled, the limit is 23',
+      'UEFA List A has 18 players who are not locally trained; 8 of its 25 places are reserved for locally trained players, so at most 17 are allowed',
     );
   });
 
-  it('accepts_a_short_quota_when_the_squad_fits_the_reduced_limit', () => {
+  it('accepts_a_short_quota_when_the_open_places_suffice', () => {
     const squad = [
       ...keepers(),
       ...players('home', 6, { training: 'club' }),

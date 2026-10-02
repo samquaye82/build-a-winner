@@ -171,9 +171,10 @@ describe('realConfig', () => {
   });
 
   it('sends_loanees_back_to_their_parent_club_after_the_season', () => {
-    // The opening squad needs two more UEFA List A places than it has, so
-    // January must make room before it can be submitted (Sam, 02/10/2026).
-    // Two senior players who are not locally trained free them.
+    // The opening squad has 26 on UEFA List A, against a maximum of 25, and
+    // 19 outside its reserved places, against 17 (Sam, 02/10/2026), so
+    // January must make room before it can be submitted. Two senior players
+    // who are not locally trained fix both.
     const state = [
       { type: 'SELL', playerId: 'konstantinos-tsimikas-35197' } as const,
       { type: 'SELL', playerId: 'wataru-endo-34009' } as const,

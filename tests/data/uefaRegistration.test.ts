@@ -103,21 +103,22 @@ describe('UEFA registration data', () => {
 });
 
 describe('the opening squad', () => {
-  it('needs_two_more_list_a_places_than_it_has', () => {
+  it('opens_one_over_25_and_two_over_the_open_places', () => {
     // The January puzzle (Sam, 02/10/2026). Jacquet and Leoni are under 21,
     // so the Premier League exempts them, but neither has List B's two
-    // years at the club, so both take List A places. Elliott, away at
-    // Valencia, frees one place but takes a locally trained one with him,
-    // which cuts the limit by one: 26 against 24.
+    // years at the club, so both are on List A. Elliott, away at Valencia,
+    // takes a locally trained player with him. List A has 26 against a
+    // maximum of 25, and 19 players outside the reserved places against 17.
     const window = realConfig.windows[0]!;
     const lists = assignUefaLists(state.squad, window);
     expect(lists.listA).toHaveLength(26);
     expect(lists.locallyTrained).toBe(7);
-    expect(lists.listALimit).toBe(24);
+    expect(lists.inOpenPlaces).toBe(19);
     expect(lists.listA).toContain('jeremy-jacquet-38546');
     expect(lists.listA).toContain('giovanni-leoni-39072');
     expect(validateUefaRegistration(state.squad, window).map((v) => v.code)).toEqual([
       'UCL_LIST_A_OVER_LIMIT',
+      'UCL_OPEN_PLACES_EXCEEDED',
     ]);
   });
 });

@@ -3,10 +3,11 @@
  *
  * A club registers its squad on two lists:
  *
- * - **List A**: at most 25 players. Eight places are reserved for locally
- *   trained players (see UefaTraining), and at most four of those eight may
- *   be association-trained. Each reserved place the club cannot fill costs
- *   the list one place, so six locally trained players cut the limit to 23.
+ * - **List A**: at most 25 players, a limit that never moves. Eight places
+ *   are reserved for locally trained players (see UefaTraining), and at
+ *   most four of those eight may be association-trained. A reserved place
+ *   no such player fills stays empty, so at most 17 List A players may be
+ *   anyone else: with six locally trained players a club can register 23.
  *   At least two goalkeepers must be on it.
  * - **List B**: unlimited, for players who are young enough and have been
  *   at the club for two uninterrupted years.
@@ -18,10 +19,11 @@
  * Which list a player goes on is not the player's choice to make in the
  * game: the engine works out the best legal assignment itself. That is
  * safe because the best assignment is always the obvious one. Moving a
- * List-B-eligible player onto List A adds one to the list and at most one
- * to the locally trained count, so it can never make room. Every eligible
- * player therefore goes on List B, except that young goalkeepers move up
- * when List A would otherwise be short of two.
+ * List-B-eligible player onto List A adds a player to the 25 and, unless he
+ * counts as locally trained, one to the 17 open places too, so it can only
+ * ever make things worse. Every eligible player therefore goes on List B,
+ * except that young goalkeepers move up when List A would otherwise be
+ * short of two.
  *
  * Simplifications, each documented where it applies:
  * - List B's age test reuses the Premier League U21 test (isU21). Both
@@ -41,6 +43,7 @@ import {
   UCL_LIST_B_TENURE_YEARS,
   UCL_LOCALLY_TRAINED_PLACES,
   UCL_MIN_GOALKEEPERS,
+  UCL_OPEN_PLACES,
 } from '../constants';
 import type { PlayerCore, SeasonPoint, UefaTraining, WindowConfig } from '../types';
 import { isU21 } from './registration';
@@ -107,13 +110,17 @@ export interface UefaRegistration {
   /** Association-trained players on List A. */
   associationTrained: number;
   /**
-   * Locally trained players counted towards the eight reserved places:
-   * every club-trained player, plus association-trained players up to
-   * four, capped at eight.
+   * Locally trained players filling the eight reserved places: every
+   * club-trained player, plus association-trained players up to four,
+   * capped at eight.
    */
   locallyTrained: number;
-  /** List A's limit once any unfilled reserved places are taken off. */
-  listALimit: number;
+  /**
+   * List A players in the open places: everyone not filling a reserved
+   * one, including association-trained players beyond the four. At most
+   * UCL_OPEN_PLACES.
+   */
+  inOpenPlaces: number;
   /** Goalkeepers across both lists, i.e. in the whole squad. */
   goalkeepers: number;
 }
@@ -191,8 +198,7 @@ export function assignUefaLists(
     clubTrained,
     associationTrained,
     locallyTrained,
-    listALimit:
-      UCL_LIST_A_LIMIT - (UCL_LOCALLY_TRAINED_PLACES - locallyTrained),
+    inOpenPlaces: listA.length - locallyTrained,
     goalkeepers: squad.filter((p) => p.position === 'GK').length,
   };
 }
@@ -201,9 +207,10 @@ export function assignUefaLists(
  * Validates a squad against the UEFA registration rules.
  *
  * Fewer than eight locally trained players is not a violation in its own
- * right: the real rule turns the shortfall into a smaller List A, and that
- * is already in the limit. Nor is a List A short of two goalkeepers, which
- * can only happen when the squad is short of three, already reported.
+ * right: the reserved places they would fill simply stay empty, which the
+ * open-places check already accounts for. Nor is a List A short of two
+ * goalkeepers, which can only happen when the squad is short of three,
+ * already reported.
  *
  * @param squad - The current squad.
  * @param window - The window being registered for.
@@ -216,15 +223,17 @@ export function validateUefaRegistration(
   const registration = assignUefaLists(squad, window);
   const violations: Violation[] = [];
 
-  const needed = registration.listA.length;
-  if (needed > registration.listALimit) {
-    const reason =
-      registration.locallyTrained < UCL_LOCALLY_TRAINED_PLACES
-        ? `with ${String(registration.locallyTrained)} of ${String(UCL_LOCALLY_TRAINED_PLACES)} locally trained places filled, the limit is ${String(registration.listALimit)}`
-        : `the limit is ${String(registration.listALimit)}`;
+  const registered = registration.listA.length;
+  if (registered > UCL_LIST_A_LIMIT) {
     violations.push({
       code: 'UCL_LIST_A_OVER_LIMIT',
-      message: `UEFA List A needs ${String(needed)} places; ${reason}`,
+      message: `UEFA List A has ${String(registered)} players; the maximum is ${String(UCL_LIST_A_LIMIT)}`,
+    });
+  }
+  if (registration.inOpenPlaces > UCL_OPEN_PLACES) {
+    violations.push({
+      code: 'UCL_OPEN_PLACES_EXCEEDED',
+      message: `UEFA List A has ${String(registration.inOpenPlaces)} players who are not locally trained; ${String(UCL_LOCALLY_TRAINED_PLACES)} of its ${String(UCL_LIST_A_LIMIT)} places are reserved for locally trained players, so at most ${String(UCL_OPEN_PLACES)} are allowed`,
     });
   }
   if (registration.goalkeepers < UCL_MIN_GOALKEEPERS) {
