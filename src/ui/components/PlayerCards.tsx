@@ -5,6 +5,7 @@
 import {
   currentWindow,
   isLocked,
+  type LoanedOutPlayer,
   type MarketPlayer,
   type SquadPlayer,
 } from '../../engine';
@@ -256,6 +257,39 @@ export function SoldCard({ player }: { player: SquadPlayer }): React.JSX.Element
         >
           Undo sale
         </button>
+      </div>
+    </article>
+  );
+}
+
+/**
+ * A read-only card for a club player away on loan: who he is, where he is,
+ * and the window he rejoins the squad in. No actions, because a player
+ * away cannot be sold or renewed until he is back.
+ *
+ * @param props.loan - The player away on loan.
+ * @param props.returnsIn - Label of the window he returns in.
+ * @returns The card element.
+ */
+export function LoanedOutCard({
+  loan,
+  returnsIn,
+}: {
+  loan: LoanedOutPlayer;
+  returnsIn: string;
+}): React.JSX.Element {
+  const { player } = loan;
+  return (
+    <article className="player-card">
+      <div className="quality">{player.quality}</div>
+      <h3 className="name">{player.name}</h3>
+      <div className="meta">
+        <span>{player.position}</span>
+        <span>{player.age}</span>
+        <span>At {loan.club}</span>
+      </div>
+      <div className="actions">
+        <span>Back in {returnsIn}</span>
       </div>
     </article>
   );

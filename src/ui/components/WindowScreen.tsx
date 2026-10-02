@@ -9,7 +9,13 @@ import { useGame } from '../GameContext';
 import { groupByPosition, POSITION_LABELS, POSITION_ORDER } from '../helpers';
 import { Dashboard } from './Dashboard';
 import { MarketBrowser } from './MarketBrowser';
-import { AcademyCard, RenewalCard, SoldCard, SquadCard } from './PlayerCards';
+import {
+  AcademyCard,
+  LoanedOutCard,
+  RenewalCard,
+  SoldCard,
+  SquadCard,
+} from './PlayerCards';
 
 type Tab = 'squad' | 'market' | 'academy' | 'renewals';
 
@@ -166,6 +172,24 @@ export function WindowScreen({
               <div className="card-grid">
                 {soldThisWindow.map((d) => (
                   <SoldCard key={d.player.id} player={d.player} />
+                ))}
+              </div>
+            </section>
+          )}
+          {/* Players away on loan come back on their own, so January can
+              plan around them; read-only until they return. */}
+          {state.loanedOut.length > 0 && (
+            <section>
+              <span className="pill">Out on loan</span>
+              <div className="card-grid">
+                {state.loanedOut.map((loan) => (
+                  <LoanedOutCard
+                    key={loan.player.id}
+                    loan={loan}
+                    returnsIn={
+                      state.config.windows[loan.returnsInWindow]?.label ?? ''
+                    }
+                  />
                 ))}
               </div>
             </section>
