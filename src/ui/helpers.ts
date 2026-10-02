@@ -7,6 +7,7 @@ import {
   MAX_CONTRACT_YEARS,
 } from '../engine/constants';
 import {
+  isRegisteredFor,
   isU21,
   priceRenewal,
   remainingMonths,
@@ -301,7 +302,14 @@ export function scoreComponentRows(
     { label: 'Balance', score: breakdown.balance.score },
     { label: 'Age profile', score: breakdown.ageProfile.score },
     { label: 'Contract health', score: breakdown.contractHealth.score },
-    { label: 'Value created', score: breakdown.valueCreated.score },
+    {
+      // A deregistration penalty is named, so the score explains itself.
+      label:
+        breakdown.valueCreated.penalty > 0
+          ? `Value created (−${String(breakdown.valueCreated.penalty)} for ${String(breakdown.valueCreated.deregistered)} deregistered)`
+          : 'Value created',
+      score: breakdown.valueCreated.score,
+    },
   ];
 }
 
@@ -382,6 +390,9 @@ export function buildShareText(
   ].join('\n');
 }
 
+/** The kinds of status badge a player card can show. */
+export type BadgeKind = 'u21' | 'hg' | 'expiring' | 'off-pl' | 'off-ucl' | 'loan';
+
 /**
  * The status badges shown on a player card.
  *
@@ -392,9 +403,8 @@ export function buildShareText(
 export function playerBadges(
   player: SquadPlayer,
   window: WindowConfig,
-): { kind: 'u21' | 'hg' | 'expiring' | 'loan'; label: string }[] {
-  const badges: { kind: 'u21' | 'hg' | 'expiring' | 'loan'; label: string }[] =
-    [];
+): { kind: BadgeKind; label: string }[] {
+  const badges: { kind: BadgeKind; label: string }[] = [];
   if (isU21(player)) {
     badges.push({ kind: 'u21', label: 'U21' });
   } else if (player.homegrown) {
@@ -402,6 +412,12 @@ export function playerBadges(
   }
   if (isExpiring(player, window)) {
     badges.push({ kind: 'expiring', label: 'Expiring' });
+  }
+  if (!isRegisteredFor(player, 'PL')) {
+    badges.push({ kind: 'off-pl', label: 'Off PL' });
+  }
+  if (!isRegisteredFor(player, 'UCL')) {
+    badges.push({ kind: 'off-ucl', label: 'Off UCL' });
   }
   // Last in the row: it is the fact that most changes what you can do with
   // the player, so it should be the one the eye finishes on.

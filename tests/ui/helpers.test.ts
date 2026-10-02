@@ -12,9 +12,15 @@ import {
   isExpiring,
   playerBadges,
   renewalOptions,
+  scoreComponentRows,
 } from '../../src/ui/helpers';
 import { makeSquadPlayer, testWindow, threeTestWindows } from '../engine/fixtures';
-import { createGame, type WindowConfig } from '../../src/engine';
+import {
+  applyAction,
+  createGame,
+  scoreGame,
+  type WindowConfig,
+} from '../../src/engine';
 import { makeTestConfig } from '../engine/fixtures';
 
 const januaryWindow = threeTestWindows[0] as WindowConfig;
@@ -93,6 +99,18 @@ describe('badges', () => {
     expect(badges.at(-1)?.label).toBe('On loan');
   });
 
+  it('marks_each_list_a_player_is_off_before_the_loan_badge', () => {
+    const player = {
+      ...makeSquadPlayer({ id: 'f' }),
+      saleValue: 0,
+      onLoan: true,
+      deregisteredFrom: ['UCL', 'PL'] as const,
+    };
+    const badges = playerBadges(player, testWindow);
+    expect(badges.map((b) => b.kind)).toEqual(['off-pl', 'off-ucl', 'loan']);
+    expect(badges.map((b) => b.label)).toEqual(['Off PL', 'Off UCL', 'On loan']);
+  });
+
   it('leaves_an_owned_player_unbadged_as_a_loanee', () => {
     const owned = { ...makeSquadPlayer({ id: 'e' }), saleValue: 0 };
     expect(playerBadges(owned, testWindow).map((b) => b.kind)).not.toContain(
@@ -144,5 +162,35 @@ describe('verdict', () => {
     expect(verdict(72)).toMatch(/Europa League/);
     expect(verdict(71)).toMatch(/failed/);
     expect(verdict(0)).toMatch(/failed/);
+  });
+});
+
+describe('scoreComponentRows', () => {
+  /** The single-window fixture XI (see tests/engine/scoring.test.ts). */
+  const pick = {
+    type: 'PICK_XI',
+    selection: {
+      formationId: '4-2-3-1',
+      playerIds: [
+        'gk1', 'rb1', 'cb1', 'cb2', 'lb1',
+        'cm1', 'cm2', 'rw1', 'am1', 'lw1', 'st1',
+      ],
+    },
+  } as const;
+
+  it('labels_value_created_plainly_without_a_penalty', () => {
+    const state = applyAction(createGame(makeTestConfig()), pick);
+    const rows = scoreComponentRows(scoreGame(state));
+    expect(rows.at(-1)?.label).toBe('Value created');
+  });
+
+  it('names_a_deregistration_penalty_in_the_value_created_label', () => {
+    const state = [
+      { type: 'DEREGISTER', playerId: 'gk2', competition: 'UCL' } as const,
+      pick,
+    ].reduce(applyAction, createGame(makeTestConfig()));
+    const rows = scoreComponentRows(scoreGame(state));
+    expect(rows.at(-1)?.label).toBe('Value created (−10 for 1 deregistered)');
+    expect(rows.at(-1)?.score).toBe(39.7);
   });
 });

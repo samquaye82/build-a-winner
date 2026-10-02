@@ -8,6 +8,7 @@ import {
   computeSquadCost,
   countRegistration,
   currentWindow,
+  registeredFor,
   validateState,
 } from '../../engine';
 import {
@@ -27,8 +28,12 @@ import { useGame } from '../GameContext';
  */
 export function Dashboard(): React.JSX.Element {
   const { state } = useGame();
-  const counts = countRegistration(state.squad);
-  const uefa = assignUefaLists(state.squad, currentWindow(state));
+  // Each list counts only the players registered for it, as the rules do.
+  const counts = countRegistration(registeredFor(state.squad, 'PL'));
+  const uefa = assignUefaLists(
+    registeredFor(state.squad, 'UCL'),
+    currentWindow(state),
+  );
   const cost = computeSquadCost(state);
   const violations = validateState(state);
 

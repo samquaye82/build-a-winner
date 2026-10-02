@@ -316,6 +316,9 @@ button {
 .badge.hg { background: var(--green-tint); color: var(--green); }
 .badge.u21 { background: var(--gold); color: var(--ink); }
 .badge.expiring { background: var(--red-tint); color: var(--red); }
+/* Off a registration list: existing tokens, pending the UI pass. */
+.badge.off-pl,
+.badge.off-ucl { background: var(--red-tint); color: var(--red); }
 /* Solid deep red, so a loanee reads as a different kind of fact from the
    three tinted status badges rather than another shade of the same. */
 .badge.loan { background: var(--red-deep); color: var(--white-88); }
@@ -897,7 +900,8 @@ button {
   color: var(--ink-70);
 }
 
-.xi-squad-row.picked {
+.xi-squad-row.picked,
+.xi-squad-row.unavailable {
   opacity: 0.4;
 }
 

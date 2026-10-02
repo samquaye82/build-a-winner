@@ -5,6 +5,8 @@
 import {
   currentWindow,
   isLocked,
+  isRegisteredFor,
+  type Competition,
   type LoanedOutPlayer,
   type MarketPlayer,
   type SquadPlayer,
@@ -117,7 +119,60 @@ export function SquadCard({ player }: { player: SquadPlayer }): React.JSX.Elemen
           </>
         )}
       </div>
+      <RegistrationToggles player={player} />
     </article>
+  );
+}
+
+/** Short names for the registration toggles. */
+const COMPETITION_LABELS: Readonly<Record<Competition, string>> = {
+  PL: 'PL',
+  UCL: 'UCL',
+};
+
+/**
+ * Deregister / re-register buttons for each competition. Shown for every
+ * squad player, locked or on loan included: leaving a player off a list is
+ * not a sale. The cost falls only if a window closes with him still off.
+ *
+ * @param props.player - The squad player.
+ * @returns The toggle row.
+ */
+function RegistrationToggles({
+  player,
+}: {
+  player: SquadPlayer;
+}): React.JSX.Element {
+  const { dispatch } = useGame();
+  const competitions: readonly Competition[] = ['PL', 'UCL'];
+  return (
+    <div className="actions">
+      {competitions.map((competition) => {
+        const registered = isRegisteredFor(player, competition);
+        return (
+          <button
+            key={competition}
+            type="button"
+            className="action-link"
+            title={
+              registered
+                ? 'Still under contract. If the window closes with him off the list, he loses 20% of his value and costs 10 points of value created.'
+                : undefined
+            }
+            onClick={() =>
+              dispatch({
+                type: registered ? 'DEREGISTER' : 'REREGISTER',
+                playerId: player.id,
+                competition,
+              })
+            }
+          >
+            {registered ? 'Deregister' : 'Re-register'}{' '}
+            {COMPETITION_LABELS[competition]}
+          </button>
+        );
+      })}
+    </div>
   );
 }
 

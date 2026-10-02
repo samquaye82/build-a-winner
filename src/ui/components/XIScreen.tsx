@@ -5,6 +5,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   FORMATIONS,
+  isRegisteredFor,
   type FormationId,
   type SquadPlayer,
 } from '../../engine';
@@ -47,14 +48,22 @@ export function XIScreen({
   const pickedIds = new Set(picks.filter((id): id is string => id !== null));
   const pickedCount = pickedIds.size;
 
-  /** Eligible, unpicked squad players for a slot, best first. */
+  /**
+   * Eligible, unpicked squad players for a slot, best first. Players off
+   * the Premier League list cannot play, so they are never offered.
+   */
   function optionsFor(slotIndex: number): SquadPlayer[] {
     const slot = formation.slots[slotIndex];
     if (slot === undefined) {
       return [];
     }
     return state.squad
-      .filter((p) => slot.eligible.includes(p.position) && !pickedIds.has(p.id))
+      .filter(
+        (p) =>
+          slot.eligible.includes(p.position) &&
+          !pickedIds.has(p.id) &&
+          isRegisteredFor(p, 'PL'),
+      )
       .sort((a, b) => b.quality - a.quality);
   }
 
@@ -162,8 +171,11 @@ export function XIScreen({
               <div className="xi-squad-group">{POSITION_LABELS[position]}</div>
               {group.map((player) => {
                 const picked = pickedIds.has(player.id);
+                // Off the Premier League list: shown, greyed, never picked.
+                const unavailable = !isRegisteredFor(player, 'PL');
                 const eligible =
                   !picked &&
+                  !unavailable &&
                   activeSlot !== null &&
                   (formation.slots[activeSlot]?.eligible.includes(
                     player.position,
@@ -173,7 +185,7 @@ export function XIScreen({
                   <button
                     key={player.id}
                     type="button"
-                    className={`xi-squad-row${picked ? ' picked' : ''}${eligible ? ' eligible' : ''}`}
+                    className={`xi-squad-row${picked ? ' picked' : ''}${unavailable ? ' unavailable' : ''}${eligible ? ' eligible' : ''}`}
                     disabled={!eligible}
                     onClick={() => {
                       if (activeSlot !== null) {
@@ -184,7 +196,7 @@ export function XIScreen({
                     <span className="q">{player.quality}</span>
                     <span className="xi-squad-name">{player.name}</span>
                     <span className="xi-squad-pos">
-                      {picked ? '✓ XI' : player.position}
+                      {picked ? '✓ XI' : unavailable ? 'Off PL' : player.position}
                     </span>
                   </button>
                 );
