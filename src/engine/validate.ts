@@ -8,7 +8,9 @@
 import { validateBudget } from './rules/budget';
 import { validateRegistration } from './rules/registration';
 import { validateScr } from './rules/scr';
+import { validateUefaRegistration } from './rules/uefa';
 import type { Violation } from './rules/violations';
+import { currentWindow } from './state';
 import type { GameState } from './types';
 
 /**
@@ -21,6 +23,7 @@ export function validateState(state: GameState): Violation[] {
   return [
     ...validateBudget(state),
     ...validateRegistration(state.squad),
+    ...validateUefaRegistration(state.squad, currentWindow(state)),
     ...validateScr(state),
   ];
 }

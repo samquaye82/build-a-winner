@@ -141,14 +141,15 @@ describe('scoreGame', () => {
   it('scores_the_untouched_fixture_game', () => {
     const breakdown = scoreGame(play({ type: 'PICK_XI', selection: fixtureXI }));
 
+    // Depth is the two spare keepers, gk2 (70) and gk3 (60).
     expect(breakdown.squadQuality).toEqual({
       xiAverage: 76.4,
-      depthAverage: 70,
-      score: 74.1,
+      depthAverage: 65,
+      score: 72.4,
     });
-    expect(breakdown.balance.score).toBe(43.7);
-    expect(breakdown.ageProfile.score).toBe(93.8);
-    expect(breakdown.contractHealth.score).toBe(58.3);
+    expect(breakdown.balance.score).toBe(46.2);
+    expect(breakdown.ageProfile.score).toBe(94.1);
+    expect(breakdown.contractHealth.score).toBe(55);
     expect(breakdown.valueCreated).toEqual({ ratio: 1, score: 50 });
     expect(breakdown.total).toBe(65);
   });
@@ -158,7 +159,8 @@ describe('scoreGame', () => {
     // full depth so the raw weighted total sails past 70 before the cap.
     const config = makeTestConfig();
     const elite = config.initialSquad.map((p) => ({ ...p, quality: 95 }));
-    const filler = Array.from({ length: 10 }, (_unused, i) =>
+    // Thirteen fixture players plus nine fillers.
+    const filler = Array.from({ length: 9 }, (_unused, i) =>
       makeSquadPlayer({ id: `star-${String(i)}`, position: 'CM', quality: 95 }),
     );
     const state = applyAction(
@@ -174,9 +176,9 @@ describe('scoreGame', () => {
   });
 
   it('does not cap a squad at or above the viability threshold', () => {
-    // Pad the fixture squad to 23 with filler midfielders.
+    // Pad the thirteen-man fixture squad to 23 with filler midfielders.
     const config = makeTestConfig();
-    const filler = Array.from({ length: 11 }, (_unused, i) =>
+    const filler = Array.from({ length: 10 }, (_unused, i) =>
       makeSquadPlayer({ id: `fill-${String(i)}`, position: 'CM' }),
     );
     const state = applyAction(
@@ -188,7 +190,7 @@ describe('scoreGame', () => {
     );
     const breakdown = scoreGame(state);
 
-    expect(state.squad.length).toBeGreaterThanOrEqual(23);
+    expect(state.squad.length).toBe(23);
     expect(breakdown.squadSizeCapped).toBe(false);
     expect(breakdown.total).toBe(breakdown.rawTotal);
   });
@@ -262,12 +264,12 @@ describe('autoPickBestXI', () => {
     const state = createGame(makeTestConfig());
     const xi = autoPickBestXI(state);
 
-    // Twelve fixture players; the best eleven drops only the spare keeper.
+    // Thirteen fixture players; the best eleven drops only the spare keepers.
     const chosen = new Set(xi.playerIds);
     const dropped = state.squad
       .map((p) => p.id)
       .filter((id) => !chosen.has(id));
-    expect(dropped).toEqual(['gk2']);
+    expect(dropped).toEqual(['gk2', 'gk3']);
     // Every shape that fields this XI ties on quality, so the smallest
     // formation id wins the tie-break. With CM eligible in defensive slots
     // and AM in wide slots, 3-4-3 can now field the same eleven and takes it.

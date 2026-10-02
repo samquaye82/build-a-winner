@@ -40,7 +40,7 @@ describe('groupByPosition', () => {
       'GK', 'RB', 'LB', 'CB', 'CM', 'AM', 'RW', 'LW', 'ST',
     ]);
     const gks = grouped[0]?.[1] ?? [];
-    expect(gks.map((p) => p.id)).toEqual(['gk1', 'gk2']);
+    expect(gks.map((p) => p.id)).toEqual(['gk1', 'gk2', 'gk3']);
   });
 });
 

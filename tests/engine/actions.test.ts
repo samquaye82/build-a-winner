@@ -29,7 +29,7 @@ describe('createGame', () => {
     const state = freshGame();
     expect(state.windowIndex).toBe(0);
     expect(state.funds).toBe(100);
-    expect(state.squad).toHaveLength(12);
+    expect(state.squad).toHaveLength(13);
     expect(state.market).toHaveLength(4);
     expect(state.actionLog).toHaveLength(0);
   });

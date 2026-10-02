@@ -136,13 +136,13 @@ export function makeTestAcademy(): AcademyPlayerSeed[] {
 }
 
 /**
- * Standard fixture squad, 12 players:
- * - gk1 (GK, HG), gk2 (GK, 31)
+ * Standard fixture squad, 13 players:
+ * - gk1 (GK, HG), gk2 (GK, 31), gk3 (GK, HG, quality 60, wage 1)
  * - cb1 (locked star), cb2 (expiring 2027), rb1 (HG), lb1
  * - cm1 (HG, quality 80, expiring 2027), cm2, am1 (U21 age 19, HG)
  * - rw1, lw1 (U21 age 20), st1 (locked)
  *
- * Total wage bill 62. Sale values derive from baseValue: unity discount
+ * Total wage bill 63. Sale values derive from baseValue: unity discount
  * everywhere except the two 2027 expiries, 12 months out at Summer 2026
  * (cb2 6, cm1 17.5).
  */
@@ -150,6 +150,8 @@ export function makeTestSquad(): SquadPlayerSeed[] {
   return [
     makeSquadPlayer({ id: 'gk1', position: 'GK', homegrown: true, baseValue: 15 }),
     makeSquadPlayer({ id: 'gk2', position: 'GK', age: 31, baseValue: 3 }),
+    // UEFA requires three goalkeepers across Lists A and B.
+    makeSquadPlayer({ id: 'gk3', position: 'GK', age: 24, homegrown: true, quality: 60, baseValue: 2, contract: { expiryYear: 2029, salary: 1 } }),
     makeSquadPlayer({ id: 'cb1', position: 'CB', quality: 90, locked: true, baseValue: 70 }),
     makeSquadPlayer({ id: 'cb2', position: 'CB', contract: { expiryYear: 2027, salary: 4 }, baseValue: 12 }),
     makeSquadPlayer({ id: 'rb1', position: 'RB', homegrown: true, baseValue: 25 }),
@@ -195,7 +197,7 @@ export function makeSummer27Market(): MarketPlayer[] {
 /**
  * Builds a complete single-window game config from the standard fixtures.
  *
- * The SCR settings give the fixture squad a starting cost of 122 (wages 62
+ * The SCR settings give the fixture squad a starting cost of 123 (wages 63
  * + baseline 60) against a cap of 175 (250 x 0.7): comfortable, so tests
  * not aimed at the SCR never trip it.
  *

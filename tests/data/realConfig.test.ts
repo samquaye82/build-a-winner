@@ -171,7 +171,13 @@ describe('realConfig', () => {
   });
 
   it('sends_loanees_back_to_their_parent_club_after_the_season', () => {
-    const state = createGame(realConfig);
+    // The opening squad needs two more UEFA List A places than it has, so
+    // January must make room before it can be submitted (Sam, 02/10/2026).
+    // Two senior players who are not locally trained free them.
+    const state = [
+      { type: 'SELL', playerId: 'konstantinos-tsimikas-35197' } as const,
+      { type: 'SELL', playerId: 'wataru-endo-34009' } as const,
+    ].reduce(applyAction, createGame(realConfig));
     const loaneeIds = state.squad
       .filter((p) => p.onLoan === true)
       .map((p) => p.id);

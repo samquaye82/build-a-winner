@@ -42,14 +42,14 @@ describe('countRegistration', () => {
   it('counts_the_fixture_squad_correctly', () => {
     const counts = countRegistration(makeTestConfig().initialSquad);
     expect(counts).toEqual({
-      over21: 10,
+      over21: 11,
       nonHomegrownOver21: 7,
-      // Over-21 home-grown: gk1, rb1, cm1 (am1 is a U21 HG player and is
-      // exempt, so it does not count here). Invariant: 3 + 7 = 10.
-      homegrownOver21: 3,
+      // Over-21 home-grown: gk1, gk3, rb1, cm1 (am1 is a U21 HG player and
+      // is exempt, so it does not count here). Invariant: 4 + 7 = 11.
+      homegrownOver21: 4,
       u21: 2,
-      total: 12,
-      goalkeepers: 2,
+      total: 13,
+      goalkeepers: 3,
     });
   });
 });

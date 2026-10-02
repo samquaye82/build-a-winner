@@ -33,14 +33,14 @@ describe('academy pool at game start', () => {
     const state = createGame(makeTestConfig());
     const before = computeSquadCost(state).wageBill;
     // The fixture academy carries three 0.78m salaries that must not count.
-    expect(before).toBe(62);
+    expect(before).toBe(63);
   });
 
   it('excludes academy players from the registration count', () => {
     const state = createGame(makeTestConfig());
     const counts = countRegistration(state.squad);
-    // Squad is 12 players; the three academy players are not among them.
-    expect(counts.total).toBe(12);
+    // Squad is 13 players; the three academy players are not among them.
+    expect(counts.total).toBe(13);
   });
 });
 
@@ -66,7 +66,7 @@ describe('PROMOTE', () => {
     // The 0.78m salary lands on the wage bill (rounded to the engine's 1dp
     // money precision, so it reads as +0.8).
     expect(after.wageBill).toBeGreaterThan(before.wageBill);
-    expect(after.wageBill).toBe(62.8);
+    expect(after.wageBill).toBe(63.8);
     // No acquisition means no fee to spread: signing amortisation is untouched.
     expect(after.signingAmortisation).toBe(before.signingAmortisation);
   });

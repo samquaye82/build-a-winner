@@ -157,11 +157,11 @@ describe('January 2027 -> Summer 2027 (season boundary)', () => {
       makeSquadPlayer({ id: 'edge-u21', age: 21, homegrown: false }),
     ];
     let state = createGame({ ...config, initialSquad: squad });
-    expect(countRegistration(state.squad).over21).toBe(10);
+    expect(countRegistration(state.squad).over21).toBe(11);
 
     state = applyAction(state, advance);
     // cb2 and cm1 expire (-2 over-21s); edge-u21 now counts (+1).
-    expect(countRegistration(state.squad).over21).toBe(9);
+    expect(countRegistration(state.squad).over21).toBe(10);
     expect(state.squad.find((p) => p.id === 'edge-u21')?.age).toBe(22);
   });
 
