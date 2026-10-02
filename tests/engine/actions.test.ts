@@ -119,12 +119,12 @@ describe('UNDO_BUY', () => {
   });
 
   it('undoes buying back a progression-created free agent', () => {
-    // cb2's contract expires at the 2027 season boundary, so it re-enters the
-    // Summer 2027 market as a free agent (not in the authored config pool).
-    // Buying it back and undoing must work, which regresses a bug where undo
-    // could not find the free-agent listing and silently failed.
-    let state = createGame(makeThreeWindowConfig());
-    state = applyAction(state, { type: 'ADVANCE_WINDOW' }); // -> January 2027
+    // cb2's contract expires at the 2027 season boundary, which the game
+    // crosses on its first advance, so it re-enters the Summer 2027 market
+    // as a free agent (not in the authored config pool). Buying it back and
+    // undoing must work, which regresses a bug where undo could not find
+    // the free-agent listing and silently failed.
+    let state = createGame(makeThreeWindowConfig()); // January 2027
     state = applyAction(state, { type: 'ADVANCE_WINDOW' }); // -> Summer 2027
     expect(state.market.some((p) => p.id === 'cb2')).toBe(true);
 

@@ -14,23 +14,24 @@ import {
 } from '../../src/engine';
 import { threeTestWindows } from './fixtures';
 
-const summer26 = threeTestWindows[0] as WindowConfig;
-const january27 = threeTestWindows[1] as WindowConfig;
+const summerWindow = threeTestWindows[1] as WindowConfig;
+const januaryWindow = threeTestWindows[0] as WindowConfig;
 
 describe('remainingMonths', () => {
   it('counts_whole_years_from_a_summer_window', () => {
-    expect(remainingMonths(2027, summer26)).toBe(12);
-    expect(remainingMonths(2029, summer26)).toBe(36);
+    // Summer 2027 opens the 2027/28 season, so a 2028 expiry is 12 months.
+    expect(remainingMonths(2028, summerWindow)).toBe(12);
+    expect(remainingMonths(2030, summerWindow)).toBe(36);
   });
 
   it('subtracts_six_months_in_a_january_window', () => {
-    expect(remainingMonths(2027, january27)).toBe(6);
-    expect(remainingMonths(2028, january27)).toBe(18);
-    expect(remainingMonths(2029, january27)).toBe(30);
+    expect(remainingMonths(2027, januaryWindow)).toBe(6);
+    expect(remainingMonths(2028, januaryWindow)).toBe(18);
+    expect(remainingMonths(2029, januaryWindow)).toBe(30);
   });
 
   it('never_goes_negative', () => {
-    expect(remainingMonths(2026, january27)).toBe(0);
+    expect(remainingMonths(2026, januaryWindow)).toBe(0);
   });
 });
 
@@ -52,16 +53,16 @@ describe('contractDiscount', () => {
 
 describe('computeSaleValue', () => {
   it('discounts_a_final_year_player_hard', () => {
-    // 40m player, 12 months left in Summer 2026: half price.
-    expect(computeSaleValue(40, 2027, summer26)).toBe(20);
+    // 40m player, 12 months left in Summer 2027: half price.
+    expect(computeSaleValue(40, 2028, summerWindow)).toBe(20);
   });
 
   it('discounts_an_18_month_contract_in_january', () => {
-    expect(computeSaleValue(40, 2028, january27)).toBe(30);
+    expect(computeSaleValue(40, 2028, januaryWindow)).toBe(30);
   });
 
   it('rounds_to_one_decimal_place', () => {
     // 35 x 0.25 = 8.75 -> 8.8.
-    expect(computeSaleValue(35, 2027, january27)).toBe(8.8);
+    expect(computeSaleValue(35, 2027, januaryWindow)).toBe(8.8);
   });
 });

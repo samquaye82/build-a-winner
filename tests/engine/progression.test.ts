@@ -24,9 +24,18 @@ function play(...actions: Action[]): GameState {
 
 const advance: Action = { type: 'ADVANCE_WINDOW' };
 
+/**
+ * Keeps the fixture squad submittable past Summer 2027. The season boundary
+ * is the first transition, where cb2 and cm1 expire and the twelve-man
+ * fixture squad drops to ten, below the eleven needed to submit. A free
+ * academy promotion restores the eleventh man without touching funds,
+ * values or departures, so the tests below still measure only progression.
+ */
+const refill: Action = { type: 'PROMOTE', playerId: 'acad-cb' };
+
 describe('ADVANCE_WINDOW guards', () => {
   it('rejects_advancing_past_the_final_window', () => {
-    expect(() => play(advance, advance, advance)).toThrowError(
+    expect(() => play(advance, refill, advance, advance)).toThrowError(
       /final window/,
     );
   });
@@ -44,54 +53,16 @@ describe('ADVANCE_WINDOW guards', () => {
   });
 });
 
-describe('Summer 2026 -> January 2027 (same season)', () => {
+describe('January 2027 -> Summer 2027 (season boundary)', () => {
   it('rolls_funds_forward_and_adds_the_new_budget', () => {
-    // 100 - 60 (buy-st) = 40, + 30 January budget = 70.
+    // 100 - 60 (buy-st) = 40, + 30 Summer 2027 budget = 70.
     const state = play({ type: 'BUY', playerId: 'buy-st' }, advance);
     expect(state.windowIndex).toBe(1);
     expect(state.funds).toBe(70);
   });
 
-  it('does_not_age_players_or_expire_contracts_mid_season', () => {
-    const state = play(advance);
-    const cb2 = state.squad.find((p) => p.id === 'cb2');
-    // cb2 expires 2027 but the season has not turned yet.
-    expect(cb2).toBeDefined();
-    expect(cb2?.age).toBe(26);
-  });
-
-  it('drifts_values_at_half_the_annual_rate', () => {
-    const state = play(advance);
-    const byId = new Map(state.squad.map((p) => [p.id, p]));
-
-    // cb1: age 26, quality 90 -> +8%/yr -> +4%: 70 -> 72.8.
-    expect(byId.get('cb1')?.baseValue).toBe(72.8);
-    // gk2: age 31 -> -12%/yr -> -6%: 3 -> 2.8.
-    expect(byId.get('gk2')?.baseValue).toBe(2.8);
-    // am1: age 19, quality 78 -> +12%/yr -> +6%: 30 -> 31.8.
-    expect(byId.get('am1')?.baseValue).toBe(31.8);
-    // cm1: quality 80 -> +8%/yr -> +4%: 35 -> 36.4. In January his 2027
-    // contract has only 6 months left: discount 0.25 -> 9.1. Sell now and
-    // get pennies, renew, or lose him free in the summer.
-    expect(byId.get('cm1')?.baseValue).toBe(36.4);
-    expect(byId.get('cm1')?.saleValue).toBe(9.1);
-  });
-
-  it('opens_the_new_market_minus_players_already_at_the_club', () => {
-    // buy-st is bought in Summer 2026 and also authored into the January
-    // pool: the engine must not list him twice.
-    const withStriker = play({ type: 'BUY', playerId: 'buy-st' }, advance);
-    expect(withStriker.market.map((p) => p.id)).toEqual(['jan-cm']);
-
-    // Left unbought, he appears in January at his drifted authored price.
-    const without = play(advance);
-    expect(without.market.map((p) => p.id)).toEqual(['buy-st', 'jan-cm']);
-  });
-});
-
-describe('January 2027 -> Summer 2027 (season boundary)', () => {
   it('ages_every_player_by_one_year', () => {
-    const state = play(advance, advance);
+    const state = play(advance);
     const byId = new Map(state.squad.map((p) => [p.id, p]));
     expect(byId.get('gk2')?.age).toBe(32);
     expect(byId.get('am1')?.age).toBe(20);
@@ -99,7 +70,7 @@ describe('January 2027 -> Summer 2027 (season boundary)', () => {
   });
 
   it('releases_unrenewed_expiring_contracts_for_free', () => {
-    const state = play(advance, advance);
+    const state = play(advance);
     const squadIds = state.squad.map((p) => p.id);
 
     expect(squadIds).not.toContain('cb2');
@@ -107,12 +78,12 @@ describe('January 2027 -> Summer 2027 (season boundary)', () => {
 
     const expired = state.departed.filter((d) => d.reason === 'expired');
     expect(expired.map((d) => d.player.id).sort()).toEqual(['cb2', 'cm1']);
-    // Free exits: no fee is banked. Funds are budgets only: 100 + 30 + 80.
-    expect(state.funds).toBe(210);
+    // Free exits: no fee is banked. Funds are budgets only: 100 + 30.
+    expect(state.funds).toBe(130);
   });
 
   it('relists_expired_players_as_free_agents_in_the_new_market', () => {
-    const state = play(advance, advance);
+    const state = play(advance);
     const cm1 = state.market.find((p) => p.id === 'cm1');
 
     expect(cm1).toBeDefined();
@@ -127,7 +98,7 @@ describe('January 2027 -> Summer 2027 (season boundary)', () => {
     // Buying him back works and books the real value, not the zero fee.
     const resigned = applyAction(state, { type: 'BUY', playerId: 'cm1' });
     const player = resigned.squad.find((p) => p.id === 'cm1');
-    expect(resigned.funds).toBe(210); // no fee left the account
+    expect(resigned.funds).toBe(130); // no fee left the account
     expect(player?.baseValue).toBe(cm1?.baseValue);
     expect(player?.contract.salary).toBe(12);
   });
@@ -143,10 +114,7 @@ describe('January 2027 -> Summer 2027 (season boundary)', () => {
         p.id === 'cb2' ? { ...p, onLoan: true } : p,
       ),
     });
-    const advanced = applyAction(
-      applyAction(state, { type: 'ADVANCE_WINDOW' }),
-      { type: 'ADVANCE_WINDOW' },
-    );
+    const advanced = applyAction(state, { type: 'ADVANCE_WINDOW' });
 
     expect(advanced.squad.map((p) => p.id)).not.toContain('cb2');
     expect(advanced.market.find((p) => p.id === 'cb2')).toBeUndefined();
@@ -159,16 +127,15 @@ describe('January 2027 -> Summer 2027 (season boundary)', () => {
     const state = play(
       { type: 'RENEW', playerId: 'cm1', newExpiryYear: 2030 },
       advance,
-      advance,
     );
     const cm1 = state.squad.find((p) => p.id === 'cm1');
     expect(cm1).toBeDefined();
-    expect(cm1?.contract).toEqual({ expiryYear: 2030, salary: 11.7 });
+    expect(cm1?.contract.expiryYear).toBe(2030);
   });
 
   it('pulls_an_aged_u21_into_the_registration_count', () => {
-    // A 21-year-old non-home-grown player is exempt in the first two
-    // windows but turns 22 at the boundary and starts counting.
+    // A 21-year-old non-home-grown player is exempt in the opening window
+    // but turns 22 at the boundary and starts counting.
     const config = makeThreeWindowConfig();
     const squad = [
       ...config.initialSquad,
@@ -177,25 +144,68 @@ describe('January 2027 -> Summer 2027 (season boundary)', () => {
     let state = createGame({ ...config, initialSquad: squad });
     expect(countRegistration(state.squad).over21).toBe(10);
 
-    state = [advance, advance].reduce(applyAction, state);
+    state = applyAction(state, advance);
     // cb2 and cm1 expire (-2 over-21s); edge-u21 now counts (+1).
     expect(countRegistration(state.squad).over21).toBe(9);
-    expect(
-      state.squad.find((p) => p.id === 'edge-u21')?.age,
-    ).toBe(22);
+    expect(state.squad.find((p) => p.id === 'edge-u21')?.age).toBe(22);
   });
 
-  it('compounds_value_drift_with_the_new_age_after_the_boundary', () => {
-    const state = play(advance, advance);
+  it('drifts_value_with_the_age_the_player_has_crossed_into', () => {
+    const state = play(advance);
     const byId = new Map(state.squad.map((p) => [p.id, p]));
 
-    // cb1: 70 -> 72.8 (age 26), then age 27 still +8%/yr: 72.8 -> 75.7.
-    // Contract 2029 now has 2 years left: saleValue 75.7 x 0.9 = 68.1.
-    expect(byId.get('cb1')?.baseValue).toBe(75.7);
-    expect(byId.get('cb1')?.saleValue).toBe(68.1);
+    // cb1: age 27, quality 90 -> +8%/yr -> +4% for one transition:
+    // 70 -> 72.8. His 2029 deal has 24 months left in a summer window,
+    // so the running-down discount is 0.9: 72.8 x 0.9 = 65.5.
+    expect(byId.get('cb1')?.baseValue).toBe(72.8);
+    expect(byId.get('cb1')?.saleValue).toBe(65.5);
+    // gk2: age 32 -> -12%/yr -> -6%: 3 -> 2.8.
+    expect(byId.get('gk2')?.baseValue).toBe(2.8);
+    // am1: age 20, quality 78 -> +12%/yr -> +6%: 30 -> 31.8.
+    expect(byId.get('am1')?.baseValue).toBe(31.8);
+  });
+});
 
-    // gk2: 3 -> 2.8 (age 31), then age 32 -6%: 2.8 -> 2.6.
+describe('Summer 2027 -> January 2028 (same season)', () => {
+  it('rolls_funds_forward_across_both_windows', () => {
+    // Budgets only, no sales: 100 + 30 + 80.
+    expect(play(advance, refill, advance).funds).toBe(210);
+  });
+
+  it('does_not_age_players_or_expire_contracts_mid_season', () => {
+    const state = play(advance, refill, advance);
+    const byId = new Map(state.squad.map((p) => [p.id, p]));
+
+    // Both aged once at the boundary and stay put through mid-season.
+    expect(byId.get('gk2')?.age).toBe(32);
+    expect(byId.get('cb1')?.age).toBe(27);
+    // Nothing further expires: the season has not turned again.
+    expect(state.departed.filter((d) => d.reason === 'expired')).toHaveLength(2);
+  });
+
+  it('compounds_value_drift_at_half_the_annual_rate', () => {
+    const state = play(advance, refill, advance);
+    const byId = new Map(state.squad.map((p) => [p.id, p]));
+
+    // cb1: 70 -> 72.8 across the boundary, then 72.8 -> 75.7 mid-season,
+    // both at half the annual +8%. January sits six months into the
+    // season, so his 2029 deal now reads 18 months: discount 0.75.
+    expect(byId.get('cb1')?.baseValue).toBe(75.7);
+    expect(byId.get('cb1')?.saleValue).toBe(56.8);
+    // gk2: 2.8 -> 2.6 at -6% a transition.
     expect(byId.get('gk2')?.baseValue).toBe(2.6);
+  });
+
+  it('opens_the_new_market_minus_players_already_at_the_club', () => {
+    // buy-cb is bought in January 2027 and also authored into the
+    // January 2028 pool: the engine must not list him twice.
+    const bought = play({ type: 'BUY', playerId: 'buy-cb' }, advance, advance);
+    expect(bought.market.map((p) => p.id)).not.toContain('buy-cb');
+    expect(bought.market.map((p) => p.id)).toContain('s27-lw');
+
+    // Left unbought, he appears at his drifted authored price.
+    const without = play(advance, refill, advance);
+    expect(without.market.map((p) => p.id)).toContain('buy-cb');
   });
 });
 

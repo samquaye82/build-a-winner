@@ -50,9 +50,9 @@ const FREE_IF_AGE_AT_LEAST = 31;
 
 /** The three real windows (budgets per Sam: 250 fiscal-year pots). */
 const WINDOWS: readonly WindowConfig[] = [
-  { id: 'summer-2026', label: 'Summer 2026', seasonStartYear: 2026, midSeason: false, budget: 250, squadCostCapBase: 850 },
-  { id: 'january-2027', label: 'January 2027', seasonStartYear: 2026, midSeason: true, budget: 0, squadCostCapBase: 875 },
-  { id: 'summer-2027', label: 'Summer 2027', seasonStartYear: 2027, midSeason: false, budget: 250, squadCostCapBase: 900 },
+  { id: 'january-2027', label: 'January 2027', seasonStartYear: 2026, midSeason: true, budget: 100, squadCostCapBase: 875 },
+  { id: 'summer-2027', label: 'Summer 2027', seasonStartYear: 2027, midSeason: false, budget: 200, squadCostCapBase: 962.5 },
+  { id: 'january-2028', label: 'January 2028', seasonStartYear: 2027, midSeason: true, budget: 0, squadCostCapBase: 962.5 },
 ];
 
 /** Transfer-fee-style rounding, mirroring the Python pipeline's tiers. */
@@ -136,61 +136,81 @@ function main(): void {
       : Math.round(
           r.salary * (isCurrentFreeAgent ? FREE_AGENT_WAGE_PREMIUM : WAGE_MOVE_PREMIUM) * 10,
         ) / 10;
-    const w0 = WINDOWS[0] as WindowConfig;
-    const w1 = WINDOWS[1] as WindowConfig;
-    const w2 = WINDOWS[2] as WindowConfig;
-
-    const base0 = r.value;
-    const base1 = driftBaseValue(base0, r.age, r.quality);
-    const age2 = r.age + 1;
-    const base2 = driftBaseValue(base1, age2, r.quality);
+    // Ages tick at the season boundary only. The window list now puts that
+    // boundary between January 2027 and Summer 2027, and the last two
+    // windows share the 2027/28 season, so a player is a year older for
+    // both of them rather than only for the last.
+    const opening = WINDOWS[0] as WindowConfig;
+    const ageIn = (window: WindowConfig): number =>
+      window.seasonStartYear > opening.seasonStartYear ? r.age + 1 : r.age;
 
     // Current free agents (contractless since 25/26) cost nothing in any
     // window: only their wages and the SCR bite.
     if (isCurrentFreeAgent) {
+      let freeBase = r.value;
       return {
         id: r.slug, name: r.name, position: r.position, age: r.age,
         homegrown: r.homegrown, quality: r.quality, club: 'Free agent',
         league: r.league,
-        windows: [
-          { fee: 0, wage, years: contractYearsDemand(r.age), baseValue: base0, freeAgent: true },
-          { fee: 0, wage, years: contractYearsDemand(r.age), baseValue: base1, freeAgent: true },
-          { fee: 0, wage, years: contractYearsDemand(age2), baseValue: base2, freeAgent: true },
-        ],
+        windows: WINDOWS.map((window, index) => {
+          const age = ageIn(window);
+          if (index > 0) {
+            freeBase = driftBaseValue(freeBase, age, r.quality);
+          }
+          return {
+            fee: 0,
+            wage,
+            years: contractYearsDemand(age),
+            baseValue: freeBase,
+            freeAgent: true,
+          };
+        }),
       };
     }
 
-    const fee0 = roundFee(base0 * contractDiscount(remainingMonths(r.expiryYear, w0)));
-    const fee1 = roundFee(base1 * contractDiscount(remainingMonths(r.expiryYear, w1)));
-
-    const expired = r.expiryYear <= w2.seasonStartYear;
-    const clubRenews =
-      expired &&
-      r.quality >= FREE_IF_QUALITY_BELOW &&
-      age2 < FREE_IF_AGE_AT_LEAST;
-    const fee2 = expired
-      ? clubRenews
-        ? roundFee(base2)
-        : 0
-      : roundFee(base2 * contractDiscount(remainingMonths(r.expiryYear, w2)));
-    // A released star still doubles their wage (the star rule wins over the
-    // free-agent premium); otherwise a released player takes the free-agent
-    // premium, and a still-contracted one keeps the moving wage.
-    const wage2 = isStar
-      ? wage
-      : expired && !clubRenews
-        ? Math.round(r.salary * FREE_AGENT_WAGE_PREMIUM * 10) / 10
-        : wage;
-
+    let base = r.value;
     return {
       id: r.slug, name: r.name, position: r.position, age: r.age,
       homegrown: r.homegrown, quality: r.quality, club: r.club,
       league: r.league,
-      windows: [
-        { fee: fee0, wage, years: contractYearsDemand(r.age), baseValue: base0 },
-        { fee: fee1, wage, years: contractYearsDemand(r.age), baseValue: base1 },
-        { fee: fee2, wage: wage2, years: contractYearsDemand(age2), baseValue: base2, freeAgent: expired && !clubRenews },
-      ],
+      // Each window judges the contract against its own season, so a deal
+      // expiring in 2027 has already run out by Summer 2027 and stays run
+      // out in January 2028. The previous version tested only the last
+      // window, which was correct only while the last window was the sole
+      // one in a later season.
+      windows: WINDOWS.map((window, index) => {
+        const age = ageIn(window);
+        if (index > 0) {
+          base = driftBaseValue(base, age, r.quality);
+        }
+        const expired = r.expiryYear <= window.seasonStartYear;
+        const clubRenews =
+          expired &&
+          r.quality >= FREE_IF_QUALITY_BELOW &&
+          age < FREE_IF_AGE_AT_LEAST;
+        const released = expired && !clubRenews;
+        const fee = expired
+          ? clubRenews
+            ? roundFee(base)
+            : 0
+          : roundFee(base * contractDiscount(remainingMonths(r.expiryYear, window)));
+        // A released star still doubles their wage (the star rule wins over
+        // the free-agent premium); otherwise a released player takes the
+        // free-agent premium, and a still-contracted one keeps the moving
+        // wage.
+        const windowWage = isStar
+          ? wage
+          : released
+            ? Math.round(r.salary * FREE_AGENT_WAGE_PREMIUM * 10) / 10
+            : wage;
+        return {
+          fee,
+          wage: windowWage,
+          years: contractYearsDemand(age),
+          baseValue: base,
+          freeAgent: released,
+        };
+      }),
     };
   });
 
@@ -209,6 +229,18 @@ function main(): void {
   const referenceMs = Date.parse(`${generatedAt}T00:00:00Z`);
   const MS_PER_YEAR = 31_557_600_000;
   const AGE_TOLERANCE_YEARS = 1.5;
+
+  // Contract expiry rides alongside the player records for the same reason
+  // dates of birth do: the squad-health chart reads it, no rule does, so
+  // the engine's player types stay as they are. Liverpool's own expiries
+  // live on their contracts already; this covers every other club, whose
+  // market entries carry demands rather than a current deal.
+  const expiryYears: Record<string, number> = {};
+  for (const row of rows) {
+    if (Number.isFinite(row.expiryYear)) {
+      expiryYears[row.slug] = row.expiryYear;
+    }
+  }
 
   const birthDates: Record<string, string> = {};
   let contradictory = 0;
@@ -236,12 +268,18 @@ function main(): void {
     squad: squadOut,
     market: marketOut,
     birthDates,
+    expiryYears,
   };
   writeFileSync(join(OUT_DIR, 'gameData.json'), JSON.stringify(payload));
 
-  const freeAgents27 = marketOut.filter((m) => m.windows[2]?.freeAgent).length;
-  console.log(`Squad: ${squadOut.length} | Market: ${marketOut.length}`);
-  console.log(`Summer 2027 free agents (released on expiry): ${freeAgents27}`);
+  console.log(
+    `Squad: ${squadOut.length} | Market: ${marketOut.length} | ` +
+      `Expiry years: ${String(Object.keys(expiryYears).length)}`,
+  );
+  for (const [index, window] of WINDOWS.entries()) {
+    const free = marketOut.filter((m) => m.windows[index]?.freeAgent).length;
+    console.log(`${window.label} free agents (released on expiry): ${free}`);
+  }
   console.log(`Wrote ${join(OUT_DIR, 'gameData.json')}`);
 }
 

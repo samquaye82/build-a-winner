@@ -14,21 +14,35 @@ import type {
   WindowConfig,
 } from '../../src/engine';
 
-/** A single test window: Summer 2026, EUR 100m budget. */
+/**
+ * A single generic window for the many tests that do not turn on season
+ * timing: buying, selling, registration, scoring.
+ *
+ * Deliberately a summer window, so contract arithmetic is in whole years
+ * and an expiry reads straight off the season. Fixtures here are fictional
+ * by design, so its season year need not agree with its id.
+ */
 export const testWindow: WindowConfig = {
-  id: 'summer-2026',
-  label: 'Summer 2026',
+  id: 'summer-2027',
+  label: 'Summer 2027',
   seasonStartYear: 2026,
   midSeason: false,
   budget: 100,
   squadCostCapBase: 250,
 };
 
-/** The three real windows of a full playthrough, with test budgets. */
+/**
+ * The three real windows of a full playthrough, with test budgets.
+ *
+ * Mirrors the shape the game actually has: the one season boundary falls
+ * between the first window and the second, and the last two windows share
+ * the 2027/28 season. Progression tests read the boundary off these rather
+ * than assuming where it sits.
+ */
 export const threeTestWindows: readonly WindowConfig[] = [
-  testWindow,
-  { id: 'january-2027', label: 'January 2027', seasonStartYear: 2026, midSeason: true, budget: 30, squadCostCapBase: 250 },
-  { id: 'summer-2027', label: 'Summer 2027', seasonStartYear: 2027, midSeason: false, budget: 80, squadCostCapBase: 260 },
+  { id: 'january-2027', label: 'January 2027', seasonStartYear: 2026, midSeason: true, budget: 100, squadCostCapBase: 250 },
+  { id: 'summer-2027', label: 'Summer 2027', seasonStartYear: 2027, midSeason: false, budget: 30, squadCostCapBase: 250 },
+  { id: 'january-2028', label: 'January 2028', seasonStartYear: 2027, midSeason: true, budget: 80, squadCostCapBase: 260 },
 ];
 
 /**
@@ -201,7 +215,7 @@ export function makeTestConfig(): GameConfig {
 /**
  * Builds a full three-window config from the standard fixtures.
  *
- * @returns A config spanning Summer 2026, January 2027 and Summer 2027.
+ * @returns A config spanning January 2027, Summer 2027 and January 2028.
  */
 export function makeThreeWindowConfig(): GameConfig {
   return {

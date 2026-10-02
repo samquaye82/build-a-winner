@@ -17,7 +17,7 @@ import { makeSquadPlayer, testWindow, threeTestWindows } from '../engine/fixture
 import { createGame, type WindowConfig } from '../../src/engine';
 import { makeTestConfig } from '../engine/fixtures';
 
-const january27 = threeTestWindows[1] as WindowConfig;
+const januaryWindow = threeTestWindows[0] as WindowConfig;
 
 describe('formatting', () => {
   it('formats_money_with_one_decimal_only_when_needed', () => {
@@ -107,7 +107,7 @@ describe('badges', () => {
     };
     // Summer 2026: 24 months left. January 2027: 18 months. Neither warns.
     expect(isExpiring(player, testWindow)).toBe(false);
-    expect(isExpiring(player, january27)).toBe(false);
+    expect(isExpiring(player, januaryWindow)).toBe(false);
 
     const nearer = {
       ...makeSquadPlayer({ id: 'd', contract: { expiryYear: 2027, salary: 4 } }),

@@ -85,9 +85,27 @@ const ACADEMY_QUALITY = 65;
 const ACADEMY_BASE_VALUE = 20;
 const ACADEMY_SALARY_EUR_M = 0.78;
 const ACADEMY_EXPIRY_YEAR = 2029;
-const BUDGETS: readonly number[] = [200, 0, 200];
-/** Season revenues (EUR m): 25/26 opening basis, then 26/27 and 27/28. */
-const REVENUES: readonly number[] = [875, 875, 900];
+/**
+ * Per-window budgets (EUR m), agreed with Sam (29/09/2026): January 2027
+ * opens with EUR 100m, Summer 2027 adds a full EUR 200m, and January 2028
+ * adds nothing, spending only what the first two windows left over.
+ */
+const BUDGETS: readonly number[] = [100, 200, 0];
+/**
+ * Season revenues (EUR m), which set the squad cost cap. January 2027 is
+ * the back half of 2026/27 and keeps that season's 875. Summer 2027 and
+ * January 2028 are both 2027/28, so both take one 10% uplift on it
+ * (Sam, 29/09/2026), not one uplift each: the cap is a season's, and two
+ * windows of one season cannot sit under different caps.
+ */
+const REVENUE_UPLIFT = 1.1;
+const REVENUE_2026_27 = 875;
+const REVENUE_2027_28 = REVENUE_2026_27 * REVENUE_UPLIFT;
+const REVENUES: readonly number[] = [
+  REVENUE_2026_27,
+  REVENUE_2027_28,
+  REVENUE_2027_28,
+];
 
 const windows: WindowConfig[] = (gameData.windows as WindowConfig[]).map(
   (window, index) => ({
@@ -115,8 +133,16 @@ function namedIn(list: readonly string[], id: string, name: string): boolean {
 /** The season a 2026/27 loan runs to, as a contract expiry year. */
 const LOAN_EXPIRY_YEAR = 2027;
 
-/** Window index from which the board will listen to offers (January 2027). */
-const JANUARY_WINDOW_INDEX = 1;
+/**
+ * Window index from which the board will listen to offers.
+ *
+ * The protected spine used to be held through the opening summer and
+ * released in January. The game now opens in January, so there is no
+ * earlier window to hold them through: a player on the protect-until-
+ * January list is sellable from the start, and only the always-locked list
+ * still bites.
+ */
+const JANUARY_WINDOW_INDEX = 0;
 
 const ownedSquad: SquadPlayerSeed[] = (
   gameData.squad as GeneratedSquadPlayer[]
@@ -172,7 +198,7 @@ function isUntouchable(player: GeneratedMarketPlayer): boolean {
 const generatedMarket = gameData.market as GeneratedMarketPlayer[];
 
 /** The window from which every 2026/27 loan has ended and the player is home. */
-const LOAN_RETURN_WINDOW_INDEX = 2;
+const LOAN_RETURN_WINDOW_INDEX = 1;
 
 /**
  * Where each loaned-out player spends the 2026/27 season, by player id.
@@ -233,8 +259,9 @@ const marketByWindow: MarketPlayer[][] = [0, 1, 2].map((windowIndex) =>
         id: player.id,
         name: player.name,
         position: player.position as Position,
-        // Ages tick at the season boundary into Summer 2027.
-        age: windowIndex === 2 ? player.age + 1 : player.age,
+        // Ages tick at the one season boundary, which now falls between
+        // January 2027 and Summer 2027, so both later windows are aged on.
+        age: windowIndex >= 1 ? player.age + 1 : player.age,
         homegrown: player.homegrown,
         quality: player.quality,
         fee: terms.fee,

@@ -23,7 +23,8 @@ describe('realConfig', () => {
   it('builds_a_playable_three_window_game', () => {
     const state = createGame(realConfig);
     expect(state.config.windows).toHaveLength(3);
-    expect(state.funds).toBe(200);
+    // The game opens in January 2027 on that window's EUR 100m budget.
+    expect(state.funds).toBe(100);
     expect(state.squad.length).toBeGreaterThanOrEqual(25);
     expect(state.market.length).toBeGreaterThan(3000);
   });
@@ -151,15 +152,16 @@ describe('realConfig', () => {
   });
 
   it('unlocks_the_protected_spine_from_january_but_not_the_untouchables', () => {
-    // The board holds firm through the summer, then listens to offers
-    // (Sam, 13/08/2026). The academy jewels never come up for sale.
+    // The board listens to offers from January (Sam, 13/08/2026). The game
+    // now opens in January, so the protected spine is sellable from the
+    // first window. The academy jewels never come up for sale.
     const state = createGame(realConfig);
     const isak = state.squad.find((p) => p.name === 'Alexander Isak');
     const leoni = state.squad.find((p) => p.name === 'Giovanni Leoni');
     expect(isak).toBeDefined();
     expect(leoni).toBeDefined();
 
-    expect(isLocked(isak!, 0)).toBe(true);
+    expect(isLocked(isak!, 0)).toBe(false);
     expect(isLocked(isak!, 1)).toBe(false);
     expect(isLocked(isak!, 2)).toBe(false);
 
@@ -214,9 +216,10 @@ describe('loans out', () => {
 
   it('puts a loaned-out player at the club he plays for', () => {
     // Altay Bayındır is Manchester United's, on loan at Celta Vigo for
-    // 2026/27 (Sam, 20/08/2026).
+    // 2026/27 (Sam, 20/08/2026). January 2027 is the only window in that
+    // season, so by Summer 2027 the loan has ended and he is home.
     expect(inWindow(0, 'Altay Bayındır')?.club).toBe('Celta Vigo');
-    expect(inWindow(1, 'Altay Bayındır')?.club).toBe('Celta Vigo');
+    expect(inWindow(1, 'Altay Bayındır')?.club).toBe('Manchester United');
   });
 
   it('moves him into the borrowing club’s league too', () => {

@@ -20,10 +20,11 @@ export type Position =
 
 /**
  * Identifiers for the three transfer windows the player plans through.
- * Summer 2026 and January 2027 belong to the 2026/27 season; Summer 2027
- * opens the 2027/28 season.
+ * January 2027 sits mid-season in 2026/27; Summer 2027 opens the 2027/28
+ * season and January 2028 sits mid-season within it. Only one season
+ * boundary is crossed, between the first window and the second.
  */
-export type WindowId = 'summer-2026' | 'january-2027' | 'summer-2027';
+export type WindowId = 'january-2027' | 'summer-2027' | 'january-2028';
 
 /**
  * A player's employment terms with the club.

@@ -15,10 +15,10 @@ import { isStarWageCase } from '../../src/engine/rules/wage';
 
 /** Summer 2026 fixture window (season starts 2026). */
 const window: WindowConfig = {
-  id: 'summer-2026',
-  label: 'Summer 2026',
+  id: 'january-2027',
+  label: 'January 2027',
   seasonStartYear: 2026,
-  midSeason: false,
+  midSeason: true,
   budget: 100,
   squadCostCapBase: 250,
 };

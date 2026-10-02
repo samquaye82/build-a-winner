@@ -168,16 +168,21 @@ describe('UNDO_PROMOTE', () => {
 describe('academy progression', () => {
   it('ages academy players at the season boundary without drifting value', () => {
     const state = createGame(makeThreeWindowConfig());
-    // Summer 2026 -> January 2027 stays in-season: no ageing.
-    const jan = applyAction(state, { type: 'ADVANCE_WINDOW' });
-    const cbJan = jan.academy.find((p) => p.id === 'acad-cb');
-    expect(cbJan?.age).toBe(20);
-
     // January 2027 -> Summer 2027 crosses seasons: age ticks, value holds.
-    const summer = applyAction(jan, { type: 'ADVANCE_WINDOW' });
+    const summer = applyAction(state, { type: 'ADVANCE_WINDOW' });
     const cbSummer = summer.academy.find((p) => p.id === 'acad-cb');
     expect(cbSummer?.age).toBe(21);
     expect(cbSummer?.baseValue).toBe(20);
+
+    // Two expiries at the boundary leave ten men, one short of submitting;
+    // promoting a different academy player keeps acad-cb in the pool.
+    const refilled = applyAction(summer, { type: 'PROMOTE', playerId: 'acad-st' });
+
+    // Summer 2027 -> January 2028 stays in-season: no ageing, value holds.
+    const jan = applyAction(refilled, { type: 'ADVANCE_WINDOW' });
+    const cbJan = jan.academy.find((p) => p.id === 'acad-cb');
+    expect(cbJan?.age).toBe(21);
+    expect(cbJan?.baseValue).toBe(20);
   });
 
   it('carries the academy pool forward across windows', () => {
