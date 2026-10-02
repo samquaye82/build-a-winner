@@ -15,6 +15,14 @@ factors price youth up and age down; both come from a fit of Transfermarkt
 values on rating and age bands across the master, with the under-21
 premium softened from the fitted x2.67 to x1.8 by Sam.
 
+Age is smooth, not banded (Sam, 03/10/2026). Each fitted band's factor
+sits at the band's mid-age, and between those points the factor changes by
+a constant percentage per year, so a birthday never moves a value by a
+band's worth at once: banded, Willian Pacho was worth EUR 80m more than
+William Saliba, born seven months earlier, mostly for sitting on the young
+side of a band edge. Ages are exact, from date of birth on the day the
+game opens, so seven months counts as seven months.
+
 Contract length is deliberately absent: the game already applies it on top
 of this baseline, discounting sale prices and market fees by the months a
 contract has left, so including it here would count it twice.
@@ -40,11 +48,21 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from datetime import date
+
+from .apply_ratings import with_birthdates
 from .value_model import round_game_value
 
 ROOT = Path(__file__).resolve().parent.parent
 REVIEW_CSV = ROOT / "review.csv"
 RECONCILIATION_CSV = ROOT / "output" / "reconciliation_2026.csv"
+FINAL_CSV = ROOT / "output" / "final_players.csv"
+
+#: Ages are measured on the day the game opens: the January 2027 window.
+AGE_REFERENCE_DATE = date(2027, 1, 1)
+
+#: A player with no date of birth is assumed this far into his year of age.
+UNKNOWN_BIRTHDAY_OFFSET = 0.5
 
 #: A prime-age player at the top rating is worth this, and it is the
 #: ceiling for everyone (EUR m).
@@ -53,16 +71,20 @@ TOP_VALUE = 250.0
 #: Value multiple per rating point (Transfermarkt fit: x1.260).
 RATING_STEP = 1.26
 
-#: Value multiples by age band, upper age inclusive; 25-27 is the anchor.
-#: Fitted on Transfermarkt values, under-21s softened to x1.8 by Sam.
-AGE_FACTORS: tuple[tuple[int, float], ...] = (
-    (21, 1.8),
-    (24, 1.29),
-    (27, 1.0),
-    (29, 0.79),
-    (31, 0.48),
-    (33, 0.33),
-    (200, 0.17),
+#: Value multiples at each fitted band's centre, youngest first. Fitted on
+#: Transfermarkt values by whole-year band (<=21, 22-24, 25-27, 28-29,
+#: 30-31, 32-33, 34+), under-21s softened to x1.8 by Sam. A whole-year band
+#: spans exact ages from its first birthday to its last plus a year, so
+#: 25-27 is 25.0 to 28.0 and centred on 26.5, the anchor; the open-ended
+#: bands sit at 19.5 and 35.5.
+AGE_KNOTS: tuple[tuple[float, float], ...] = (
+    (19.5, 1.8),
+    (23.5, 1.29),
+    (26.5, 1.0),
+    (29.0, 0.79),
+    (31.0, 0.48),
+    (33.0, 0.33),
+    (35.5, 0.17),
 )
 
 #: Reconciliation categories whose fee is a completed permanent move.
@@ -73,19 +95,47 @@ _REALISED_CATEGORIES = frozenset(
 )
 
 
-def age_factor(age: int) -> float:
-    """The value multiple for a player's age.
+def age_factor(age: float) -> float:
+    """The value multiple for a player's exact age.
+
+    Between two knots the multiple changes by a constant percentage per
+    year (interpolated on a log scale, as suits a multiplier); younger than
+    the first knot or older than the last, it holds that knot's value.
 
     Args:
-        age: Age in whole years.
+        age: Exact age in years, e.g. 25.2.
 
     Returns:
-        The multiple from AGE_FACTORS.
+        The multiple.
     """
-    for upper, factor in AGE_FACTORS:
-        if age <= upper:
-            return factor
-    return AGE_FACTORS[-1][1]
+    first_age, first_factor = AGE_KNOTS[0]
+    if age <= first_age:
+        return first_factor
+    for (low_age, low), (high_age, high) in zip(AGE_KNOTS, AGE_KNOTS[1:]):
+        if age <= high_age:
+            share = (age - low_age) / (high_age - low_age)
+            return float(np.exp(np.log(low) + share * (np.log(high) - np.log(low))))
+    return AGE_KNOTS[-1][1]
+
+
+def exact_age(birthdate: str, whole_years: int, on: date = AGE_REFERENCE_DATE) -> float:
+    """A player's age in years, to the day where his birth date is known.
+
+    Args:
+        birthdate: ISO date of birth, or an empty string.
+        whole_years: His whole-year age in the master, the fallback.
+        on: The day to measure at.
+
+    Returns:
+        Exact age; without a usable birth date, whole_years plus
+        UNKNOWN_BIRTHDAY_OFFSET.
+    """
+    try:
+        year, month, day = (int(part) for part in str(birthdate)[:10].split("-"))
+        born = date(year, month, day)
+    except ValueError:
+        return whole_years + UNKNOWN_BIRTHDAY_OFFSET
+    return (on - born).days / 365.25
 
 
 def baseline_values(quality: pd.Series, age: pd.Series) -> pd.Series:
@@ -94,7 +144,7 @@ def baseline_values(quality: pd.Series, age: pd.Series) -> pd.Series:
 
     Args:
         quality: Ratings, 0-100.
-        age: Ages in whole years, aligned with `quality`.
+        age: Exact ages in years, aligned with `quality`.
 
     Returns:
         Values in EUR m, aligned with the inputs.
@@ -125,7 +175,8 @@ def rebaseline(master: pd.DataFrame, fees: dict[str, float]) -> pd.Series:
     """Every master row's new value, rounded.
 
     Args:
-        master: The review master with quality and age.
+        master: The review master with quality, age and date_of_birth (see
+            apply_ratings.with_birthdates; empty where unknown).
         fees: Output of realised_fees().
 
     Returns:
@@ -133,7 +184,13 @@ def rebaseline(master: pd.DataFrame, fees: dict[str, float]) -> pd.Series:
         kept as published; everyone else is on the rounded curve.
     """
     quality = pd.to_numeric(master.quality).astype(float)
-    age = pd.to_numeric(master.age).astype(int)
+    age = pd.Series(
+        [
+            exact_age(dob, int(whole))
+            for dob, whole in zip(master.date_of_birth, master.age)
+        ],
+        index=master.index,
+    )
     curve = pd.Series(
         round_game_value(baseline_values(quality, age).to_numpy()), index=master.index
     )
@@ -152,8 +209,9 @@ def main() -> int:
     args = parser.parse_args()
 
     master = pd.read_csv(REVIEW_CSV, keep_default_na=False, dtype=str)
+    final = pd.read_csv(FINAL_CSV, keep_default_na=False, dtype=str)
     fees = realised_fees(pd.read_csv(RECONCILIATION_CSV, keep_default_na=False))
-    new = rebaseline(master, fees)
+    new = rebaseline(with_birthdates(master, final), fees)
     old = pd.to_numeric(master.true_value_m, errors="coerce")
 
     kept = master["name"].map(fees).notna()
