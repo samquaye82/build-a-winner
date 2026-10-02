@@ -95,6 +95,7 @@ export { isLocked } from './rules/lock';
 export { countRegistration, isU21 } from './rules/registration';
 export { priceRenewal } from './rules/renewal';
 export { computeSquadCost, type SquadCostBreakdown } from './rules/scr';
+export { loanFee, loanReturnWindow } from './rules/loan';
 export {
   isDeregistered,
   isRegisteredFor,

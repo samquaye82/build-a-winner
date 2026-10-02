@@ -10,7 +10,6 @@
  * Structurally impossible actions throw EngineError. Soft constraint
  * breaches (budget, quotas) never throw; see validate.ts.
  */
-import { LOAN_FEE_SHARE } from './constants';
 import { EngineError } from './errors';
 import { roundMoney } from './money';
 import { advanceWindow } from './progression';
@@ -26,6 +25,7 @@ import {
   requireSquadPlayer,
 } from './state';
 import { isRegisteredFor } from './rules/deregistration';
+import { loanFee, loanReturnWindow } from './rules/loan';
 import type {
   Action,
   Competition,
@@ -107,21 +107,6 @@ function reduce(state: GameState, action: Action): GameState {
 }
 
 /**
- * The window a loan agreed now ends in: the first window of the next
- * season. A loan runs to the end of the season it starts in, so from
- * January 2027 he is back for Summer 2027; from Summer 2027 or January
- * 2028 he is back in Summer 2028, after the game's last window, which is
- * reported as the index just past it.
- */
-function loanReturnWindow(state: GameState): number {
-  const season = currentWindow(state).seasonStartYear;
-  const next = state.config.windows.findIndex(
-    (window, index) => index > state.windowIndex && window.seasonStartYear > season,
-  );
-  return next === -1 ? state.config.windows.length : next;
-}
-
-/**
  * Loans a squad player out to the end of the season. The fee, 15% of his
  * sale value, is banked now; while away he is off every list and his wage
  * leaves the squad cost, though his fee keeps amortising.
@@ -148,7 +133,7 @@ function loanOut(state: GameState, playerId: string): GameState {
     );
   }
 
-  const fee = roundMoney(player.saleValue * LOAN_FEE_SHARE);
+  const fee = loanFee(player);
   return {
     ...state,
     funds: roundMoney(state.funds + fee),

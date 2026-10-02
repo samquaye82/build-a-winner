@@ -9,6 +9,8 @@ import {
   applyAction,
   computeSquadCost,
   createGame,
+  loanFee,
+  loanReturnWindow,
   replay,
   scoreGame,
   type Action,
@@ -55,6 +57,21 @@ const pick: Action = { type: 'PICK_XI', selection: fixtureXI };
  * squad on eleven, so without it no one could be lent in Summer 2027.
  */
 const renewCb2: Action = { type: 'RENEW', playerId: 'cb2', newExpiryYear: 2030 };
+
+describe('loanFee and loanReturnWindow', () => {
+  it('charges_fifteen_percent_of_sale_value_rounded', () => {
+    expect(loanFee({ saleValue: 40 })).toBe(6);
+    // 17.5 x 0.15 = 2.625 -> 2.6.
+    expect(loanFee({ saleValue: 17.5 })).toBe(2.6);
+  });
+
+  it('ends_a_loan_at_the_first_window_of_the_next_season', () => {
+    const three = createGame(makeThreeWindowConfig());
+    expect(loanReturnWindow(three)).toBe(1);
+    expect(loanReturnWindow({ ...three, windowIndex: 1 })).toBe(3);
+    expect(loanReturnWindow({ ...three, windowIndex: 2 })).toBe(3);
+  });
+});
 
 describe('LOAN_OUT', () => {
   it('banks_fifteen_percent_of_his_sale_value', () => {
