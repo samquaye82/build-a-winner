@@ -62,6 +62,17 @@ export function isDeregistered(
 }
 
 /**
+ * A player put back on every list, as a player returning from loan is.
+ *
+ * @param player - A squad player.
+ * @returns The same player with no deregistration.
+ */
+export function fullyRegistered(player: SquadPlayer): SquadPlayer {
+  const { deregisteredFrom: _dropped, ...registered } = player;
+  return registered;
+}
+
+/**
  * A player's base value after the deregistration drop.
  *
  * @param baseValue - His base value before it.

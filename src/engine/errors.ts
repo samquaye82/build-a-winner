@@ -28,7 +28,8 @@ export type EngineErrorCode =
   | 'XI_NOT_PICKED'
   | 'ALREADY_DEREGISTERED'
   | 'NOT_DEREGISTERED'
-  | 'PLAYER_IN_XI';
+  | 'PLAYER_IN_XI'
+  | 'PLAYER_NOT_LOANED_THIS_WINDOW';
 
 /**
  * Error thrown by reducers for structurally invalid actions.

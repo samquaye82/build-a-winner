@@ -340,14 +340,38 @@ export interface LoanedOutSeed {
 }
 
 /**
+ * A loan agreed during the game (Sam, 02/10/2026), as opposed to one the
+ * club had already made when the game opened.
+ */
+export interface AgreedLoan {
+  /** Index of the window the loan was agreed in; it can be undone there. */
+  windowIndex: number;
+  /** Loan fee received, in EUR m. */
+  fee: number;
+}
+
+/**
  * A club player away on loan, as held in game state. Until he returns he
- * is outside every rule and topline figure: no squad place, no
- * registration, no squad cost, and he cannot be sold or renewed.
+ * is outside every registration rule, cannot play, and cannot be sold or
+ * renewed. The borrowing club pays his wage, so it leaves the squad cost;
+ * for a loan agreed in the game his fee keeps amortising.
  */
 export interface LoanedOutPlayer {
+  /**
+   * The player as he left, including any deregistration, so an undo
+   * restores him exactly. He returns on every list.
+   */
   player: SquadPlayer;
-  club: string;
+  /** The club he is on loan at, where known (authored loans name it). */
+  club?: string;
+  /**
+   * Index of the window he rejoins the squad in. A loan runs to the end of
+   * the season it starts in, which may be after the game's last window: he
+   * is then still away when the game ends.
+   */
   returnsInWindow: number;
+  /** Present for a loan agreed during the game. */
+  agreed?: AgreedLoan;
 }
 
 /**
@@ -437,6 +461,12 @@ export type Action =
    */
   | { type: 'DEREGISTER'; playerId: string; competition: Competition }
   | { type: 'REREGISTER'; playerId: string; competition: Competition }
+  /**
+   * Loans a squad player out to the end of the season, for a fee of 15% of
+   * his sale value. Undoable within the window it was agreed in.
+   */
+  | { type: 'LOAN_OUT'; playerId: string }
+  | { type: 'UNDO_LOAN_OUT'; playerId: string }
   /**
    * Submits the current window and opens the next. One-way: earlier windows
    * cannot be reopened. Rejected while soft-constraint violations remain.

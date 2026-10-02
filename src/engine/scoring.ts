@@ -151,15 +151,17 @@ export function scoreGame(state: GameState): ScoreBreakdown {
 
   // Only players on the Premier League list can play, so only they count
   // towards quality, depth, balance and the size cap. Age, contracts and
-  // value judge the whole squad: a deregistered player is still the club's.
+  // value judge every player the club holds: a deregistered player is still
+  // the club's, and so is one still away on loan (Sam, 02/10/2026).
   const playable = registeredFor(state.squad, 'PL');
+  const held = clubPlayers(state);
   const xiIds = new Set(state.xi.playerIds);
   const xiPlayers = playable.filter((p) => xiIds.has(p.id));
   const rest = playable.filter((p) => !xiIds.has(p.id));
 
   const squadQuality = scoreSquadQuality(xiPlayers, rest);
   const balance = scoreBalance(playable);
-  const ageProfile = scoreAgeProfile(state.squad);
+  const ageProfile = scoreAgeProfile(held);
   const contractHealth = scoreContractHealth(state);
   const valueCreated = scoreValueCreated(state);
 
@@ -409,6 +411,16 @@ export function scoreProvisional(state: GameState): ScoreBreakdown {
   return scoreGame({ ...state, xi: autoPickBestXI(state) });
 }
 
+/**
+ * Every player the club holds: the squad, plus anyone away on loan.
+ *
+ * @param state - The game state.
+ * @returns The players, squad first.
+ */
+function clubPlayers(state: GameState): SquadPlayer[] {
+  return [...state.squad, ...state.loanedOut.map((loan) => loan.player)];
+}
+
 /** Squad Quality: weighted XI average and whole-squad depth average. */
 function scoreSquadQuality(
   xiPlayers: readonly SquadPlayer[],
@@ -509,7 +521,8 @@ function scoreContractHealth(
   const window = currentWindow(state);
   let sum = 0;
 
-  for (const player of state.squad) {
+  const held = clubPlayers(state);
+  for (const player of held) {
     const months = remainingMonths(player.contract.expiryYear, window);
     const tenure =
       CONTRACT_HEALTH_BY_MONTHS.find((r) => months >= r.minMonths)?.score ?? 0;
@@ -528,7 +541,7 @@ function scoreContractHealth(
     sum += contribution;
   }
 
-  const average = state.squad.length > 0 ? sum / state.squad.length : 0;
+  const average = held.length > 0 ? sum / held.length : 0;
   const score = Math.max(0, Math.min(100, 50 + 50 * average));
   return { score: roundMoney(score) };
 }

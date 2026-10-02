@@ -10,6 +10,7 @@
  * Structurally impossible actions throw EngineError. Soft constraint
  * breaches (budget, quotas) never throw; see validate.ts.
  */
+import { LOAN_FEE_SHARE } from './constants';
 import { EngineError } from './errors';
 import { roundMoney } from './money';
 import { advanceWindow } from './progression';
@@ -94,11 +95,95 @@ function reduce(state: GameState, action: Action): GameState {
       return deregister(state, action.playerId, action.competition);
     case 'REREGISTER':
       return reregister(state, action.playerId, action.competition);
+    case 'LOAN_OUT':
+      return loanOut(state, action.playerId);
+    case 'UNDO_LOAN_OUT':
+      return undoLoanOut(state, action.playerId);
     case 'ADVANCE_WINDOW':
       return advanceWindow(state);
     case 'PICK_XI':
       return pickXI(state, action.selection);
   }
+}
+
+/**
+ * The window a loan agreed now ends in: the first window of the next
+ * season. A loan runs to the end of the season it starts in, so from
+ * January 2027 he is back for Summer 2027; from Summer 2027 or January
+ * 2028 he is back in Summer 2028, after the game's last window, which is
+ * reported as the index just past it.
+ */
+function loanReturnWindow(state: GameState): number {
+  const season = currentWindow(state).seasonStartYear;
+  const next = state.config.windows.findIndex(
+    (window, index) => index > state.windowIndex && window.seasonStartYear > season,
+  );
+  return next === -1 ? state.config.windows.length : next;
+}
+
+/**
+ * Loans a squad player out to the end of the season. The fee, 15% of his
+ * sale value, is banked now; while away he is off every list and his wage
+ * leaves the squad cost, though his fee keeps amortising.
+ */
+function loanOut(state: GameState, playerId: string): GameState {
+  const player = requireSquadPlayer(state, playerId);
+  // The board's protection covers loans as well as sales (Sam, 02/10/2026).
+  if (isLocked(player, state.windowIndex)) {
+    throw new EngineError(
+      'PLAYER_LOCKED',
+      `The board will not sanction loaning out ${player.name}`,
+    );
+  }
+  if (player.onLoan === true) {
+    throw new EngineError(
+      'PLAYER_ON_LOAN',
+      `${player.name} is on loan here and is not the club's to lend`,
+    );
+  }
+  if (state.xi?.playerIds.includes(playerId) === true) {
+    throw new EngineError(
+      'PLAYER_IN_XI',
+      `${player.name} is in your starting eleven; take him out of it first`,
+    );
+  }
+
+  const fee = roundMoney(player.saleValue * LOAN_FEE_SHARE);
+  return {
+    ...state,
+    funds: roundMoney(state.funds + fee),
+    squad: state.squad.filter((p) => p.id !== playerId),
+    loanedOut: [
+      ...state.loanedOut,
+      {
+        player,
+        returnsInWindow: loanReturnWindow(state),
+        agreed: { windowIndex: state.windowIndex, fee },
+      },
+    ],
+  };
+}
+
+/**
+ * Reverses a loan agreed in the current window: the player returns to the
+ * squad exactly as he left, and the fee is repaid.
+ */
+function undoLoanOut(state: GameState, playerId: string): GameState {
+  const loan = state.loanedOut.find(
+    (l) => l.player.id === playerId && l.agreed?.windowIndex === state.windowIndex,
+  );
+  if (loan?.agreed === undefined) {
+    throw new EngineError(
+      'PLAYER_NOT_LOANED_THIS_WINDOW',
+      `Player ${playerId} was not loaned out in the current window`,
+    );
+  }
+  return {
+    ...state,
+    funds: roundMoney(state.funds - loan.agreed.fee),
+    squad: [...state.squad, loan.player],
+    loanedOut: state.loanedOut.filter((l) => l !== loan),
+  };
 }
 
 /** Display names for competitions in error messages. */

@@ -64,6 +64,12 @@ export const DEREGISTRATION_VALUE_DROP = 0.2;
  */
 export const DEREGISTRATION_SCORE_PENALTY = 10;
 
+/**
+ * Loan fee, as a share of the player's sale value (Sam, 02/10/2026). A loan
+ * runs to the end of the season it is agreed in.
+ */
+export const LOAN_FEE_SHARE = 0.15;
+
 /** Longest contract a player may hold, in years (mirrors the real fee
  * amortisation cap). Renewals may not extend beyond this many years from
  * the start of the current season. */

@@ -20,6 +20,9 @@
  *   returns (Sam, 02/10/2026).
  * - Either way the spread is capped at MAX_CONTRACT_YEARS: a six-year deal
  *   amortises over five.
+ * - A player loaned out during the game keeps amortising while away: his
+ *   fee is the club's cost wherever he plays. His wage is the borrowing
+ *   club's, so it leaves the wage bill (Sam, 02/10/2026).
  */
 import { MAX_CONTRACT_YEARS, SCR_LIMIT } from '../constants';
 import { roundMoney } from '../money';
@@ -62,6 +65,13 @@ export function computeSquadCost(state: GameState): SquadCostBreakdown {
     wageBill += player.contract.salary;
     const fee = player.acquisition ?? player.priorSigning;
     if (fee !== undefined) {
+      signingAmortisation += annualAmortisation(fee.fee, fee.contractYears);
+    }
+  }
+
+  for (const loan of state.loanedOut) {
+    const fee = loan.player.acquisition ?? loan.player.priorSigning;
+    if (loan.agreed !== undefined && fee !== undefined) {
       signingAmortisation += annualAmortisation(fee.fee, fee.contractYears);
     }
   }

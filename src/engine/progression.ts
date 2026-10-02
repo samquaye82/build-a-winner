@@ -32,7 +32,10 @@
 import { FREE_AGENT_WAGE_PREMIUM } from './constants';
 import { EngineError } from './errors';
 import { roundMoney } from './money';
-import { penaliseDeregistrations } from './rules/deregistration';
+import {
+  fullyRegistered,
+  penaliseDeregistrations,
+} from './rules/deregistration';
 import {
   computeSaleValue,
   contractYearsDemand,
@@ -107,10 +110,23 @@ export function advanceWindow(submitted: GameState): GameState {
     progressPlayer(player, seasonBoundary, nextWindow),
   );
 
-  // 4. Loan returns. A player away is still the club's, so he ages and his
-  // value drifts as if he were here; the returners then join the squad
+  // 4. Loan returns. A contract that ends while he is away ends there: he
+  // leaves as a free agent at the boundary, exactly as he would from the
+  // squad, rather than coming back.
+  const contracted = state.loanedOut.filter((loan) => {
+    if (
+      seasonBoundary &&
+      loan.player.contract.expiryYear <= nextWindow.seasonStartYear
+    ) {
+      expired.push({ player: loan.player, reason: 'expired', windowIndex: nextIndex });
+      return false;
+    }
+    return true;
+  });
+  // A player away is still the club's, so he ages and his value drifts as
+  // if he were here; the returners then join the squad, on every list,
   // before the market opens, so it never lists them.
-  const loanedOut = state.loanedOut.map((loan) => ({
+  const loanedOut = contracted.map((loan) => ({
     ...loan,
     player: progressPlayer(loan.player, seasonBoundary, nextWindow),
   }));
@@ -118,7 +134,7 @@ export function advanceWindow(submitted: GameState): GameState {
     ...squad,
     ...loanedOut
       .filter((loan) => loan.returnsInWindow === nextIndex)
-      .map((loan) => loan.player),
+      .map((loan) => fullyRegistered(loan.player)),
   ];
 
   // 5. Market swap: authored pool minus players already at the club, PLUS
