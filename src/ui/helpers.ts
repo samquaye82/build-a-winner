@@ -429,7 +429,7 @@ export function playerBadges(
   window: WindowConfig,
 ): { kind: BadgeKind; label: string }[] {
   const badges: { kind: BadgeKind; label: string }[] = [];
-  if (isU21(player)) {
+  if (isU21(player, window)) {
     badges.push({ kind: 'u21', label: 'U21' });
   } else if (player.homegrown) {
     badges.push({ kind: 'hg', label: 'HG' });

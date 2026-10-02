@@ -13,7 +13,7 @@ import {
   type SquadPlayerSeed,
 } from '../../src/engine';
 import { validateRegistration } from '../../src/engine/rules/registration';
-import { makeSquadPlayer, makeTestConfig } from './fixtures';
+import { makeSquadPlayer, makeTestConfig, testWindow } from './fixtures';
 
 /**
  * Builds a squad of `count` over-21 players plus a goalkeeper, with a given
@@ -33,14 +33,14 @@ function squadOf(count: number, nonHomegrown: number): SquadPlayerSeed[] {
 
 describe('isU21', () => {
   it('treats_age_21_as_exempt_and_age_22_as_registrable', () => {
-    expect(isU21({ age: 21 })).toBe(true);
-    expect(isU21({ age: 22 })).toBe(false);
+    expect(isU21({ age: 21 }, testWindow)).toBe(true);
+    expect(isU21({ age: 22 }, testWindow)).toBe(false);
   });
 });
 
 describe('countRegistration', () => {
   it('counts_the_fixture_squad_correctly', () => {
-    const counts = countRegistration(makeTestConfig().initialSquad);
+    const counts = countRegistration(makeTestConfig().initialSquad, testWindow);
     expect(counts).toEqual({
       over21: 11,
       nonHomegrownOver21: 7,
@@ -56,27 +56,27 @@ describe('countRegistration', () => {
 
 describe('validateRegistration', () => {
   it('accepts_a_legal_squad', () => {
-    expect(validateRegistration(makeTestConfig().initialSquad)).toEqual([]);
+    expect(validateRegistration(makeTestConfig().initialSquad, testWindow)).toEqual([]);
   });
 
   it('flags_more_than_25_over21_players', () => {
-    const violations = validateRegistration(squadOf(26, 0));
+    const violations = validateRegistration(squadOf(26, 0), testWindow);
     expect(violations.map((v) => v.code)).toContain('OVER21_LIMIT_EXCEEDED');
   });
 
   it('accepts_exactly_25_over21_players', () => {
-    expect(validateRegistration(squadOf(25, 0))).toEqual([]);
+    expect(validateRegistration(squadOf(25, 0), testWindow)).toEqual([]);
   });
 
   it('flags_more_than_17_non_homegrown_players', () => {
-    const violations = validateRegistration(squadOf(25, 18));
+    const violations = validateRegistration(squadOf(25, 18), testWindow);
     expect(violations.map((v) => v.code)).toContain(
       'NON_HOMEGROWN_LIMIT_EXCEEDED',
     );
   });
 
   it('accepts_exactly_17_non_homegrown_players', () => {
-    expect(validateRegistration(squadOf(25, 17))).toEqual([]);
+    expect(validateRegistration(squadOf(25, 17), testWindow)).toEqual([]);
   });
 
   it('exempts_u21_players_from_both_limits', () => {
@@ -88,17 +88,17 @@ describe('validateRegistration', () => {
         makeSquadPlayer({ id: `u21-${String(i)}`, age: 19, homegrown: false }),
       );
     }
-    expect(validateRegistration(squad)).toEqual([]);
+    expect(validateRegistration(squad, testWindow)).toEqual([]);
   });
 
   it('flags_a_squad_too_small_to_field_an_XI', () => {
-    const violations = validateRegistration(squadOf(10, 0));
+    const violations = validateRegistration(squadOf(10, 0), testWindow);
     expect(violations.map((v) => v.code)).toContain('SQUAD_TOO_SMALL');
   });
 
   it('flags_a_squad_with_no_goalkeeper', () => {
     const squad = squadOf(12, 0).filter((p) => p.position !== 'GK');
-    const violations = validateRegistration(squad);
+    const violations = validateRegistration(squad, testWindow);
     expect(violations.map((v) => v.code)).toContain('NOT_ENOUGH_GOALKEEPERS');
   });
 });

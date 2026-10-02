@@ -13,17 +13,30 @@ import {
   OVER21_REGISTRATION_LIMIT,
   U21_AGE_LIMIT,
 } from '../constants';
-import type { PlayerCore } from '../types';
+import type { PlayerCore, WindowConfig } from '../types';
 import type { Violation } from './violations';
 
 /**
- * Whether a player is exempt from registration as an under-21.
+ * Whether a player is exempt from registration as an under-21 this season.
+ *
+ * Both the Premier League and UEFA fix it by birth date: born on or after
+ * 1 January twenty-one years before the season starts. It holds for the
+ * whole season, birthdays or not.
  *
  * @param player - Any player.
- * @returns True if the player's age is at or below the U21 limit.
+ * @param window - A window of the season in question.
+ * @returns True when he is under 21 for that season.
  */
-export function isU21(player: { age: number }): boolean {
-  return player.age <= U21_AGE_LIMIT;
+export function isU21(
+  player: Pick<PlayerCore, 'age' | 'birthDate'>,
+  window: Pick<WindowConfig, 'seasonStartYear'>,
+): boolean {
+  if (player.birthDate === undefined) {
+    return player.age <= U21_AGE_LIMIT;
+  }
+  const cutoff = `${String(window.seasonStartYear - U21_AGE_LIMIT)}-01-01`;
+  // ISO dates compare correctly as strings.
+  return player.birthDate >= cutoff;
 }
 
 /**
@@ -51,10 +64,13 @@ export interface RegistrationCounts {
  * Computes the registration counts for a squad.
  *
  * @param squad - The current squad.
+ * @param window - The window being registered for (it sets the season the
+ *   under-21 test applies to).
  * @returns Counts used by both validation and the UI dashboard.
  */
 export function countRegistration(
   squad: readonly PlayerCore[],
+  window: Pick<WindowConfig, 'seasonStartYear'>,
 ): RegistrationCounts {
   let over21 = 0;
   let nonHomegrownOver21 = 0;
@@ -65,7 +81,7 @@ export function countRegistration(
     if (player.position === 'GK') {
       goalkeepers += 1;
     }
-    if (isU21(player)) {
+    if (isU21(player, window)) {
       // U21s are exempt from registration, so they count towards none of
       // the registration tallies (home-grown included).
       continue;
@@ -96,8 +112,9 @@ export function countRegistration(
  */
 export function validateRegistration(
   squad: readonly PlayerCore[],
+  window: Pick<WindowConfig, 'seasonStartYear'>,
 ): Violation[] {
-  const counts = countRegistration(squad);
+  const counts = countRegistration(squad, window);
   const violations: Violation[] = [];
 
   if (counts.over21 > OVER21_REGISTRATION_LIMIT) {

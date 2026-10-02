@@ -9,8 +9,9 @@
  *
  *   1. Contract expiry (season boundaries only): players whose deals end at
  *      or before the new season leave for free.
- *   2. Age tick (season boundaries only): every remaining player ages one
- *      year, which can pull U21s into the registration count.
+ *   2. Ages: every player's age is brought up to the new window's date
+ *      from his birth date, so he ages on his birthday (rules/age.ts). A
+ *      player without one ages a year at a season boundary instead.
  *   3. Value drift: every player's baseValue moves along the age/quality
  *      curve at half the annual rate; saleValue is recomputed from the new
  *      baseValue and remaining contract length.
@@ -23,8 +24,9 @@
  *      window's budget.
  *
  * A "season boundary" is a transition where seasonStartYear increases
- * (January 2027 -> Summer 2027). Summer 2026 -> January 2027 stays inside
- * the 2026/27 season: no expiry, no ageing, but values still drift.
+ * (January 2027 -> Summer 2027). Summer 2027 -> January 2028 stays inside
+ * the 2027/28 season: no expiry, but values still drift, and a player whose
+ * birthday falls in between is a year older.
  *
  * Everything here is pure and derived from config plus current state:
  * no randomness, ever.
@@ -32,6 +34,7 @@
 import { FREE_AGENT_WAGE_PREMIUM } from './constants';
 import { EngineError } from './errors';
 import { roundMoney } from './money';
+import { ageAfter } from './rules/age';
 import {
   fullyRegistered,
   penaliseDeregistrations,
@@ -105,7 +108,7 @@ export function advanceWindow(submitted: GameState): GameState {
     squad = [...state.squad];
   }
 
-  // 2 + 3. Age tick, then value drift at the new age.
+  // 2 + 3. Age to the new window's date, then value drift at that age.
   squad = squad.map((player) =>
     progressPlayer(player, seasonBoundary, nextWindow),
   );
@@ -143,7 +146,7 @@ export function advanceWindow(submitted: GameState): GameState {
   // free-agency wage premium.
   const squadIds = new Set(squad.map((p) => p.id));
   const freeListings: MarketPlayer[] = expired.map(({ player }) => {
-    const age = player.age + 1; // expiry only happens at season boundaries
+    const age = ageAfter(player, true, nextWindow); // expiry is at a boundary
     return {
       id: player.id,
       name: player.name,
@@ -151,6 +154,7 @@ export function advanceWindow(submitted: GameState): GameState {
       age,
       homegrown: player.homegrown,
       quality: player.quality,
+      ...(player.birthDate !== undefined && { birthDate: player.birthDate }),
       // Kept so re-signing a released academy graduate restores him as
       // club-trained. His spell is not kept: leaving interrupted it.
       ...(player.uefaTraining !== undefined && {
@@ -191,8 +195,8 @@ export function advanceWindow(submitted: GameState): GameState {
 
 /**
  * Ages an un-promoted academy player across a window transition. Unlike squad
- * players their baseValue does not drift; only the age ticks (season
- * boundaries only) and the sale value is recomputed against the new window.
+ * players their baseValue does not drift; only the age moves on (to the new
+ * window's date) and the sale value is recomputed against the new window.
  *
  * @param player - The academy player before the transition.
  * @param seasonBoundary - Whether this transition crosses seasons.
@@ -204,7 +208,7 @@ function progressAcademyPlayer(
   seasonBoundary: boolean,
   nextWindow: WindowConfig,
 ): SquadPlayer {
-  const age = seasonBoundary ? player.age + 1 : player.age;
+  const age = ageAfter(player, seasonBoundary, nextWindow);
   return {
     ...player,
     age,
@@ -229,7 +233,7 @@ function progressPlayer(
   seasonBoundary: boolean,
   nextWindow: WindowConfig,
 ): SquadPlayer {
-  const age = seasonBoundary ? player.age + 1 : player.age;
+  const age = ageAfter(player, seasonBoundary, nextWindow);
   const baseValue = driftBaseValue(player.baseValue, age, player.quality);
 
   return {

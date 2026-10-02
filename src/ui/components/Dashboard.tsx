@@ -29,7 +29,10 @@ import { useGame } from '../GameContext';
 export function Dashboard(): React.JSX.Element {
   const { state } = useGame();
   // Each list counts only the players registered for it, as the rules do.
-  const counts = countRegistration(registeredFor(state.squad, 'PL'));
+  const counts = countRegistration(
+    registeredFor(state.squad, 'PL'),
+    currentWindow(state),
+  );
   const uefa = assignUefaLists(
     registeredFor(state.squad, 'UCL'),
     currentWindow(state),

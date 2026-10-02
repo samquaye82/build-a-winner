@@ -24,7 +24,7 @@ export function validateState(state: GameState): Violation[] {
   return [
     ...validateBudget(state),
     // Each competition's rules judge only the players registered for it.
-    ...validateRegistration(registeredFor(state.squad, 'PL')),
+    ...validateRegistration(registeredFor(state.squad, 'PL'), currentWindow(state)),
     ...validateUefaRegistration(
       registeredFor(state.squad, 'UCL'),
       currentWindow(state),

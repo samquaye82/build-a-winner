@@ -282,6 +282,9 @@ function buy(state: GameState, playerId: string): GameState {
     name: marketPlayer.name,
     position: marketPlayer.position,
     age: marketPlayer.age,
+    ...(marketPlayer.birthDate !== undefined && {
+      birthDate: marketPlayer.birthDate,
+    }),
     homegrown: marketPlayer.homegrown,
     quality: marketPlayer.quality,
     // Training history belongs to the player and comes with him. Tenure

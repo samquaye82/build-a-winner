@@ -11,6 +11,7 @@ import {
   computeSquadCost,
   countRegistration,
   createGame,
+  currentWindow,
   replay,
   scoreGame,
   type Action,
@@ -77,8 +78,8 @@ describe('while away', () => {
   it('leaves_him_out_of_registration_and_squad_cost', () => {
     const away = createGame(withLoans(backInSummer));
     const without = createGame(makeThreeWindowConfig());
-    expect(countRegistration(away.squad)).toEqual(
-      countRegistration(without.squad),
+    expect(countRegistration(away.squad, currentWindow(away))).toEqual(
+      countRegistration(without.squad, currentWindow(without)),
     );
     expect(computeSquadCost(away)).toEqual(computeSquadCost(without));
   });

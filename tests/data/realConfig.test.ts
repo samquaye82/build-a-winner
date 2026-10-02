@@ -8,6 +8,7 @@ import {
   computeSquadCost,
   countRegistration,
   createGame,
+  currentWindow,
   isLocked,
   validateState,
 } from '../../src/engine';
@@ -91,7 +92,7 @@ describe('realConfig', () => {
 
   it('documents_the_starting_registration_position', () => {
     const state = createGame(realConfig);
-    const counts = countRegistration(state.squad);
+    const counts = countRegistration(state.squad, currentWindow(state));
     // 31-man squad: whether over-21s exceed 25 is data-dependent; the
     // game must simply report a coherent starting position.
     expect(counts.total).toBe(state.squad.length);

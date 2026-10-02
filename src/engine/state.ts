@@ -2,6 +2,7 @@
  * Game state construction and lookup helpers.
  */
 import { EngineError } from './errors';
+import { ageAt } from './rules/age';
 import { computeSaleValue } from './rules/value';
 import type {
   GameConfig,
@@ -37,8 +38,10 @@ export function createGame(config: GameConfig): GameState {
   // Derive runtime squad players from authored seeds: sale values are
   // computed, never authored, so the contract-length discount is always
   // consistent with the value model.
+  // Ages come from birth dates where known: authored ages can lag reality.
   const squad: SquadPlayer[] = config.initialSquad.map((seed) => ({
     ...seed,
+    age: ageAt(seed, firstWindow),
     saleValue: computeSaleValue(
       seed.baseValue,
       seed.contract.expiryYear,
@@ -50,6 +53,7 @@ export function createGame(config: GameConfig): GameState {
   // locked defaults to false since the board never blocks a promotion.
   const academy: SquadPlayer[] = (config.academy ?? []).map((seed) => ({
     ...seed,
+    age: ageAt(seed, firstWindow),
     locked: false,
     saleValue: computeSaleValue(
       seed.baseValue,
@@ -78,6 +82,7 @@ export function createGame(config: GameConfig): GameState {
       ...seed,
       player: {
         ...seed.player,
+        age: ageAt(seed.player, firstWindow),
         saleValue: computeSaleValue(
           seed.player.baseValue,
           seed.player.contract.expiryYear,

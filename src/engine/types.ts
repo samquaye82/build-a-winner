@@ -82,8 +82,17 @@ export interface PlayerCore {
   id: string;
   name: string;
   position: Position;
-  /** Age at the current window. Ages tick between seasons, not windows. */
+  /**
+   * Age in whole years at the current window. With a birth date the
+   * engine keeps it true to that date, so it changes on birthdays (see
+   * rules/age.ts); without one it ticks at each season boundary.
+   */
   age: number;
+  /**
+   * ISO date of birth (Sam, 03/10/2026). Present for every real player;
+   * absent only for the fictional test fixtures.
+   */
+  birthDate?: string;
   /**
    * Whether the player qualifies as home-grown under Premier League rules
    * (club- or association-trained). Independent of age: a U21 player carries

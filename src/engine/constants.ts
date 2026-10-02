@@ -13,10 +13,12 @@ export const OVER21_REGISTRATION_LIMIT = 25;
 export const NON_HOMEGROWN_LIMIT = 17;
 
 /**
- * Age at or below which a player counts as U21 and is exempt from the
- * 25-man registration list. Simplification of the real birthday-cutoff rule:
- * the real exemption depends on date of birth relative to a 1 January
- * cutoff; the game uses whole-year age instead.
+ * The under-21 limit, exempting a player from the 25-man list (and making
+ * him young enough for UEFA's List B). The real rule, used for any player
+ * with a birth date (Sam, 03/10/2026): born on or after 1 January of the
+ * year U21_AGE_LIMIT years before the season starts, so for 2026/27 born
+ * on or after 01/01/2005. A player without a birth date (test fixtures)
+ * qualifies at whole-year age U21_AGE_LIMIT or under.
  */
 export const U21_AGE_LIMIT = 21;
 

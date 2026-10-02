@@ -11,6 +11,7 @@ import {
   computeSquadCost,
   countRegistration,
   createGame,
+  currentWindow,
   EngineError,
   replay,
   type Action,
@@ -38,7 +39,7 @@ describe('academy pool at game start', () => {
 
   it('excludes academy players from the registration count', () => {
     const state = createGame(makeTestConfig());
-    const counts = countRegistration(state.squad);
+    const counts = countRegistration(state.squad, currentWindow(state));
     // Squad is 13 players; the three academy players are not among them.
     expect(counts.total).toBe(13);
   });
@@ -77,9 +78,9 @@ describe('PROMOTE', () => {
       academy: [makeAcademyPlayer({ id: 'acad-vet', position: 'CB', age: 24 })],
     };
     const state = createGame(config);
-    const before = countRegistration(state.squad);
+    const before = countRegistration(state.squad, currentWindow(state));
     const next = applyAction(state, { type: 'PROMOTE', playerId: 'acad-vet' });
-    const after = countRegistration(next.squad);
+    const after = countRegistration(next.squad, currentWindow(next));
 
     expect(after.over21).toBe(before.over21 + 1);
     // The fixture academy players are home-grown by default.
@@ -88,10 +89,10 @@ describe('PROMOTE', () => {
 
   it('keeps a promoted U21 registration-exempt', () => {
     const state = createGame(makeTestConfig());
-    const before = countRegistration(state.squad);
+    const before = countRegistration(state.squad, currentWindow(state));
     // acad-cb is 20: under the U21 limit.
     const next = applyAction(state, { type: 'PROMOTE', playerId: 'acad-cb' });
-    const after = countRegistration(next.squad);
+    const after = countRegistration(next.squad, currentWindow(next));
 
     expect(after.over21).toBe(before.over21);
     expect(after.u21).toBe(before.u21 + 1);

@@ -91,10 +91,10 @@ export function meetsListBTenure(
  *   enough.
  */
 export function isListBEligible(
-  player: Pick<PlayerCore, 'age' | 'joined'>,
+  player: Pick<PlayerCore, 'age' | 'birthDate' | 'joined'>,
   window: Pick<WindowConfig, 'seasonStartYear' | 'midSeason'>,
 ): boolean {
-  return isU21(player) && meetsListBTenure(player, window);
+  return isU21(player, window) && meetsListBTenure(player, window);
 }
 
 /**
