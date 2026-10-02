@@ -127,9 +127,6 @@ export const LIVERPOOL_UEFA_REGISTRATION: readonly UefaRegistrationEntry[] = [
   // Chelsea, September 2024, aged 16. Completes his third Liverpool season
   // in 2026/27.
   { player: 'rio-ngumoha-39689', training: 'club', joined: summerOf(2024) },
-  // Celta Vigo, December 2020, aged 16 (hg_overrides.csv). Loans abroad
-  // since; his first two years were uninterrupted, which is all List B asks.
-  { player: 'stefan-bajcetic-38282', training: 'club', joined: januaryOf(2021) },
   // Olympiacos, 10/08/2020.
   { player: 'konstantinos-tsimikas-35197', training: 'none', joined: summerOf(2020) },
   // Parma, 15/08/2025 (snapshot).
@@ -235,6 +232,9 @@ export const MARKET_CLUB_TRAINED: readonly string[] = [
   'neco-williams-36994', // from age 10
   'rhys-williams-36925', // from childhood
   'harry-wilson-35511', // from age 8
+  // Joined from Celta Vigo in December 2020, aged 16, and sold back to them
+  // permanently (Sam, 02/10/2026).
+  'stefan-bajcetic-38282',
   // Joined from QPR in February 2010, aged 15: 36 months by February 2013.
   'fa-134425', // Raheem Sterling
   // joined from Le Havre in 2017, aged 16, and stayed until 2021.

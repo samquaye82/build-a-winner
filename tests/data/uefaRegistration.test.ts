@@ -131,6 +131,17 @@ describe('market training status', () => {
     }
   });
 
+  it('lists_bajcetic_at_celta_as_a_club_trained_graduate', () => {
+    // Sold permanently to Celta Vigo, on a deal to 2029 (Sam, 02/10/2026).
+    expect(state.squad.some((p) => p.id === 'stefan-bajcetic-38282')).toBe(false);
+    for (const pool of realConfig.marketByWindow) {
+      const bajcetic = pool.find((p) => p.id === 'stefan-bajcetic-38282');
+      expect(bajcetic?.club).toBe('Celta Vigo');
+      expect(bajcetic?.uefaTraining).toBe('club');
+      expect(bajcetic?.fee).toBeGreaterThan(0);
+    }
+  });
+
   it('derives_association_training_from_home_grown_status', () => {
     const pool = realConfig.marketByWindow[0] ?? [];
     const listed = new Set(MARKET_CLUB_TRAINED);
