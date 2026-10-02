@@ -15,7 +15,9 @@ export type ViolationCode =
   | 'SQUAD_TOO_SMALL'
   | 'NOT_ENOUGH_GOALKEEPERS'
   | 'BUDGET_EXCEEDED'
-  | 'SCR_EXCEEDED';
+  | 'SCR_EXCEEDED'
+  | 'UCL_LIST_A_OVER_LIMIT'
+  | 'UCL_NOT_ENOUGH_GOALKEEPERS';
 
 /** A single soft-constraint breach, ready for display. */
 export interface Violation {

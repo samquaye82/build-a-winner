@@ -91,6 +91,14 @@ export { countRegistration, isU21 } from './rules/registration';
 export { priceRenewal } from './rules/renewal';
 export { computeSquadCost, type SquadCostBreakdown } from './rules/scr';
 export {
+  assignUefaLists,
+  isListBEligible,
+  meetsListBTenure,
+  seasonTime,
+  validateUefaRegistration,
+  type UefaRegistration,
+} from './rules/uefa';
+export {
   annualValueGrowthRate,
   computeSaleValue,
   contractDiscount,

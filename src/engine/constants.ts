@@ -20,6 +20,32 @@ export const NON_HOMEGROWN_LIMIT = 17;
  */
 export const U21_AGE_LIMIT = 21;
 
+/**
+ * UEFA Champions League squad registration (real-world values; Sam,
+ * 02/10/2026). Enforced alongside the Premier League rules above, never
+ * instead of them: a squad must satisfy both.
+ *
+ * List A holds at most 25 players, eight of its places reserved for
+ * locally trained players, of whom at most four may be association-trained.
+ * Each reserved place left unfilled costs the list one place: six locally
+ * trained players cut the limit to 23. List B is unlimited, for players
+ * young enough and long enough at the club (see rules/uefa.ts).
+ */
+export const UCL_LIST_A_LIMIT = 25;
+export const UCL_LOCALLY_TRAINED_PLACES = 8;
+export const UCL_ASSOCIATION_TRAINED_MAX = 4;
+
+/** Goalkeepers: at least two on List A, and three across both lists. */
+export const UCL_LIST_A_MIN_GOALKEEPERS = 2;
+export const UCL_MIN_GOALKEEPERS = 3;
+
+/**
+ * Uninterrupted years at the club a List B player needs. UEFA counts any
+ * two-year spell since the player's fifteenth birthday; the game measures
+ * the current spell, which is the only one its data records.
+ */
+export const UCL_LIST_B_TENURE_YEARS = 2;
+
 /** Longest contract a player may hold, in years (mirrors the real fee
  * amortisation cap). Renewals may not extend beyond this many years from
  * the start of the current season. */
