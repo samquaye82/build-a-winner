@@ -4,7 +4,8 @@
  * Adapts src/data/generated/gameData.json (produced by npm run
  * generate:data from the scraped dataset) into the engine's GameConfig,
  * applying the hand-editable locked lists at build time so edits to
- * lockedLists.ts take effect on refresh without regeneration.
+ * lockedLists.ts take effect on refresh without regeneration. The UEFA
+ * registration data (uefaRegistration.ts) is applied the same way.
  *
  * Money constants (Sam, 11/07/2026):
  * - Budgets 200 / 0 / 200: Summer 2026 opens with EUR 200m; January
@@ -24,7 +25,9 @@ import type {
   MarketPlayer,
   Position,
   RivalTeam,
+  SeasonPoint,
   SquadPlayerSeed,
+  UefaTraining,
   WindowConfig,
 } from '../engine';
 import {
@@ -37,6 +40,10 @@ import {
   MARKET_UNTOUCHABLE_MIN_VALUE_M,
 } from './lockedLists';
 import { LOANED_OUT } from './loansOut';
+import {
+  LIVERPOOL_UEFA_REGISTRATION,
+  MARKET_CLUB_TRAINED,
+} from './uefaRegistration';
 import gameData from './generated/gameData.json';
 import academyData from './academy-players.json';
 
@@ -144,6 +151,28 @@ const LOAN_EXPIRY_YEAR = 2027;
  */
 const JANUARY_WINDOW_INDEX = 0;
 
+/**
+ * A Liverpool player's UEFA registration facts, looked up by slug or
+ * display name in uefaRegistration.ts.
+ *
+ * @param id - The player's id.
+ * @param name - The player's display name.
+ * @returns The fields to spread into his seed. Empty when he has no entry,
+ *   which leaves him untrained with no known spell, and so on List A; the
+ *   data tests fail for any first-team or academy player left that way.
+ */
+function uefaFor(
+  id: string,
+  name: string,
+): { uefaTraining?: UefaTraining; joined?: SeasonPoint } {
+  const entry = LIVERPOOL_UEFA_REGISTRATION.find(
+    (candidate) => candidate.player === id || candidate.player === name,
+  );
+  return entry === undefined
+    ? {}
+    : { uefaTraining: entry.training, joined: entry.joined };
+}
+
 const ownedSquad: SquadPlayerSeed[] = (
   gameData.squad as GeneratedSquadPlayer[]
 ).map((player) => {
@@ -165,6 +194,7 @@ const ownedSquad: SquadPlayerSeed[] = (
     ...(lockedUntilJanuary
       ? { unlocksInWindow: JANUARY_WINDOW_INDEX }
       : {}),
+    ...uefaFor(player.id, player.name),
     contract: player.contract,
   };
 });
@@ -193,6 +223,21 @@ function isUntouchable(player: GeneratedMarketPlayer): boolean {
   return (
     window0 !== undefined && window0.fee >= MARKET_UNTOUCHABLE_MIN_VALUE_M
   );
+}
+
+/**
+ * A market player's UEFA training status, from Liverpool's point of view.
+ * Liverpool graduates elsewhere are listed; otherwise home-grown in the
+ * Premier League sense means trained in England, so association-trained.
+ *
+ * @param player - A generated market entry.
+ * @returns His training status were Liverpool to sign him.
+ */
+function marketTraining(player: GeneratedMarketPlayer): UefaTraining {
+  if (listed(MARKET_CLUB_TRAINED, player)) {
+    return 'club';
+  }
+  return player.homegrown ? 'association' : 'none';
 }
 
 const generatedMarket = gameData.market as GeneratedMarketPlayer[];
@@ -264,6 +309,7 @@ const marketByWindow: MarketPlayer[][] = [0, 1, 2].map((windowIndex) =>
         age: windowIndex >= 1 ? player.age + 1 : player.age,
         homegrown: player.homegrown,
         quality: player.quality,
+        uefaTraining: marketTraining(player),
         fee: terms.fee,
         wageDemand: terms.wage,
         contractYears: terms.years,
@@ -312,6 +358,7 @@ const loanedIn: SquadPlayerSeed[] = LOANED_IN.flatMap((loan) => {
       baseValue: terms?.baseValue ?? 0,
       locked: false,
       onLoan: true,
+      ...uefaFor(source.id, source.name),
       contract: {
         expiryYear: LOAN_EXPIRY_YEAR,
         salary: loan.salaryEurM,
@@ -337,11 +384,23 @@ const academy: AcademyPlayerSeed[] = (
   homegrown: player.homegrown,
   quality: ACADEMY_QUALITY,
   baseValue: ACADEMY_BASE_VALUE,
+  ...uefaFor(player.id, player.name),
   contract: {
     expiryYear: ACADEMY_EXPIRY_YEAR,
     salary: ACADEMY_SALARY_EUR_M,
   },
 }));
+
+// An entry naming nobody in the squad or academy is a typo or a departed
+// player: report it rather than let it pass silently.
+for (const entry of LIVERPOOL_UEFA_REGISTRATION) {
+  const matched = [...initialSquad, ...academy].some(
+    (player) => player.id === entry.player || player.name === entry.player,
+  );
+  if (!matched) {
+    console.warn(`UEFA registration entry matches no Liverpool player: ${entry.player}`);
+  }
+}
 
 /**
  * Rival strengths, derived with the same full-squad methodology as Squad
