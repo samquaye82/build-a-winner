@@ -14,6 +14,7 @@ import {
   roundMoney,
   type Contract,
   type GameState,
+  type LoanedOutPlayer,
   type MarketPlayer,
   type Position,
   type ScoreBreakdown,
@@ -388,6 +389,29 @@ export function buildShareText(
     `Three windows, ${String(summary.signings)} in, ${String(summary.sales)} out, net spend ${formatMoney(summary.netSpend)}.`,
     `Final squad value ${formatMoney(summary.squadValue)} in a ${shape}.`,
   ].join('\n');
+}
+
+/**
+ * When a player away on loan comes back, for display. A loan that outlasts
+ * the game still ends with its season, so he is back the summer after the
+ * last window's season.
+ *
+ * @param windows - The game's windows.
+ * @param loan - The player away on loan.
+ * @returns A label such as "Summer 2027" or "Summer 2028".
+ */
+export function loanReturnLabel(
+  windows: readonly WindowConfig[],
+  loan: Pick<LoanedOutPlayer, 'returnsInWindow'>,
+): string {
+  const window = windows[loan.returnsInWindow];
+  if (window !== undefined) {
+    return window.label;
+  }
+  const last = windows.at(-1);
+  return last === undefined
+    ? 'after the game'
+    : `Summer ${String(last.seasonStartYear + 1)}`;
 }
 
 /** The kinds of status badge a player card can show. */

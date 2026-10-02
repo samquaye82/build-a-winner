@@ -6,6 +6,7 @@ import {
   currentWindow,
   isLocked,
   isRegisteredFor,
+  loanFee,
   type Competition,
   type LoanedOutPlayer,
   type MarketPlayer,
@@ -99,6 +100,7 @@ export function SquadCard({ player }: { player: SquadPlayer }): React.JSX.Elemen
                 >
                   Sell
                 </button>
+                <LoanButton player={player} />
                 <button
                   type="button"
                   className="action-link"
@@ -108,19 +110,43 @@ export function SquadCard({ player }: { player: SquadPlayer }): React.JSX.Elemen
                 </button>
               </>
             ) : (
-              <button
-                type="button"
-                className="action-link"
-                onClick={() => dispatch({ type: 'SELL', playerId: player.id })}
-              >
-                Sell
-              </button>
+              <>
+                <button
+                  type="button"
+                  className="action-link"
+                  onClick={() => dispatch({ type: 'SELL', playerId: player.id })}
+                >
+                  Sell
+                </button>
+                <LoanButton player={player} />
+              </>
             )}
           </>
         )}
       </div>
       <RegistrationToggles player={player} />
     </article>
+  );
+}
+
+/**
+ * Loans a player out to the end of the season, showing the fee it brings
+ * in (15% of his sale value, from the engine).
+ *
+ * @param props.player - The squad player.
+ * @returns The button.
+ */
+function LoanButton({ player }: { player: SquadPlayer }): React.JSX.Element {
+  const { dispatch } = useGame();
+  return (
+    <button
+      type="button"
+      className="action-link"
+      title="Off every list and off the wage bill until the end of the season; his fee keeps amortising."
+      onClick={() => dispatch({ type: 'LOAN_OUT', playerId: player.id })}
+    >
+      Loan +{formatMoney(loanFee(player))}
+    </button>
   );
 }
 
@@ -318,12 +344,13 @@ export function SoldCard({ player }: { player: SquadPlayer }): React.JSX.Element
 }
 
 /**
- * A read-only card for a club player away on loan: who he is, where he is,
- * and the window he rejoins the squad in. No actions, because a player
- * away cannot be sold or renewed until he is back.
+ * A card for a club player away on loan: who he is, where he is when that
+ * is known, and when he rejoins the squad. A player away cannot be sold or
+ * renewed; the only action is undoing a loan agreed this window, which
+ * repays its fee.
  *
  * @param props.loan - The player away on loan.
- * @param props.returnsIn - Label of the window he returns in.
+ * @param props.returnsIn - When he returns, e.g. "Summer 2027".
  * @returns The card element.
  */
 export function LoanedOutCard({
@@ -333,18 +360,34 @@ export function LoanedOutCard({
   loan: LoanedOutPlayer;
   returnsIn: string;
 }): React.JSX.Element {
+  const { state, dispatch } = useGame();
   const { player } = loan;
+  const agreedNow = loan.agreed?.windowIndex === state.windowIndex;
   return (
-    <article className="player-card">
+    <article className={`player-card${agreedNow ? ' selected-sale' : ''}`}>
       <div className="quality">{player.quality}</div>
       <h3 className="name">{player.name}</h3>
       <div className="meta">
         <span>{player.position}</span>
         <span>{player.age}</span>
-        <span>At {loan.club}</span>
+        {loan.club !== undefined && <span>At {loan.club}</span>}
       </div>
       <div className="actions">
         <span>Back in {returnsIn}</span>
+        {agreedNow && loan.agreed !== undefined && (
+          <>
+            <span className="fee in">+{formatMoney(loan.agreed.fee)}</span>
+            <button
+              type="button"
+              className="action-link"
+              onClick={() =>
+                dispatch({ type: 'UNDO_LOAN_OUT', playerId: player.id })
+              }
+            >
+              Undo loan
+            </button>
+          </>
+        )}
       </div>
     </article>
   );

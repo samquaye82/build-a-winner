@@ -6,7 +6,12 @@
 import { useState } from 'react';
 import { currentWindow, isSubmittable, type Position } from '../../engine';
 import { useGame } from '../GameContext';
-import { groupByPosition, POSITION_LABELS, POSITION_ORDER } from '../helpers';
+import {
+  groupByPosition,
+  loanReturnLabel,
+  POSITION_LABELS,
+  POSITION_ORDER,
+} from '../helpers';
 import { Dashboard } from './Dashboard';
 import { MarketBrowser } from './MarketBrowser';
 import {
@@ -186,9 +191,7 @@ export function WindowScreen({
                   <LoanedOutCard
                     key={loan.player.id}
                     loan={loan}
-                    returnsIn={
-                      state.config.windows[loan.returnsInWindow]?.label ?? ''
-                    }
+                    returnsIn={loanReturnLabel(state.config.windows, loan)}
                   />
                 ))}
               </div>

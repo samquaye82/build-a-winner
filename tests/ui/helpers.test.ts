@@ -10,6 +10,7 @@ import {
   formatSalary,
   groupByPosition,
   isExpiring,
+  loanReturnLabel,
   playerBadges,
   renewalOptions,
   scoreComponentRows,
@@ -192,5 +193,20 @@ describe('scoreComponentRows', () => {
     const rows = scoreComponentRows(scoreGame(state));
     expect(rows.at(-1)?.label).toBe('Value created (−10 for 1 deregistered)');
     expect(rows.at(-1)?.score).toBe(39.7);
+  });
+});
+
+describe('loanReturnLabel', () => {
+  it('names_the_return_window_when_it_is_in_the_game', () => {
+    expect(loanReturnLabel(threeTestWindows, { returnsInWindow: 1 })).toBe(
+      'Summer 2027',
+    );
+  });
+
+  it('names_the_summer_after_the_game_when_the_loan_outlasts_it', () => {
+    // The last window sits in 2027/28, so the loan ends in Summer 2028.
+    expect(loanReturnLabel(threeTestWindows, { returnsInWindow: 3 })).toBe(
+      'Summer 2028',
+    );
   });
 });
