@@ -16,7 +16,9 @@ RedmenTV transfer game.
   funds and sale proceeds roll forward into January and Summer 2027.
 - **Buy, sell, renew.** Sign players from across Europe's top leagues, sell
   those you can spare, and renew expiring contracts before your best players
-  walk away for free.
+  walk away for free. Liverpool pay to a wage structure: nobody signs or
+  extends for much less than comparable team-mates earn, and players of 33
+  and over renew only on a pay cut, for two years at most.
 - **Real squad rules.** Stay inside the Premier League's 25-man registration
   limit (at most 17 non-home-grown, under-21s exempt), UEFA's Champions League
   lists (List A of 25 with eight places for locally trained players, at most
