@@ -65,6 +65,7 @@ export {
 } from './scoring';
 export {
   rivalsAt,
+  seasonVerdict,
   simulateSeason,
   // Building blocks, exported so a whole-league projection can run the very
   // model the game's own projection runs.

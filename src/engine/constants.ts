@@ -375,19 +375,24 @@ export const SIM_DEFAULT_RIVAL_COUNT = 19;
 export const SIM_DEFAULT_RIVAL_STRENGTH = 75;
 
 /**
- * Verdict bands by projected points (Sam, 25/07/2026). Ordered by minPoints
- * descending; the first band the total reaches wins. An unbeaten projection
- * (zero losses) additionally earns the "Invincible" badge in the UI.
+ * Verdict bands by squad strength, not projected points (Sam, 03/10/2026):
+ * the points curve is so steep through the middle that points bands each
+ * covered a sliver of strength. Ordered by minStrength descending; the
+ * first band the strength (as displayed, to one decimal) reaches wins, so
+ * 90 and up is Dynasty, 85 to 89.9 Champions, 84 to 84.9 Title race, 80 to
+ * 83.9 Champions League, 77 to 79.9 Europa / top half, 76 to 76.9
+ * Mid-table, and below 76 Relegation scrap. An unbeaten projection (zero
+ * losses) additionally earns the "Invincible" badge in the UI.
  */
 export const SIM_VERDICT_BANDS: readonly {
-  minPoints: number;
+  minStrength: number;
   label: string;
 }[] = [
-  { minPoints: 90, label: 'Dynasty' },
-  { minPoints: 84, label: 'Champions' },
-  { minPoints: 78, label: 'Title race' },
-  { minPoints: 68, label: 'Champions League' },
-  { minPoints: 58, label: 'Europa / top half' },
-  { minPoints: 45, label: 'Mid-table' },
-  { minPoints: 0, label: 'Relegation scrap' },
+  { minStrength: 90, label: 'Dynasty' },
+  { minStrength: 85, label: 'Champions' },
+  { minStrength: 84, label: 'Title race' },
+  { minStrength: 80, label: 'Champions League' },
+  { minStrength: 77, label: 'Europa / top half' },
+  { minStrength: 76, label: 'Mid-table' },
+  { minStrength: 0, label: 'Relegation scrap' },
 ];

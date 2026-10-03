@@ -51,7 +51,7 @@ export interface SeasonProjection {
   goalDiff: number;
   /** Our full-squad strength (0-100), XI blended with the rest of the squad. */
   strength: number;
-  /** Verdict band label for the projected points (see SIM_VERDICT_BANDS). */
+  /** Verdict band label for the squad's strength (see SIM_VERDICT_BANDS). */
   verdict: string;
   /** True when the projection loses no games: an Invincible season. */
   invincible: boolean;
@@ -142,7 +142,9 @@ export function simulateSeason(state: GameState): SeasonProjection {
     goalsAgainst: Math.round(goalsAgainst),
     goalDiff: Math.round(goalsFor) - Math.round(goalsAgainst),
     strength: Math.round(strength * 10) / 10,
-    verdict: verdictFor(points),
+    // Judged on the strength as displayed, so the label always matches the
+    // number shown beside it.
+    verdict: seasonVerdict(Math.round(strength * 10) / 10),
     invincible: lost === 0,
   };
 }
@@ -314,14 +316,15 @@ export function roundRecord(
 }
 
 /**
- * The verdict band label for a points total.
+ * The verdict band label for a squad strength.
  *
- * @param points - Projected league points.
- * @returns The label of the highest band the total reaches.
+ * @param strength - Full-squad strength, 0-100.
+ * @returns The label of the first band (see SIM_VERDICT_BANDS) whose floor
+ *   the strength reaches.
  */
-function verdictFor(points: number): string {
-  const band = SIM_VERDICT_BANDS.find((b) => points >= b.minPoints);
-  // The last band's minPoints is 0, so a band is always found.
+export function seasonVerdict(strength: number): string {
+  const band = SIM_VERDICT_BANDS.find((b) => strength >= b.minStrength);
+  // The last band's floor is 0, so a band is always found.
   return band?.label ?? 'Relegation scrap';
 }
 

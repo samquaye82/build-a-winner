@@ -13,6 +13,7 @@ import {
   createGame,
   EngineError,
   replay,
+  seasonVerdict,
   simulateSeason,
   type Action,
   type GameConfig,
@@ -118,6 +119,23 @@ describe('simulateSeason', () => {
     expect(projection.verdict).toBe('Relegation scrap');
   });
 
+  it('judges_the_verdict_on_strength_not_points', () => {
+    // An 80-strength squad among nineteen 70s runs away with the league on
+    // points, but its strength makes it a Champions League side (Sam,
+    // 03/10/2026).
+    const config: GameConfig = {
+      ...uniformQualityConfig(80),
+      rivals: Array.from({ length: 19 }, (_unused, i) => ({
+        name: `Weak ${String(i + 1)}`,
+        strength: 70,
+      })),
+    };
+    const projection = simulateSeason(finishedGame(config));
+    expect(projection.strength).toBe(80);
+    expect(projection.points).toBeGreaterThan(90);
+    expect(projection.verdict).toBe('Champions League');
+  });
+
   it('reports a full-squad strength on the quality scale', () => {
     // A uniform quality-80 squad blends to a strength of exactly 80 (0.6 x 80
     // XI + 0.4 x 80 rest), matching the Squad quality methodology.
@@ -140,5 +158,29 @@ describe('season projection is separate from the rating', () => {
     const state = finishedGame();
     const log: readonly Action[] = state.actionLog;
     expect(log).toContainEqual({ type: 'PICK_XI', selection: fixtureXI });
+  });
+});
+
+describe('seasonVerdict', () => {
+  it('maps_every_band_floor_and_the_value_just_below_it', () => {
+    const cases: [number, string][] = [
+      [100, 'Dynasty'],
+      [90, 'Dynasty'],
+      [89.9, 'Champions'],
+      [85, 'Champions'],
+      [84.9, 'Title race'],
+      [84, 'Title race'],
+      [83.9, 'Champions League'],
+      [80, 'Champions League'],
+      [79.9, 'Europa / top half'],
+      [77, 'Europa / top half'],
+      [76.9, 'Mid-table'],
+      [76, 'Mid-table'],
+      [75.9, 'Relegation scrap'],
+      [40, 'Relegation scrap'],
+    ];
+    for (const [strength, label] of cases) {
+      expect(seasonVerdict(strength), String(strength)).toBe(label);
+    }
   });
 });
