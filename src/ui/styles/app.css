@@ -765,7 +765,9 @@ button {
 }
 
 .market-controls input[type='search'] {
-  flex: 1 1 220px;
+  /* Half its old stretched width (606px at desktop), Sam 03/10/2026, to
+     make room for the age and fee filters. */
+  flex: 0 1 300px;
   min-width: 180px;
 }
 
@@ -783,6 +785,26 @@ button {
 
 .market-results {
   border-top: 1px solid var(--ink-17);
+}
+
+.market-pages {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 18px 0 8px;
+}
+
+.market-page-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-70);
+}
+
+.market-pages .btn-secondary:disabled {
+  color: var(--ink-40);
+  border-color: var(--ink-17);
+  cursor: not-allowed;
 }
 
 .market-row {

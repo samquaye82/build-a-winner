@@ -1,7 +1,9 @@
 /**
  * The market browser (Sam's interaction model, 11/07/2026): dropdown
- * filters and search over the full market, a compact ranked result list,
- * and a detail card revealed on click where the buy decision happens.
+ * filters and search over the full market, a compact ranked result list in
+ * pages of MARKET_PAGE_SIZE, and a detail card revealed on click where the
+ * buy decision happens. Age and maximum-fee filters and the pages added
+ * 03/10/2026.
  */
 import { useEffect, useRef, useState } from 'react';
 import { type MarketPlayer, type Position } from '../../engine';
@@ -13,6 +15,9 @@ import {
   formatMoney,
   LEAGUE_LABELS,
   leaguesIn,
+  MARKET_AGE_BANDS,
+  MARKET_FEE_LIMITS,
+  MARKET_PAGE_SIZE,
   POSITION_ORDER,
   type MarketFilters,
 } from '../helpers';
@@ -58,9 +63,15 @@ export function MarketBrowser(): React.JSX.Element {
   const { state } = useGame();
   const [filters, setFilters] = useState<MarketFilters>(EMPTY_FILTERS);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
   const detailRef = useRef<HTMLDivElement>(null);
 
-  const { results, total } = filterMarket(state.market, filters);
+  const { results, total, page: shownPage, pageCount } = filterMarket(
+    state.market,
+    filters,
+    MARKET_PAGE_SIZE,
+    page,
+  );
   const selected =
     selectedId === null
       ? undefined
@@ -75,6 +86,13 @@ export function MarketBrowser(): React.JSX.Element {
 
   function update(partial: Partial<MarketFilters>): void {
     setFilters((current) => ({ ...current, ...partial }));
+    // New filters mean a new list: start it from the top.
+    setPage(0);
+    setSelectedId(null);
+  }
+
+  function goToPage(next: number): void {
+    setPage(next);
     setSelectedId(null);
   }
 
@@ -132,6 +150,35 @@ export function MarketBrowser(): React.JSX.Element {
             </option>
           ))}
         </select>
+        <select
+          value={filters.age}
+          onChange={(event) => {
+            update({ age: event.target.value });
+          }}
+          aria-label="Age"
+        >
+          <option value="ALL">All ages</option>
+          {MARKET_AGE_BANDS.map((band) => (
+            <option key={band.id} value={band.id}>
+              {band.label}
+            </option>
+          ))}
+        </select>
+        <select
+          value={filters.maxFee === null ? 'ALL' : String(filters.maxFee)}
+          onChange={(event) => {
+            const { value } = event.target;
+            update({ maxFee: value === 'ALL' ? null : Number(value) });
+          }}
+          aria-label="Maximum fee"
+        >
+          <option value="ALL">Any price</option>
+          {MARKET_FEE_LIMITS.map((limit) => (
+            <option key={limit} value={String(limit)}>
+              {limit === 0 ? 'Free only' : `Up to ${formatMoney(limit)}`}
+            </option>
+          ))}
+        </select>
       </div>
 
       {selected !== undefined && (
@@ -143,9 +190,7 @@ export function MarketBrowser(): React.JSX.Element {
       <p className="market-count">
         {total === 0
           ? 'No players match. Loosen the filters.'
-          : total > results.length
-            ? `Showing the top ${String(results.length)} of ${String(total)} matches by rating. Refine to narrow.`
-            : `${String(total)} match${total === 1 ? '' : 'es'}.`}
+          : `${total.toLocaleString('en-GB')} match${total === 1 ? '' : 'es'}, best rated first.`}
       </p>
 
       <div className="market-results">
@@ -160,6 +205,34 @@ export function MarketBrowser(): React.JSX.Element {
           />
         ))}
       </div>
+
+      {pageCount > 1 && (
+        <nav className="market-pages" aria-label="Market pages">
+          <button
+            type="button"
+            className="btn-secondary"
+            disabled={shownPage === 0}
+            onClick={() => {
+              goToPage(shownPage - 1);
+            }}
+          >
+            ◂ Previous
+          </button>
+          <span className="market-page-label">
+            Page {shownPage + 1} of {pageCount}
+          </span>
+          <button
+            type="button"
+            className="btn-secondary"
+            disabled={shownPage === pageCount - 1}
+            onClick={() => {
+              goToPage(shownPage + 1);
+            }}
+          >
+            Next ▸
+          </button>
+        </nav>
+      )}
     </section>
   );
 }

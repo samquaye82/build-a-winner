@@ -183,12 +183,41 @@ function searchable(text: string): string {
     .toLowerCase();
 }
 
+/**
+ * The market browser's age bands (Sam, 03/10/2026), youngest first. Ages
+ * are whole years as the market lists them.
+ */
+export const MARKET_AGE_BANDS: readonly {
+  id: string;
+  label: string;
+  min: number;
+  max: number;
+}[] = [
+  { id: 'U21', label: '21 and under', min: 0, max: 21 },
+  { id: '22-25', label: '22–25', min: 22, max: 25 },
+  { id: '26-29', label: '26–29', min: 26, max: 29 },
+  { id: '30+', label: '30 and over', min: 30, max: Number.POSITIVE_INFINITY },
+];
+
+/**
+ * The market browser's maximum-fee options (EUR m), cheapest first. Zero
+ * is "free only"; every other limit includes free players too.
+ */
+export const MARKET_FEE_LIMITS: readonly number[] = [0, 10, 25, 50, 75, 100, 150];
+
+/** Rows on one page of market results. */
+export const MARKET_PAGE_SIZE = 30;
+
 /** The market browser's filter state. */
 export interface MarketFilters {
   query: string;
   league: string;
   club: string;
   position: Position | 'ALL';
+  /** An id from MARKET_AGE_BANDS, or 'ALL'. */
+  age: string;
+  /** Highest fee shown (EUR m), or null for any price. */
+  maxFee: number | null;
 }
 
 /** An unfiltered browser. */
@@ -197,22 +226,40 @@ export const EMPTY_FILTERS: MarketFilters = {
   league: 'ALL',
   club: 'ALL',
   position: 'ALL',
+  age: 'ALL',
+  maxFee: null,
 };
 
+/** One page of the filtered, ranked market. */
+export interface MarketPage {
+  /** The players on this page, best quality first. */
+  results: MarketPlayer[];
+  /** Matches across every page. */
+  total: number;
+  /** The page shown, zero-based, clamped into range. */
+  page: number;
+  /** Number of pages; at least 1, even with no matches. */
+  pageCount: number;
+}
+
 /**
- * Filters and ranks the market for the browser.
+ * Filters and ranks the market for the browser, returning one page.
  *
  * @param market - The current window's market pool.
  * @param filters - Active filter state.
- * @param limit - Maximum results to return (the UI shows a refine hint).
- * @returns The top matches (best quality first) and the total match count.
+ * @param pageSize - Rows per page.
+ * @param page - Zero-based page wanted; clamped to the pages that exist, so
+ *   a page left over from a wider search falls back to the last one.
+ * @returns The page of matches (best quality first) and the totals.
  */
 export function filterMarket(
   market: readonly MarketPlayer[],
   filters: MarketFilters,
-  limit = 30,
-): { results: MarketPlayer[]; total: number } {
+  pageSize = MARKET_PAGE_SIZE,
+  page = 0,
+): MarketPage {
   const query = searchable(filters.query.trim());
+  const ageBand = MARKET_AGE_BANDS.find((band) => band.id === filters.age);
   const matches = market.filter((player) => {
     if (filters.league !== 'ALL' && player.league !== filters.league) {
       return false;
@@ -223,12 +270,25 @@ export function filterMarket(
     if (filters.position !== 'ALL' && player.position !== filters.position) {
       return false;
     }
+    if (ageBand !== undefined && (player.age < ageBand.min || player.age > ageBand.max)) {
+      return false;
+    }
+    if (filters.maxFee !== null && player.fee > filters.maxFee) {
+      return false;
+    }
     return query === '' || searchable(player.name).includes(query);
   });
   const ranked = [...matches].sort(
     (a, b) => b.quality - a.quality || a.name.localeCompare(b.name),
   );
-  return { results: ranked.slice(0, limit), total: matches.length };
+  const pageCount = Math.max(1, Math.ceil(ranked.length / pageSize));
+  const shown = Math.min(Math.max(0, page), pageCount - 1);
+  return {
+    results: ranked.slice(shown * pageSize, (shown + 1) * pageSize),
+    total: matches.length,
+    page: shown,
+    pageCount,
+  };
 }
 
 /**
