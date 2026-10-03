@@ -19,7 +19,7 @@
  * Bump whenever a rules change would make scores incomparable with earlier
  * versions; a future leaderboard must only compare like-for-like versions.
  */
-export const ENGINE_VERSION = '0.24.0';
+export const ENGINE_VERSION = '0.25.0';
 
 export type {
   AcademyPlayerSeed,
@@ -96,6 +96,12 @@ export { validateState, isSubmittable } from './validate';
 export { isLocked } from './rules/lock';
 export { countRegistration, isU21 } from './rules/registration';
 export { priceRenewal } from './rules/renewal';
+export {
+  signingWage,
+  wageFloor,
+  wageGroupOf,
+  type WageGroup,
+} from './rules/wageStructure';
 export { computeSquadCost, type SquadCostBreakdown } from './rules/scr';
 export { loanFee, loanReturnWindow } from './rules/loan';
 export { ageAt, ageOn, windowDate } from './rules/age';

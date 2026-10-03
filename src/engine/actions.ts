@@ -15,6 +15,7 @@ import { roundMoney } from './money';
 import { advanceWindow } from './progression';
 import { isLocked } from './rules/lock';
 import { priceRenewal } from './rules/renewal';
+import { signingWage } from './rules/wageStructure';
 import { computeSaleValue } from './rules/value';
 import { validateXI } from './scoring';
 import {
@@ -303,7 +304,9 @@ function buy(state: GameState, playerId: string): GameState {
     locked: false,
     contract: {
       expiryYear: window.seasonStartYear + marketPlayer.contractYears,
-      salary: marketPlayer.wageDemand,
+      // His listed demand, lifted to the club's wage structure where it
+      // falls short (rules/wageStructure.ts).
+      salary: signingWage(state, marketPlayer),
     },
     acquisition: {
       fee: marketPlayer.fee,

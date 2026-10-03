@@ -7,6 +7,7 @@ import {
   isLocked,
   isRegisteredFor,
   loanFee,
+  signingWage,
   type Competition,
   type LoanedOutPlayer,
   type MarketPlayer,
@@ -260,7 +261,7 @@ export function MarketCard({
   player: MarketPlayer;
   onBought?: () => void;
 }): React.JSX.Element {
-  const { dispatch } = useGame();
+  const { state, dispatch } = useGame();
   const isFree = player.fee === 0;
   const isLocked = player.locked === true;
 
@@ -283,7 +284,7 @@ export function MarketCard({
         {isFree && <span className="badge free">Free agent</span>}
       </div>
       <div className="contract">
-        Wants <strong>{formatWage(player.wageDemand)}</strong> ·{' '}
+        Wants <strong>{formatWage(signingWage(state, player))}</strong> ·{' '}
         {player.contractYears}-year deal
       </div>
       <div className="actions">

@@ -133,6 +133,26 @@ export const STAR_WAGE_WEEKLY_CAP_M = 10.4;
 export const STAR_WAGE_MULTIPLIER = 2;
 
 /**
+ * The club's wage structure (Sam, 03/10/2026). A player joining or renewing
+ * will not sign for much less than comparable Liverpool players earn: his
+ * wage is at least WAGE_STRUCTURE_SHARE of the best-paid squad player in
+ * his wage group rated within WAGE_STRUCTURE_RATING_BAND points of him.
+ * See rules/wageStructure.ts.
+ */
+export const WAGE_STRUCTURE_SHARE = 0.7;
+export const WAGE_STRUCTURE_RATING_BAND = 3;
+
+/**
+ * Veteran renewals (Sam, 03/10/2026): a player aged VETERAN_RENEWAL_AGE or
+ * over at the window renews on VETERAN_RENEWAL_SALARY_FACTOR of his current
+ * salary (a 30% cut), adding at most VETERAN_MAX_YEARS_ADDED years to his
+ * current expiry. The wage structure and the star rule do not apply.
+ */
+export const VETERAN_RENEWAL_AGE = 33;
+export const VETERAN_RENEWAL_SALARY_FACTOR = 0.7;
+export const VETERAN_MAX_YEARS_ADDED = 2;
+
+/**
  * Squad cost ratio (UEFA-style, per Sam 11/07/2026): squad cost (annual
  * wages plus amortisation plus the baseline) may not exceed 70% of the
  * season's revenue (WindowConfig.squadCostCapBase).
