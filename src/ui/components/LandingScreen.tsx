@@ -46,7 +46,7 @@ export function LandingScreen({ onStart }: { onStart: () => void }): React.JSX.E
     <div className="landing">
       <div className="landing-hero">
         <span className="landing-kicker">The transfer window game</span>
-        <h1 className="landing-title">Build a Winner</h1>
+        <h1 className="landing-title">Project 2028</h1>
         <p className="landing-sub">Liverpool FC · January 2027 to January 2028</p>
         <p className="landing-sub">Made by Sam Talks Football (<a href="https://www.youtube.com/channel/UC95-i8y0dBFfmrNHBU00CRg">@sam-talks-football</a>)</p>
       </div>
@@ -69,7 +69,7 @@ export function LandingScreen({ onStart }: { onStart: () => void }): React.JSX.E
             Start game ▸
           </button>
         </div>
-        <p>This is a work of fiction created for entertainment purposes only. It is not officially endorsed by Liverpool FC or the Premier League, and is not intended to simulate or represent official club operations. The game uses a fictional transfer budget and player valuations for gameplay purposes.</p>
+        <p className="landing-disclaimer">This is a work of fiction created for entertainment purposes only. It is not officially endorsed by Liverpool FC or the Premier League, and is not intended to simulate or represent official club operations. The game uses a fictional transfer budget and player valuations for gameplay purposes.</p>
       </div>
     </div>
   );

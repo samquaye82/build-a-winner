@@ -1017,15 +1017,17 @@ button {
   color: var(--gold);
 }
 
-/* ---- Landing / start screen (13/07/2026) -------------------------------- */
+/* ---- Landing / start screen (13/07/2026; redesigned 03/10/2026) -------- */
 
 .landing {
   min-height: 100vh;
   background: var(--surface);
+  /* Everything on the landing page but the title is Roboto (Sam). */
+  font-family: var(--font-body);
 }
 
 .landing-hero {
-  background: var(--red);
+  background: var(--ink);
   color: #fff;
   text-align: center;
   padding: 56px 24px 44px;
@@ -1040,7 +1042,9 @@ button {
 }
 
 .landing-title {
-  font-family: var(--font-display);
+  font-family: var(--font-headline);
+  /* Anton has a single weight; a bold heading would be faked. */
+  font-weight: 400;
   font-size: clamp(44px, 9vw, 84px);
   line-height: 1;
   text-transform: uppercase;
@@ -1101,6 +1105,13 @@ button {
 .landing-start {
   font-size: 18px;
   padding: 16px 44px;
+  border-radius: 999px;
+}
+
+/* Truly small print (Sam, 03/10/2026). */
+.landing-disclaimer {
+  font-size: 8px;
+  line-height: 1.4;
 }
 
 /* ---- End screen: verdict and side-by-side team -------------------------- */
