@@ -4,8 +4,9 @@
  * showing.
  *
  * Phases: 'start' (landing / rules) -> 'window' (the three transfer
- * windows) -> 'summary' (the one interim review, after Summer 2026) -> 'xi'
- * (squad selection, can return to the window) -> 'end' (rating).
+ * windows) -> 'xi' (squad selection, can return to the window) -> 'end'
+ * (rating). The end screen is the game's only overview: there is no interim
+ * review between windows (Sam, 03/10/2026).
  */
 import { useState } from 'react';
 import { realConfig } from '../data/realConfig';
@@ -13,16 +14,14 @@ import { GameProvider } from './GameContext';
 import { EndScreen } from './components/EndScreen';
 import { LandingScreen } from './components/LandingScreen';
 import { Masthead } from './components/Masthead';
-import { SummaryScreen } from './components/SummaryScreen';
 import { WindowScreen } from './components/WindowScreen';
 import { XIScreen } from './components/XIScreen';
 import './styles/app.css';
 
-type Phase = 'start' | 'window' | 'summary' | 'xi' | 'end';
+type Phase = 'start' | 'window' | 'xi' | 'end';
 
 /** Masthead context labels for the non-window phases. */
 const PHASE_LABELS: Partial<Record<Phase, string>> = {
-  summary: 'Window review',
   xi: 'Pick your XI',
   end: 'Overall rating',
 };
@@ -64,16 +63,6 @@ export function App(): React.JSX.Element {
         <WindowScreen
           onEnterXI={() => {
             setPhase('xi');
-          }}
-          onReviewWindow={() => {
-            setPhase('summary');
-          }}
-        />
-      )}
-      {phase === 'summary' && (
-        <SummaryScreen
-          onContinue={() => {
-            setPhase('window');
           }}
         />
       )}
