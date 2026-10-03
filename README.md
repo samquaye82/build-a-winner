@@ -1,4 +1,4 @@
-# Build a Winner
+# Project 2028
 
 A single-session football transfer puzzle. You are Liverpool's Sporting
 Director, planning three consecutive transfer windows in one sitting: Summer
