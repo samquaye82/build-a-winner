@@ -149,19 +149,19 @@ describe('weekly wages', () => {
 });
 
 describe('verdict', () => {
-  it('maps_squad_quality_to_the_right_tier_including_the_72_boundary', async () => {
+  it('maps_squad_quality_to_the_right_tier_including_the_77_boundary', async () => {
     const { verdict } = await import('../../src/ui/helpers');
-    expect(verdict(88)).toMatch(/dynasty/);
-    expect(verdict(87)).toMatch(/favourites to win/);
-    expect(verdict(83)).toMatch(/favourites to win/);
-    expect(verdict(82)).toMatch(/puncher/);
-    expect(verdict(80)).toMatch(/puncher/);
-    expect(verdict(79)).toMatch(/top four/);
-    expect(verdict(76)).toMatch(/top four/);
-    expect(verdict(75)).toMatch(/Europa League/);
-    // 72 is the lowest non-failing tier; 71 falls to failed.
-    expect(verdict(72)).toMatch(/Europa League/);
-    expect(verdict(71)).toMatch(/failed/);
+    expect(verdict(90)).toMatch(/dynasty/);
+    expect(verdict(89)).toMatch(/favourites to win/);
+    expect(verdict(85)).toMatch(/favourites to win/);
+    // The puncher's chance is a single point wide.
+    expect(verdict(84)).toMatch(/puncher/);
+    expect(verdict(83)).toMatch(/top four/);
+    expect(verdict(80)).toMatch(/top four/);
+    expect(verdict(79)).toMatch(/Europa League/);
+    // 77 is the lowest non-failing tier; 76 falls to failed.
+    expect(verdict(77)).toMatch(/Europa League/);
+    expect(verdict(76)).toMatch(/failed/);
     expect(verdict(0)).toMatch(/failed/);
   });
 });

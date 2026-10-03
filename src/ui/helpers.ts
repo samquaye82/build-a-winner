@@ -270,11 +270,11 @@ export function clubsIn(
  * beneath (which is also based on squad quality).
  */
 const VERDICTS: readonly { min: number; text: string }[] = [
-  { min: 88, text: 'Job done. You’ve built a squad for a dynasty.' },
-  { min: 83, text: 'Success! This squad should be one of the favourites to win the Premier League and/or Champions League.' },
-  { min: 80, text: 'You’re not one of the favourites, but you’ve got a puncher’s chance to win a major trophy.' },
-  { min: 76, text: 'The most this squad should expect is to qualify for the top four and maybe win a domestic trophy.' },
-  { min: 72, text: 'You’ve built a Europa League level squad. Good, but still not good enough for LFC.' },
+  { min: 90, text: 'Job done. You’ve built a squad for a dynasty.' },
+  { min: 85, text: 'Success! This squad should be one of the favourites to win the Premier League and/or Champions League.' },
+  { min: 84, text: 'You’re not one of the favourites, but you’ve got a puncher’s chance to win a major trophy.' },
+  { min: 80, text: 'Not bad, this is a comfortable top four squad. But Liverpool need to aim higher.' },
+  { min: 77, text: 'You’ve built a Europa League level squad. Decent, but not good enough for LFC.' },
   { min: 0, text: 'This squad is not LFC standard. You’ve failed, and you’re fired.' },
 ];
 
