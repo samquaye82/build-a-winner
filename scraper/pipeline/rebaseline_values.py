@@ -6,7 +6,13 @@ his age, and nothing else, on one curve for the whole database:
     value = min(TOP_VALUE x RATING_STEP ** (rating - top rating) x age factor,
                 TOP_VALUE)
 
-A prime-age (25-27) player at the database's top rating is worth exactly
+Positional rules then apply (Sam, 03/10/2026): the most valuable
+goalkeeper is worth EUR 80m, defender EUR 120m and midfielder EUR 170m,
+each group's curve scaled so its top player is exactly that and everyone
+else in proportion. A prime-age forward at the top rating is worth
+EUR 200m (FORWARD_ANCHOR), and no forward more than EUR 250m.
+
+A prime-age player at the database's top rating is worth exactly
 TOP_VALUE, and nobody is worth more: younger stars the youth premium would
 lift above it are capped there (Sam, 03/10/2026, chosen over scaling the
 curve so its maximum is TOP_VALUE, which cut the database's total value by
@@ -68,8 +74,37 @@ UNKNOWN_BIRTHDAY_OFFSET = 0.5
 #: ceiling for everyone (EUR m).
 TOP_VALUE = 250.0
 
-#: Value multiple per rating point (Transfermarkt fit: x1.260).
-RATING_STEP = 1.26
+#: Value multiple per rating point (Sam, 03/10/2026). Transfermarkt's
+#: fit was x1.260, but Sam judged the flatter x1.138 closer to the real
+#: market: it is the step that values Cody Gakpo at EUR 70m.
+RATING_STEP = 1.138
+
+#: Positional groups, for the positional caps.
+POSITION_GROUPS: dict[str, str] = {
+    "GK": "GK",
+    "RB": "DEF",
+    "LB": "DEF",
+    "CB": "DEF",
+    "CM": "MID",
+    "AM": "MID",
+    "RW": "FWD",
+    "LW": "FWD",
+    "ST": "FWD",
+}
+
+#: The most valuable player in each positional group, in EUR m (Sam,
+#: 03/10/2026). Goalkeepers, defenders and midfielders: each group's curve
+#: is scaled so its most valuable player is exactly its cap, everyone else
+#: in proportion. Forwards: see FORWARD_ANCHOR.
+POSITION_CAPS: dict[str, float] = {"GK": 80.0, "DEF": 120.0, "MID": 170.0, "FWD": TOP_VALUE}
+
+#: A prime-age forward at the top rating is worth this (EUR m), and young
+#: stars the age premium lifts higher stop at the forwards' cap (Sam,
+#: 03/10/2026). The midpoint between leaving forwards on the TOP_VALUE
+#: anchor (which put 57 forwards in the top 100) and scaling them to their
+#: most valuable player (which let Lamine Yamal's youth premium cut every
+#: forward by 37%, Erling Haaland to EUR 160m).
+FORWARD_ANCHOR = 200.0
 
 #: Value multiples at each fitted band's centre, youngest first. Fitted on
 #: Transfermarkt values by whole-year band (<=21, 22-24, 25-27, 28-29,
@@ -138,19 +173,46 @@ def exact_age(birthdate: str, whole_years: int, on: date = AGE_REFERENCE_DATE) -
     return (on - born).days / 365.25
 
 
-def baseline_values(quality: pd.Series, age: pd.Series) -> pd.Series:
-    """Unrounded values on the curve: a prime-age player at the top rating
-    is worth TOP_VALUE, and no one more.
+def baseline_values(
+    quality: pd.Series,
+    age: pd.Series,
+    position: pd.Series | None = None,
+    on_curve: pd.Series | None = None,
+) -> pd.Series:
+    """Unrounded values on the curve.
+
+    A prime-age player at the top rating is worth TOP_VALUE, and no one
+    more. With positions given, the positional rules then apply: a
+    prime-age forward at the top rating is worth FORWARD_ANCHOR, capped at
+    the forwards' cap, and every other group is scaled so its most valuable
+    player on the curve is exactly the group's cap.
 
     Args:
         quality: Ratings, 0-100.
         age: Exact ages in years, aligned with `quality`.
+        position: Positions (GK, CB, ST, ...), aligned; None for no caps.
+        on_curve: Which rows take a curve value (False for realised
+            fees); a group is scaled to its top on-curve player. None
+            means every row.
 
     Returns:
         Values in EUR m, aligned with the inputs.
     """
     curve = TOP_VALUE * RATING_STEP ** (quality - quality.max()) * age.map(age_factor)
-    return curve.clip(upper=TOP_VALUE)
+    if position is None:
+        return curve.clip(upper=TOP_VALUE)
+    group = position.map(POSITION_GROUPS)
+    eligible = pd.Series(True, index=curve.index) if on_curve is None else on_curve
+    result = curve.clip(upper=TOP_VALUE)
+    for name, cap in POSITION_CAPS.items():
+        members = group == name
+        if name == "FWD":
+            result[members] = (curve[members] * (FORWARD_ANCHOR / TOP_VALUE)).clip(upper=cap)
+            continue
+        top = curve[members & eligible].max()
+        if pd.notna(top) and top > 0:
+            result[members] = curve[members] * (cap / top)
+    return result
 
 
 def realised_fees(reconciliation: pd.DataFrame) -> dict[str, float]:
@@ -175,8 +237,9 @@ def rebaseline(master: pd.DataFrame, fees: dict[str, float]) -> pd.Series:
     """Every master row's new value, rounded.
 
     Args:
-        master: The review master with quality, age and date_of_birth (see
-            apply_ratings.with_birthdates; empty where unknown).
+        master: The review master with quality, age, position and
+            date_of_birth (see apply_ratings.with_birthdates; empty where
+            unknown).
         fees: Output of realised_fees().
 
     Returns:
@@ -191,10 +254,9 @@ def rebaseline(master: pd.DataFrame, fees: dict[str, float]) -> pd.Series:
         ],
         index=master.index,
     )
-    curve = pd.Series(
-        round_game_value(baseline_values(quality, age).to_numpy()), index=master.index
-    )
     fee = master["name"].map(fees)
+    values = baseline_values(quality, age, master.position, on_curve=fee.isna())
+    curve = pd.Series(round_game_value(values.to_numpy()), index=master.index)
     return fee.where(fee.notna(), curve)
 
 

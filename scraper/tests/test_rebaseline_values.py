@@ -6,6 +6,7 @@ import pandas as pd
 import pytest
 
 from pipeline.rebaseline_values import (
+    FORWARD_ANCHOR,
     RATING_STEP,
     TOP_VALUE,
     age_factor,
@@ -100,17 +101,74 @@ def test_realised_fees_drop_a_name_with_conflicting_fees() -> None:
 
 
 def test_rebaseline_keeps_a_realised_fee_and_rounds_the_curve() -> None:
-    # Born 01/07/2000: 26.5 on 01/01/2027, the anchor age.
+    # Born 01/07/2000: 26.5 on 01/01/2027, the anchor age. All forwards.
     master = pd.DataFrame(
         {
             "name": ["Top", "Bought", "Squad"],
+            "position": ["ST", "ST", "ST"],
             "quality": ["91", "80", "80"],
             "age": ["26", "24", "26"],
             "date_of_birth": ["2000-07-01", "", "2000-07-01"],
         }
     )
     values = rebaseline(master, {"Bought": 37.3})
-    assert values.iloc[0] == 250
+    assert values.iloc[0] == 200
     assert values.iloc[1] == 37.3
-    # 250 / 1.26^11 = 19.7, rounded to the nearest 5.
-    assert values.iloc[2] == 20
+    # 200 / 1.138^11 = 48.2, rounded to the nearest 5.
+    assert values.iloc[2] == 50
+
+
+def _squad(*players: tuple[str, str, float]) -> tuple[pd.Series, pd.Series, pd.Series]:
+    """Quality, age and position series from (position, quality, age) rows."""
+    position = pd.Series([p for p, _, _ in players])
+    quality = pd.Series([float(q) for _, q, _ in players])
+    age = pd.Series([a for _, _, a in players])
+    return quality, age, position
+
+
+def test_each_capped_group_tops_out_exactly_at_its_cap() -> None:
+    quality, age, position = _squad(
+        ("ST", "91", 26.5),
+        ("GK", "90", 26.5),
+        ("CB", "89", 26.5),
+        ("CM", "90", 26.5),
+    )
+    values = baseline_values(quality, age, position)
+    assert values.tolist() == pytest.approx([FORWARD_ANCHOR, 80.0, 120.0, 170.0])
+
+
+def test_a_capped_group_keeps_its_players_in_proportion() -> None:
+    quality, age, position = _squad(("GK", "90", 26.5), ("GK", "85", 26.5))
+    values = baseline_values(quality, age, position)
+    assert values.iloc[0] == pytest.approx(80.0)
+    assert values.iloc[1] == pytest.approx(80.0 / RATING_STEP**5)
+
+
+def test_a_groups_top_is_decided_by_curve_value_not_rating() -> None:
+    # A 90-rated keeper of 34 is worth less than an 88-rated one of 26.5.
+    quality, age, position = _squad(("GK", "90", 34.2), ("GK", "88", 26.5))
+    values = baseline_values(quality, age, position)
+    assert values.iloc[1] == pytest.approx(80.0)
+    assert values.iloc[0] < 80.0
+
+
+def test_a_prime_top_rated_forward_is_worth_the_forward_anchor() -> None:
+    quality, age, position = _squad(("ST", "91", 26.5), ("RW", "85", 26.5))
+    values = baseline_values(quality, age, position)
+    assert values.iloc[0] == pytest.approx(FORWARD_ANCHOR)
+    assert values.iloc[1] == pytest.approx(FORWARD_ANCHOR / RATING_STEP**6)
+
+
+def test_a_young_star_forward_stops_at_the_forwards_cap() -> None:
+    # 200 / 1.138 x 1.8 = 316 uncapped.
+    quality, age, position = _squad(("ST", "91", 26.5), ("LW", "90", 18.0))
+    values = baseline_values(quality, age, position)
+    assert values.iloc[1] == pytest.approx(TOP_VALUE)
+
+
+def test_a_realised_fee_does_not_set_a_groups_scale() -> None:
+    # The best keeper keeps his fee; the cap goes to the best on the curve.
+    quality, age, position = _squad(("GK", "90", 26.5), ("GK", "85", 26.5))
+    on_curve = pd.Series([False, True])
+    values = baseline_values(quality, age, position, on_curve=on_curve)
+    assert values.iloc[1] == pytest.approx(80.0)
