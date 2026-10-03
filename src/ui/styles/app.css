@@ -26,8 +26,9 @@ button {
 /* ---- Masthead ------------------------------------------------------- */
 
 .masthead {
-  background: var(--red);
+  background: var(--ink);
   color: var(--white-88);
+  font-family: var(--font-body);
   padding: 18px 24px;
 }
 
@@ -42,7 +43,9 @@ button {
 }
 
 .masthead .wordmark {
-  font-family: var(--font-display);
+  font-family: var(--font-headline);
+  /* Anton has a single weight; a bold wordmark would be faked. */
+  font-weight: 400;
   font-size: 22px;
   letter-spacing: 0.04em;
   color: #fff;
@@ -337,7 +340,7 @@ button {
   padding: 5px 10px;
   font-size: 12px;
   font-weight: 600;
-  border-radius: var(--radius-button);
+  border-radius: var(--radius-full);
 }
 
 .renew-options button:hover { border-color: var(--red); }
@@ -372,6 +375,19 @@ button {
   font-size: 14px;
   font-weight: 700;
   padding: 10px 20px;
+}
+
+/* ---- Transfer window page (Sam, 04/10/2026) ---------------------------- */
+
+/* Roboto for the text; numbers keep Archivo Black, which their own rules
+   set explicitly (tile values, ratings, fees). */
+.window-page {
+  font-family: var(--font-body);
+}
+
+.window-page .btn-primary,
+.window-page .btn-secondary {
+  border-radius: var(--radius-full);
 }
 
 /* ---- Pitch (pick-your-XI) --------------------------------------------- */
@@ -885,7 +901,7 @@ button {
 .reset-btn {
   background: none;
   border: 1px solid var(--white-40);
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-full);
   color: var(--white-88);
   font: inherit;
   font-size: 12px;
