@@ -191,7 +191,7 @@ export function EndScreen(): React.JSX.Element {
 
 
         <p className="end-footnote">
-          Analytics and UI by @SamTalksFtbl
+          Analytics and UI by <a href="https://www.youtube.com/channel/UC95-i8y0dBFfmrNHBU00CRg">@sam-talks-football</a>
         </p>
       </main>
     </div>
