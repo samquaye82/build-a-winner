@@ -52,12 +52,20 @@ export function SquadCard({ player }: { player: SquadPlayer }): React.JSX.Elemen
     player.promotion?.windowIndex === state.windowIndex;
   // A lock can lift mid-game, so it is a question about this window.
   const locked = isLocked(player, state.windowIndex);
+  // Only a player the club can sell has a price to show.
+  const sellable = !locked && player.onLoan !== true;
 
   return (
     <article
       className={`player-card${locked ? ' locked' : ''}${boughtThisWindow || promotedThisWindow ? ' selected-buy' : ''}`}
     >
-      <div className="quality">{player.quality}</div>
+      {/* The price sits level with the rating (Sam, 04/10/2026). */}
+      <div className="card-top">
+        <div className="quality">{player.quality}</div>
+        {sellable && (
+          <span className="fee in">+{formatMoney(player.saleValue)}</span>
+        )}
+      </div>
       <h3 className="name">
         {player.name}
         {locked ? ' 🔒' : ''}
@@ -71,7 +79,7 @@ export function SquadCard({ player }: { player: SquadPlayer }): React.JSX.Elemen
         <strong>{formatWage(player.contract.salary)}</strong> ·{' '}
         {formatExpiry(player.contract.expiryYear)}
       </div>
-      <div className="actions">
+      <div className="actions buttons">
         {locked ? (
           <span className="fee">🔒 Locked</span>
         ) : player.onLoan === true ? (
@@ -81,7 +89,6 @@ export function SquadCard({ player }: { player: SquadPlayer }): React.JSX.Elemen
           <span className="fee">Not for sale</span>
         ) : (
           <>
-            <span className="fee in">+{formatMoney(player.saleValue)}</span>
             {boughtThisWindow ? (
               <button
                 type="button"
@@ -173,7 +180,7 @@ function RegistrationToggles({
   const { dispatch } = useGame();
   const competitions: readonly Competition[] = ['PL', 'UCL'];
   return (
-    <div className="actions">
+    <div className="actions buttons">
       {competitions.map((competition) => {
         const registered = isRegisteredFor(player, competition);
         return (
