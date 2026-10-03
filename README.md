@@ -23,6 +23,11 @@ RedmenTV transfer game.
 - **A living market.** Between windows, players age, values drift and contracts
   wind down, all fully deterministic. Rivals (Manchester United, Everton) and
   the odd untouchable superstar are out of reach.
+- **Manchester City's fire sale.** City have been found guilty of breaking the
+  Premier League's financial rules and docked points, and their players want
+  out. From Summer 2027 every City player, Erling Haaland included, costs half
+  his transfer fee on unchanged wages. A signing cannot be sold again in the
+  window he joined.
 - **Pick your XI.** When the windows shut, choose a formation and eleven. You
   are scored on squad quality and depth, balance, age profile, contract health
   and the value you created.
