@@ -168,8 +168,15 @@ export function advanceWindow(submitted: GameState): GameState {
       league: 'free-agent',
     };
   });
+  // A player away on loan is still the club's, so he is no more on the
+  // market (or counted for his old club) than one in the squad.
+  const awayIds = new Set(
+    loanedOut
+      .filter((loan) => loan.returnsInWindow > nextIndex)
+      .map((loan) => loan.player.id),
+  );
   const pool = (state.config.marketByWindow[nextIndex] ?? []).filter(
-    (p) => !squadIds.has(p.id),
+    (p) => !squadIds.has(p.id) && !awayIds.has(p.id),
   );
   const market = [...pool, ...freeListings];
 

@@ -19,7 +19,7 @@
  * Bump whenever a rules change would make scores incomparable with earlier
  * versions; a future leaderboard must only compare like-for-like versions.
  */
-export const ENGINE_VERSION = '0.21.0';
+export const ENGINE_VERSION = '0.22.0';
 
 export type {
   AcademyPlayerSeed,
@@ -64,6 +64,7 @@ export {
   type ScoreBreakdown,
 } from './scoring';
 export {
+  rivalsAt,
   simulateSeason,
   // Building blocks, exported so a whole-league projection can run the very
   // model the game's own projection runs.

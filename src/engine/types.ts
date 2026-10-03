@@ -418,9 +418,18 @@ export interface GameConfig {
    */
   loanedOut?: readonly LoanedOutSeed[];
   /**
-   * Rival clubs for the end-of-game season projection: each is played home
-   * and away, so nineteen rivals make a 38-game season. Optional; the
-   * simulation falls back to a league of average opponents when absent.
+   * The league the club plays in, as market players' `league` names it
+   * (e.g. "premier-league"). When set, the season projection reads every
+   * rival's squad from the market as it stands at the end of the game
+   * (Sam, 03/10/2026), so a player signed from a rival no longer counts for
+   * them. When absent, `rivals` is used as given.
+   */
+  rivalLeague?: string;
+  /**
+   * Fixed rival clubs for the season projection, used only without
+   * `rivalLeague`: each is played home and away, so nineteen rivals make a
+   * 38-game season. Optional; without either, the simulation falls back to
+   * a league of average opponents.
    */
   rivals?: readonly RivalTeam[];
   /**

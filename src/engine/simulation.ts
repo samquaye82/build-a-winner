@@ -35,6 +35,9 @@ import { registeredFor } from './rules/deregistration';
 import { validateXI } from './scoring';
 import type { GameState, RivalTeam, SquadPlayer } from './types';
 
+/** Players in a starting eleven. */
+const XI_SIZE = 11;
+
 /** The projected outcome of a 38-game league season. */
 export interface SeasonProjection {
   /** Games played (twice the rival count; 38 for a full league). */
@@ -87,7 +90,7 @@ export function simulateSeason(state: GameState): SeasonProjection {
     rest.map((p) => p.quality),
   );
 
-  const rivals = resolveRivals(state.config.rivals);
+  const rivals = rivalsAt(state);
 
   // Full-squad strengths bunch near the league average, so stretch each team's
   // distance from the mean before the match model. Without this the league
@@ -320,6 +323,48 @@ function verdictFor(points: number): string {
   const band = SIM_VERDICT_BANDS.find((b) => points >= b.minPoints);
   // The last band's minPoints is 0, so a band is always found.
   return band?.label ?? 'Relegation scrap';
+}
+
+/**
+ * The rival clubs as they stand now.
+ *
+ * With `config.rivalLeague` set, every rival's squad is read from the
+ * market (Sam, 03/10/2026): the players it lists at each club in that
+ * league, rated by the same full-squad methodology as our own strength.
+ * The market never lists a player at our club, away on loan from it, or
+ * already signed by it, so a player signed from a rival stops counting for
+ * them the moment he joins, and a player sold to no named buyer counts for
+ * no one. Called at the end of the game, it gives the league as the game
+ * leaves it. Without `rivalLeague`, the configured rivals are used.
+ *
+ * @param state - The game state.
+ * @returns The rivals, strongest first (ties by name, for determinism).
+ */
+export function rivalsAt(state: GameState): readonly RivalTeam[] {
+  const league = state.config.rivalLeague;
+  if (league === undefined) {
+    return resolveRivals(state.config.rivals);
+  }
+  const squads = new Map<string, number[]>();
+  for (const player of state.market) {
+    if (player.league !== league || player.club === undefined) {
+      continue;
+    }
+    const squad = squads.get(player.club) ?? [];
+    squad.push(player.quality);
+    squads.set(player.club, squad);
+  }
+  const rivals = [...squads.entries()].map(([name, qualities]) => {
+    const sorted = [...qualities].sort((a, b) => b - a);
+    return {
+      name,
+      strength: fullSquadStrength(sorted.slice(0, XI_SIZE), sorted.slice(XI_SIZE)),
+    };
+  });
+  rivals.sort(
+    (a, b) => b.strength - a.strength || (a.name < b.name ? -1 : a.name > b.name ? 1 : 0),
+  );
+  return resolveRivals(rivals);
 }
 
 /**
