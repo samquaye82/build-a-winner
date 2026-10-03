@@ -19,6 +19,9 @@
   --white-40: rgba(255, 255, 255, 0.4);
   --red-tint: rgba(227, 27, 35, 0.08);
   --green-tint: rgba(0, 153, 130, 0.08);
+  /* Manchester City, for the sanction news page only (Sam, 03/10/2026) */
+  --city-sky: #6cabdd;
+  --city-navy: #1c2c5b;
 
   /* Typography */
   --font-ui: 'Figtree', system-ui, -apple-system, 'Segoe UI', 'Helvetica Neue', sans-serif;

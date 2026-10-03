@@ -496,6 +496,36 @@ button {
   margin: 26px 0 8px;
 }
 
+/* ---- Sanction news (Sam, 03/10/2026): white page, sky blue 114 -------- */
+
+.sanction-screen {
+  text-align: center;
+  padding-top: 48px;
+  padding-bottom: 64px;
+  color: var(--city-navy);
+}
+
+.sanction-number {
+  font-family: var(--font-display);
+  font-size: clamp(160px, 36vw, 360px);
+  line-height: 0.9;
+  color: var(--city-sky);
+}
+
+.sanction-copy {
+  max-width: 560px;
+  margin: 32px auto 0;
+  font-size: 20px;
+  line-height: 1.5;
+}
+
+.sanction-screen .btn-primary {
+  margin-top: 36px;
+  background: var(--city-navy);
+}
+
+.sanction-screen .btn-primary:hover { background: var(--city-sky); }
+
 /* ---- End screen (design.md §7: the one dark screen) -------------------- */
 
 .end-screen {

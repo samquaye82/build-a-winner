@@ -5,6 +5,7 @@
  */
 import { useState } from 'react';
 import { currentWindow, isSubmittable, type Position } from '../../engine';
+import { CITY_SANCTION } from '../../data/citySanction';
 import { useGame } from '../GameContext';
 import {
   groupByPosition,
@@ -29,12 +30,16 @@ type Tab = 'squad' | 'market' | 'academy' | 'renewals';
  *
  * @param props.onEnterXI - Called when the final window is submitted and
  *   the game moves to squad selection.
+ * @param props.onSanctionNews - Called after advancing into the window the
+ *   Manchester City sanction starts in, to break the news.
  * @returns The window screen element.
  */
 export function WindowScreen({
   onEnterXI,
+  onSanctionNews,
 }: {
   onEnterXI: () => void;
+  onSanctionNews: () => void;
 }): React.JSX.Element {
   const { state, dispatch } = useGame();
   const [tab, setTab] = useState<Tab>('squad');
@@ -81,6 +86,10 @@ export function WindowScreen({
                 )
               ) {
                 dispatch({ type: 'ADVANCE_WINDOW' });
+                // The City sanction is announced as its window opens.
+                if (nextWindow?.id === CITY_SANCTION.fromWindowId) {
+                  onSanctionNews();
+                }
               }
             }}
           >
