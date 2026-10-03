@@ -149,7 +149,7 @@ function LoanButton({ player }: { player: SquadPlayer }): React.JSX.Element {
   return (
     <button
       type="button"
-      className="action-link"
+      className="action-link action-loan"
       title="Off every list and off the wage bill until the end of the season; his fee keeps amortising."
       onClick={() => dispatch({ type: 'LOAN_OUT', playerId: player.id })}
     >
