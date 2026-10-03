@@ -5,7 +5,8 @@
  * generate:data from the scraped dataset) into the engine's GameConfig,
  * applying the hand-editable locked lists at build time so edits to
  * lockedLists.ts take effect on refresh without regeneration. The UEFA
- * registration data (uefaRegistration.ts) is applied the same way.
+ * registration data (uefaRegistration.ts) and the Manchester City
+ * sanction (citySanction.ts) are applied the same way.
  *
  * Money constants (Sam, 11/07/2026):
  * - Budgets 200 / 0 / 200: Summer 2026 opens with EUR 200m; January
@@ -49,6 +50,7 @@ import {
   LIVERPOOL_UEFA_REGISTRATION,
   MARKET_CLUB_TRAINED,
 } from './uefaRegistration';
+import { applySanction, CITY_SANCTION } from './citySanction';
 import gameData from './generated/gameData.json';
 import academyData from './academy-players.json';
 
@@ -408,6 +410,19 @@ const loanedOut: LoanedOutSeed[] = LIVERPOOL_OUT_ON_LOAN.flatMap((entry) => {
   return [{ ...loan, player: priorSigningSeed(listing, entry.signing) }];
 });
 
+/**
+ * Index of the window the Manchester City sanction starts in. A missing
+ * window would switch the sanction off without a trace, so fail loudly.
+ */
+const CITY_SANCTION_START_INDEX = windows.findIndex(
+  (window) => window.id === CITY_SANCTION.fromWindowId,
+);
+if (CITY_SANCTION_START_INDEX === -1) {
+  throw new Error(
+    `City sanction window ${CITY_SANCTION.fromWindowId} is not one of the game's windows`,
+  );
+}
+
 /** Ids of everyone in `loanedOut`, to keep them out of every other pool. */
 const awayIds = new Set(loanedOut.map((loan) => loan.player.id));
 
@@ -426,25 +441,34 @@ const marketByWindow: MarketPlayer[][] = [0, 1, 2].map((windowIndex) =>
       windowIndex < LOAN_RETURN_WINDOW_INDEX
         ? loanDestinations.get(player.id)
         : undefined;
+    const listing: MarketPlayer = {
+      id: player.id,
+      name: player.name,
+      position: player.position as Position,
+      // His real age on this window's date, as the engine reckons it.
+      age: ageOn(birthDate, windowDate(window)),
+      birthDate,
+      homegrown: player.homegrown,
+      quality: player.quality,
+      uefaTraining: marketTraining(player),
+      fee: terms.fee,
+      wageDemand: terms.wage,
+      contractYears: terms.years,
+      baseValue: terms.baseValue,
+      locked: isUntouchable(player),
+      club: loan?.club ?? player.club,
+      league: loan?.league ?? player.league,
+    };
+    // The dataset's club column is the owner, so a City player out on loan
+    // is still sold at City's discount.
     return [
-      {
-        id: player.id,
-        name: player.name,
-        position: player.position as Position,
-        // His real age on this window's date, as the engine reckons it.
-        age: ageOn(birthDate, windowDate(window)),
-        birthDate,
-        homegrown: player.homegrown,
-        quality: player.quality,
-        uefaTraining: marketTraining(player),
-        fee: terms.fee,
-        wageDemand: terms.wage,
-        contractYears: terms.years,
-        baseValue: terms.baseValue,
-        locked: isUntouchable(player),
-        club: loan?.club ?? player.club,
-        league: loan?.league ?? player.league,
-      },
+      applySanction(
+        listing,
+        player.club,
+        windowIndex,
+        CITY_SANCTION_START_INDEX,
+        CITY_SANCTION,
+      ),
     ];
   }),
 );
