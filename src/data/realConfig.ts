@@ -26,7 +26,6 @@ import type {
   LoanedOutSeed,
   MarketPlayer,
   Position,
-  RivalTeam,
   SeasonPoint,
   SquadPlayerSeed,
   UefaTraining,
@@ -552,40 +551,12 @@ for (const entry of LIVERPOOL_UEFA_REGISTRATION) {
 }
 
 /**
- * Rival strengths, derived with the same full-squad methodology as Squad
- * quality (0.6 x a club's best XI + 0.4 x the rest of its squad), taken from
- * the Premier League players in the dataset. Computed rather than authored,
- * so the projected league stays consistent with the game world.
+ * The league whose clubs are the rivals. The engine reads each one's squad
+ * from the market at the end of the game (engine/simulation.ts: rivalsAt),
+ * so a player signed from a rival stops counting for them (Sam,
+ * 03/10/2026).
  */
-const RIVAL_XI_WEIGHT = 0.65;
-const RIVAL_DEPTH_WEIGHT = 0.35;
-
-function rivalStrength(qualities: readonly number[]): number {
-  const sorted = [...qualities].sort((a, b) => b - a);
-  const xi = sorted.slice(0, 11);
-  const rest = sorted.slice(11);
-  const mean = (xs: readonly number[]): number =>
-    xs.reduce((sum, q) => sum + q, 0) / xs.length;
-  const depthAverage = rest.length > 0 ? mean(rest) : mean(xi);
-  return (
-    Math.round((RIVAL_XI_WEIGHT * mean(xi) + RIVAL_DEPTH_WEIGHT * depthAverage) * 10) /
-    10
-  );
-}
-
-const rivalQualities = new Map<string, number[]>();
-for (const player of generatedMarket) {
-  if (player.league !== 'premier-league') {
-    continue;
-  }
-  const list = rivalQualities.get(player.club) ?? [];
-  list.push(player.quality);
-  rivalQualities.set(player.club, list);
-}
-
-const rivals: RivalTeam[] = [...rivalQualities.entries()]
-  .map(([name, qualities]) => ({ name, strength: rivalStrength(qualities) }))
-  .sort((a, b) => b.strength - a.strength);
+const RIVAL_LEAGUE = 'premier-league';
 
 /** The production game configuration. */
 export const realConfig: GameConfig = {
@@ -594,6 +565,6 @@ export const realConfig: GameConfig = {
   marketByWindow,
   academy,
   loanedOut,
-  rivals,
+  rivalLeague: RIVAL_LEAGUE,
   baselineAmortisation: BASELINE_AMORTISATION,
 };

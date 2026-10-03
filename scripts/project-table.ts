@@ -29,15 +29,14 @@
  *     npm run project:table
  */
 import {
+  createGame,
   expectedGoals,
   fullSquadStrength,
   matchOutcome,
+  rivalsAt,
   stretchStrength,
 } from '../src/engine';
 import { realConfig } from '../src/data/realConfig';
-
-/** The window whose squads the table is projected from: the opening one. */
-const WINDOW_INDEX = 0;
 
 /** Players in a starting eleven. */
 const XI_SIZE = 11;
@@ -77,28 +76,24 @@ function strengthOf(qualities: readonly number[]): number {
 }
 
 /**
- * Every Premier League club and its squad's qualities.
+ * Every Premier League club's full-squad strength at the game's opening.
  *
- * Liverpool's squad comes from the config's own squad list; the rest from the
- * window's market pool, which is where the dataset holds them.
+ * Liverpool's comes from the opening squad; every rival's from the engine's
+ * own rivalsAt, the function the game's projection uses, so the two can
+ * never disagree about a club.
  *
- * @returns Qualities keyed by club name.
+ * @returns Strength keyed by club name.
  */
-function premierLeagueSquads(): Map<string, number[]> {
-  const squads = new Map<string, number[]>();
-  squads.set(
+function premierLeagueStrengths(): Map<string, number> {
+  const strengths = new Map<string, number>();
+  strengths.set(
     'Liverpool',
-    realConfig.initialSquad.map((p) => p.quality),
+    strengthOf(realConfig.initialSquad.map((p) => p.quality)),
   );
-  for (const player of realConfig.marketByWindow[WINDOW_INDEX] ?? []) {
-    if (player.league !== 'premier-league' || player.club === undefined) {
-      continue;
-    }
-    const squad = squads.get(player.club) ?? [];
-    squad.push(player.quality);
-    squads.set(player.club, squad);
+  for (const rival of rivalsAt(createGame(realConfig))) {
+    strengths.set(rival.name, rival.strength);
   }
-  return squads;
+  return strengths;
 }
 
 /**
@@ -231,11 +226,7 @@ function assertBalanced(rows: readonly Row[]): void {
 }
 
 function main(): void {
-  const squads = premierLeagueSquads();
-  const raw = new Map<string, number>();
-  for (const [club, qualities] of squads) {
-    raw.set(club, strengthOf(qualities));
-  }
+  const raw = premierLeagueStrengths();
 
   const leagueMean =
     [...raw.values()].reduce((sum, s) => sum + s, 0) / raw.size;

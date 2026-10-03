@@ -10,6 +10,7 @@ import {
   createGame,
   currentWindow,
   isLocked,
+  rivalsAt,
   validateState,
 } from '../../src/engine';
 import { LOANED_OUT } from '../../src/data/loansOut';
@@ -261,5 +262,22 @@ describe('loans out', () => {
         loan.from,
       );
     }
+  });
+});
+
+describe('rivals at the end of the game', () => {
+  it('reads_every_premier_league_rival_from_the_market', () => {
+    const rivals = rivalsAt(createGame(realConfig));
+    expect(rivals).toHaveLength(19);
+    expect(rivals.map((r) => r.name)).not.toContain('Liverpool');
+  });
+
+  it('stops_counting_declan_rice_for_arsenal_once_liverpool_sign_him', () => {
+    // Sam's example (03/10/2026): he cannot count for both squads.
+    const state = createGame(realConfig);
+    const signed = applyAction(state, { type: 'BUY', playerId: 'declan-rice-36174' });
+    const arsenal = (s: typeof state) => rivalsAt(s).find((r) => r.name === 'Arsenal')?.strength ?? 0;
+    expect(arsenal(signed)).toBeLessThan(arsenal(state));
+    expect(signed.squad.some((p) => p.id === 'declan-rice-36174')).toBe(true);
   });
 });
