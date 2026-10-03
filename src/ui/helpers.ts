@@ -4,11 +4,9 @@
  * environment. Rendering components stay dumb.
  */
 import {
-  MAX_CONTRACT_YEARS,
-} from '../engine/constants';
-import {
   isRegisteredFor,
   isU21,
+  maxRenewalExpiryYear,
   priceRenewal,
   remainingMonths,
   roundMoney,
@@ -140,7 +138,8 @@ export function renewalOptions(
     return [];
   }
   const options: RenewalOption[] = [];
-  const maxExpiry = window.seasonStartYear + MAX_CONTRACT_YEARS;
+  // The engine's cap, so a veteran is offered only the years he may add.
+  const maxExpiry = maxRenewalExpiryYear(player, window);
   for (let year = player.contract.expiryYear + 1; year <= maxExpiry; year += 1) {
     options.push({
       newExpiryYear: year,

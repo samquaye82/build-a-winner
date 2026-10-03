@@ -18,11 +18,45 @@ import {
   RENEWAL_UPLIFT_FINAL_YEAR,
   RENEWAL_UPLIFT_TWO_YEARS,
   STAR_WAGE_MULTIPLIER,
+  VETERAN_MAX_YEARS_ADDED,
+  VETERAN_RENEWAL_AGE,
+  VETERAN_RENEWAL_SALARY_FACTOR,
 } from '../constants';
 import { EngineError } from '../errors';
+import { roundMoney } from '../money';
 import type { Contract, SquadPlayer, WindowConfig } from '../types';
 import { isStarWageCase } from './wage';
 import { applyWageFloor } from './wageStructure';
+
+/**
+ * Whether a player renews on veteran terms (Sam, 03/10/2026): aged
+ * VETERAN_RENEWAL_AGE or over at the window.
+ *
+ * @param player - The squad player being renewed.
+ * @returns True for a veteran.
+ */
+export function isVeteranRenewal(player: SquadPlayer): boolean {
+  return player.age >= VETERAN_RENEWAL_AGE;
+}
+
+/**
+ * The latest expiry year a renewal may run to. Every player is held to
+ * MAX_CONTRACT_YEARS from the start of the current season; a veteran may
+ * also add no more than VETERAN_MAX_YEARS_ADDED to his current deal.
+ *
+ * @param player - The squad player being renewed.
+ * @param window - The window in which the renewal is agreed.
+ * @returns The latest legal season-end expiry year.
+ */
+export function maxRenewalExpiryYear(
+  player: SquadPlayer,
+  window: WindowConfig,
+): number {
+  const cap = window.seasonStartYear + MAX_CONTRACT_YEARS;
+  return isVeteranRenewal(player)
+    ? Math.min(cap, player.contract.expiryYear + VETERAN_MAX_YEARS_ADDED)
+    : cap;
+}
 
 /**
  * Computes the contract a player will accept for a renewal to the given
@@ -34,8 +68,9 @@ import { applyWageFloor } from './wageStructure';
  * @param squad - The squad as it stands, which sets the wage structure.
  * @returns The renewed contract (new expiry, increased salary).
  * @throws {EngineError} INVALID_EXPIRY_YEAR if the new expiry does not
- *   extend the current deal, or extends it beyond MAX_CONTRACT_YEARS from
- *   the start of the current season.
+ *   extend the current deal, or extends it beyond maxRenewalExpiryYear
+ *   (MAX_CONTRACT_YEARS from the start of the current season, and for a
+ *   veteran VETERAN_MAX_YEARS_ADDED beyond his current expiry).
  */
 export function priceRenewal(
   player: SquadPlayer,
@@ -43,7 +78,7 @@ export function priceRenewal(
   window: WindowConfig,
   squad: readonly SquadPlayer[],
 ): Contract {
-  const maxExpiryYear = window.seasonStartYear + MAX_CONTRACT_YEARS;
+  const maxExpiryYear = maxRenewalExpiryYear(player, window);
 
   if (newExpiryYear <= player.contract.expiryYear) {
     throw new EngineError(
@@ -54,8 +89,19 @@ export function priceRenewal(
   if (newExpiryYear > maxExpiryYear) {
     throw new EngineError(
       'INVALID_EXPIRY_YEAR',
-      `Renewal for ${player.name} may not extend beyond ${String(maxExpiryYear)} (${String(MAX_CONTRACT_YEARS)}-year cap)`,
+      isVeteranRenewal(player)
+        ? `Renewal for ${player.name} may not extend beyond ${String(maxExpiryYear)} (at ${String(VETERAN_RENEWAL_AGE)} or over, at most ${String(VETERAN_MAX_YEARS_ADDED)} years added)`
+        : `Renewal for ${player.name} may not extend beyond ${String(maxExpiryYear)} (${String(MAX_CONTRACT_YEARS)}-year cap)`,
     );
+  }
+
+  // A veteran renews on a 30% pay cut, whatever the leverage or years
+  // added; neither the star rule nor the wage structure applies.
+  if (isVeteranRenewal(player)) {
+    return {
+      expiryYear: newExpiryYear,
+      salary: roundMoney(player.contract.salary * VETERAN_RENEWAL_SALARY_FACTOR),
+    };
   }
 
   const remainingYears = player.contract.expiryYear - window.seasonStartYear;

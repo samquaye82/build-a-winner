@@ -60,6 +60,13 @@ describe('renewalOptions', () => {
     expect(options.find((o) => o.newExpiryYear === 2030)?.contract.salary).toBe(11.7);
   });
 
+  it('offers_a_veteran_only_two_more_years_on_a_30_percent_cut', () => {
+    const veteran = { ...makeSquadPlayer({ id: 'v', age: 33, contract: { expiryYear: 2027, salary: 10 } }), saleValue: 0 };
+    const options = renewalOptions(veteran, testWindow, []);
+    expect(options.map((o) => o.newExpiryYear)).toEqual([2028, 2029]);
+    expect(options.map((o) => o.contract.salary)).toEqual([7, 7]);
+  });
+
   it('offers_nothing_to_an_already_renewed_player', () => {
     const player = {
       ...makeSquadPlayer({ id: 'p' }),

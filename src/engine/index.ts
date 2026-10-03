@@ -19,7 +19,7 @@
  * Bump whenever a rules change would make scores incomparable with earlier
  * versions; a future leaderboard must only compare like-for-like versions.
  */
-export const ENGINE_VERSION = '0.26.0';
+export const ENGINE_VERSION = '0.27.0';
 
 export type {
   AcademyPlayerSeed,
@@ -95,7 +95,11 @@ export {
 export { validateState, isSubmittable } from './validate';
 export { isLocked } from './rules/lock';
 export { countRegistration, isU21 } from './rules/registration';
-export { priceRenewal } from './rules/renewal';
+export {
+  isVeteranRenewal,
+  maxRenewalExpiryYear,
+  priceRenewal,
+} from './rules/renewal';
 export {
   signingWage,
   wageFloor,
