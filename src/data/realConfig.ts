@@ -19,6 +19,7 @@
  *   opening SCR sits around 64%, up from the real 60% of 24/25 after the
  *   Isak/Wirtz/Ekitike spree, partly offset by big frees departing.
  */
+import { ageOn, windowDate } from '../engine';
 import type {
   AcademyPlayerSeed,
   GameConfig,
@@ -81,8 +82,55 @@ interface AcademyDataPlayer {
   id: string;
   name: string;
   position: string;
+  /** Date of birth as the club's site gives it: DD/MM/YYYY. */
+  DOB: string;
   age: number;
   homegrown: boolean;
+}
+
+/** Trusted dates of birth from the generator, by player id (ISO). */
+const BIRTH_DATES = gameData.birthDates as Readonly<Record<string, string>>;
+
+/**
+ * Ids whose birth date is an estimate (Sam, 03/10/2026): players the data
+ * has no trusted date for are given a 1 July birthday consistent with their
+ * recorded age, about three months out either way on average. Exported so
+ * the estimates stay identifiable.
+ */
+export const ESTIMATED_BIRTH_DATES = new Set<string>();
+
+/**
+ * A player's date of birth: the trusted one where the data has it,
+ * otherwise a 1 July estimate that keeps his recorded age true on the date
+ * the data was generated (and so ages him a year from Summer 2027, as the
+ * game always has).
+ *
+ * @param id - The player's id.
+ * @param age - His recorded whole-year age.
+ * @returns ISO date of birth.
+ */
+function birthDateFor(id: string, age: number): string {
+  const known = BIRTH_DATES[id];
+  if (known !== undefined) {
+    return known;
+  }
+  ESTIMATED_BIRTH_DATES.add(id);
+  const [year, month] = gameData.generatedAt.split('-').map(Number) as [number, number];
+  // Born on 1 July, he has had this year's birthday if the data is from
+  // July or later.
+  const bornIn = month >= 7 ? year - age : year - age - 1;
+  return `${String(bornIn)}-07-01`;
+}
+
+/**
+ * Converts the academy file's DD/MM/YYYY to ISO.
+ *
+ * @param dob - Date of birth, e.g. "01/09/2007".
+ * @returns ISO date, e.g. "2007-09-01".
+ */
+function isoFromDayFirst(dob: string): string {
+  const [day, month, year] = dob.split('/');
+  return `${year ?? ''}-${(month ?? '').padStart(2, '0')}-${(day ?? '').padStart(2, '0')}`;
 }
 
 const BASELINE_AMORTISATION = 340;
@@ -192,6 +240,7 @@ const ownedSquad: SquadPlayerSeed[] = (
     name: player.name,
     position: player.position as Position,
     age: player.age,
+    birthDate: birthDateFor(player.id, player.age),
     homegrown: player.homegrown,
     quality: player.quality,
     baseValue: player.baseValue,
@@ -309,6 +358,7 @@ function priorSigningSeed(
     name: listing.name,
     position: listing.position as Position,
     age: listing.age,
+    birthDate: birthDateFor(listing.id, listing.age),
     homegrown: listing.homegrown,
     quality: listing.quality,
     baseValue: terms.baseValue,
@@ -365,9 +415,11 @@ const awayIds = new Set(loanedOut.map((loan) => loan.player.id));
 const marketByWindow: MarketPlayer[][] = [0, 1, 2].map((windowIndex) =>
   generatedMarket.flatMap((player) => {
     const terms = player.windows[windowIndex];
-    if (terms === undefined || awayIds.has(player.id)) {
+    const window = windows[windowIndex];
+    if (terms === undefined || window === undefined || awayIds.has(player.id)) {
       return [];
     }
+    const birthDate = birthDateFor(player.id, player.age);
     // On loan for 2026/27, home again by summer 2027. Ownership is not
     // touched: `locked` is computed from the owning club above, so a
     // Manchester United player on loan elsewhere stays unavailable.
@@ -380,9 +432,9 @@ const marketByWindow: MarketPlayer[][] = [0, 1, 2].map((windowIndex) =>
         id: player.id,
         name: player.name,
         position: player.position as Position,
-        // Ages tick at the one season boundary, which now falls between
-        // January 2027 and Summer 2027, so both later windows are aged on.
-        age: windowIndex >= 1 ? player.age + 1 : player.age,
+        // His real age on this window's date, as the engine reckons it.
+        age: ageOn(birthDate, windowDate(window)),
+        birthDate,
         homegrown: player.homegrown,
         quality: player.quality,
         uefaTraining: marketTraining(player),
@@ -429,6 +481,7 @@ const loanedIn: SquadPlayerSeed[] = LOANED_IN.flatMap((loan) => {
       name: source.name,
       position: source.position as Position,
       age: source.age,
+      birthDate: birthDateFor(source.id, source.age),
       homegrown: source.homegrown,
       quality: source.quality,
       baseValue: terms?.baseValue ?? 0,
@@ -470,6 +523,7 @@ function academySeed(player: AcademyDataPlayer): AcademyPlayerSeed {
     name: player.name,
     position: player.position as Position,
     age: player.age,
+    birthDate: isoFromDayFirst(player.DOB),
     homegrown: player.homegrown,
     quality: ACADEMY_QUALITY,
     baseValue: ACADEMY_BASE_VALUE,

@@ -26,6 +26,7 @@
  */
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { ageOn, windowDate } from '../src/engine/rules/age';
 import { contractDiscount, contractYearsDemand, driftBaseValue, remainingMonths } from '../src/engine/rules/value';
 import { FREE_AGENT_WAGE_PREMIUM, STAR_WAGE_MULTIPLIER } from '../src/engine/constants';
 import { isStarWageCase } from '../src/engine/rules/wage';
@@ -119,6 +120,24 @@ function main(): void {
   const squad = rows.filter((r) => r.isLiverpool);
   const market = rows.filter((r) => !r.isLiverpool);
 
+  // A date of birth is trusted when it agrees with the whole-year age from
+  // the same source. A handful of rows contradict themselves: Kevin Sánchez
+  // is aged 21 with a date of birth implying 23, and the two different
+  // players called Moussa Diarra share one date between them. A date that
+  // cannot be squared with the age cannot give a true age either, so it is
+  // dropped and that player is treated as having none.
+  const generatedAt = new Date().toISOString().slice(0, 10);
+  const referenceMs = Date.parse(`${generatedAt}T00:00:00Z`);
+  const MS_PER_YEAR = 31_557_600_000;
+  const AGE_TOLERANCE_YEARS = 1.5;
+  const trustedBirthDate = (row: Row): string | undefined => {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(row.birthDate)) {
+      return undefined;
+    }
+    const derived = (referenceMs - Date.parse(`${row.birthDate}T00:00:00Z`)) / MS_PER_YEAR;
+    return Math.abs(derived - row.age) > AGE_TOLERANCE_YEARS ? undefined : row.birthDate;
+  };
+
   const squadOut = squad.map((r) => ({
     id: r.slug, name: r.name, position: r.position, age: r.age,
     homegrown: r.homegrown, quality: r.quality, baseValue: r.value,
@@ -136,13 +155,18 @@ function main(): void {
       : Math.round(
           r.salary * (isCurrentFreeAgent ? FREE_AGENT_WAGE_PREMIUM : WAGE_MOVE_PREMIUM) * 10,
         ) / 10;
-    // Ages tick at the season boundary only. The window list now puts that
-    // boundary between January 2027 and Summer 2027, and the last two
-    // windows share the 2027/28 season, so a player is a year older for
-    // both of them rather than only for the last.
+    // A player's age in each window, as the engine reckons it: from his
+    // birth date on the window's date (rules/age.ts). Without a trusted
+    // date he is a year older from the first new season, which is what a
+    // 1 July birthday gives and what the game assumes for him.
     const opening = WINDOWS[0] as WindowConfig;
+    const birthDate = trustedBirthDate(r);
     const ageIn = (window: WindowConfig): number =>
-      window.seasonStartYear > opening.seasonStartYear ? r.age + 1 : r.age;
+      birthDate !== undefined
+        ? ageOn(birthDate, windowDate(window))
+        : window.seasonStartYear > opening.seasonStartYear
+          ? r.age + 1
+          : r.age;
 
     // Current free agents (contractless since 25/26) cost nothing in any
     // window: only their wages and the SCR bite.
@@ -219,16 +243,8 @@ function main(): void {
   // rule, so the engine's player types stay as they are. Keyed by player id,
   // and only players who have a trustworthy one appear.
   //
-  // Trustworthy means it agrees with the whole-year age from the same
-  // source. A handful of rows contradict themselves: Kevin Sánchez is aged
-  // 21 with a date of birth implying 23, and the two different players
-  // called Moussa Diarra share one date between them. A date that cannot be
-  // squared with the age cannot give an exact age either, so it is dropped
-  // and the chart falls back to whole years for that player.
-  const generatedAt = new Date().toISOString().slice(0, 10);
-  const referenceMs = Date.parse(`${generatedAt}T00:00:00Z`);
-  const MS_PER_YEAR = 31_557_600_000;
-  const AGE_TOLERANCE_YEARS = 1.5;
+  // Only trusted dates are published (see trustedBirthDate above); the
+  // squad-health chart falls back to whole years for anyone without one.
 
   // Contract expiry rides alongside the player records for the same reason
   // dates of birth do: the squad-health chart reads it, no rule does, so
@@ -248,12 +264,12 @@ function main(): void {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(row.birthDate)) {
       continue;
     }
-    const derived = (referenceMs - Date.parse(`${row.birthDate}T00:00:00Z`)) / MS_PER_YEAR;
-    if (Math.abs(derived - row.age) > AGE_TOLERANCE_YEARS) {
+    const trusted = trustedBirthDate(row);
+    if (trusted === undefined) {
       contradictory += 1;
       continue;
     }
-    birthDates[row.slug] = row.birthDate;
+    birthDates[row.slug] = trusted;
   }
   if (contradictory > 0) {
     console.log(

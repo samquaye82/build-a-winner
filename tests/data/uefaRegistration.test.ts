@@ -106,13 +106,16 @@ describe('the opening squad', () => {
   it('opens_one_over_25_and_two_over_the_open_places', () => {
     // The January puzzle (Sam, 02/10/2026). Jacquet and Leoni are under 21,
     // so the Premier League exempts them, but neither has List B's two
-    // years at the club, so both are on List A. Elliott, away at Valencia,
-    // takes a locally trained player with him. List A has 26 against a
-    // maximum of 25, and 19 players outside the reserved places against 17.
+    // years at the club, so both are on List A. James McConnell, born
+    // 13/09/2004, misses the real 2026/27 cutoff (01/01/2005), so he is on
+    // List A too, filling the eighth reserved place Elliott's loan left.
+    // List A has 27 against a maximum of 25, and 19 outside the reserved
+    // places against 17: two players who are not locally trained must go.
     const window = realConfig.windows[0]!;
     const lists = assignUefaLists(state.squad, window);
-    expect(lists.listA).toHaveLength(26);
-    expect(lists.locallyTrained).toBe(7);
+    expect(lists.listA).toHaveLength(27);
+    expect(lists.listA).toContain('james-mcconnell-review');
+    expect(lists.locallyTrained).toBe(8);
     expect(lists.inOpenPlaces).toBe(19);
     expect(lists.listA).toContain('jeremy-jacquet-38546');
     expect(lists.listA).toContain('giovanni-leoni-39072');
