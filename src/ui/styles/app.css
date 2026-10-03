@@ -1058,6 +1058,15 @@ button {
   margin: 0;
 }
 
+/* A little air between the fixture line and the credit (Sam, 03/10/2026). */
+.landing-credit {
+  margin-top: 10px;
+}
+
+.landing-credit a {
+  color: var(--red);
+}
+
 .landing-body {
   max-width: 780px;
   margin: 0 auto;

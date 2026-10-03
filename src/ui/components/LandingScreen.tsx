@@ -48,7 +48,7 @@ export function LandingScreen({ onStart }: { onStart: () => void }): React.JSX.E
         <span className="landing-kicker">The transfer window game</span>
         <h1 className="landing-title">Project 2028</h1>
         <p className="landing-sub">Liverpool FC · January 2027 to January 2028</p>
-        <p className="landing-sub">Made by Sam Talks Football (<a href="https://www.youtube.com/channel/UC95-i8y0dBFfmrNHBU00CRg">@sam-talks-football</a>)</p>
+        <p className="landing-sub landing-credit">Made by Sam Talks Football (<a href="https://www.youtube.com/channel/UC95-i8y0dBFfmrNHBU00CRg">@sam-talks-football</a>)</p>
       </div>
 
       <div className="landing-body">
