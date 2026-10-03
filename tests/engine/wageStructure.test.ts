@@ -7,6 +7,7 @@ import {
   applyAction,
   computeSquadCost,
   createGame,
+  priceRenewal,
   signingWage,
   wageFloor,
   wageGroupOf,
@@ -14,7 +15,12 @@ import {
   type MarketPlayer,
   type SquadPlayer,
 } from '../../src/engine';
-import { makeMarketPlayer, makeSquadPlayer, makeTestConfig } from './fixtures';
+import {
+  makeMarketPlayer,
+  makeSquadPlayer,
+  makeTestConfig,
+  testWindow,
+} from './fixtures';
 
 /** A squad player for the pure floor tests (seeds and players line up). */
 function squadPlayer(overrides: Parameters<typeof makeSquadPlayer>[0]): SquadPlayer {
@@ -112,5 +118,43 @@ describe('signing wages', () => {
     const state = applyAction(gameWith([cheapCM]), { type: 'SELL', playerId: 'cm1' });
     // Only am1 (AM 78, 5) is left in range: 70% of 5.
     expect(signingWage(state, cheapCM)).toBe(3.5);
+  });
+});
+
+describe('renewal wages', () => {
+  it('lifts_a_low_renewal_to_the_floor', () => {
+    // cm-low renewed as if rated 84: cm-star (85, 20) is in range, so the
+    // floor is 14, far above the normal uplift on 2.
+    const underpaid = squadPlayer({ id: 'cm-low', position: 'CM', quality: 84, contract: { expiryYear: 2027, salary: 2 } });
+    expect(priceRenewal(underpaid, 2030, testWindow, SQUAD).salary).toBe(14);
+  });
+
+  it('keeps_a_normal_uplift_already_above_the_floor', () => {
+    const wellPaid = squadPlayer({ id: 'cm-rich', position: 'CM', quality: 84, contract: { expiryYear: 2027, salary: 18 } });
+    expect(priceRenewal(wellPaid, 2030, testWindow, SQUAD).salary).toBeGreaterThan(18);
+  });
+
+  it('takes_the_floor_over_the_star_rule_when_higher', () => {
+    // A quality-85 star on 5 doubles to 10 under the star rule; with a
+    // team-mate on 30 in range, the floor of 21 is the higher demand.
+    const star = squadPlayer({ id: 'star', position: 'CM', quality: 85, contract: { expiryYear: 2027, salary: 5 } });
+    const squad = [...SQUAD, squadPlayer({ id: 'rich', position: 'AM', quality: 86, contract: { expiryYear: 2030, salary: 30 } })];
+    expect(priceRenewal(star, 2030, testWindow, []).salary).toBe(10);
+    expect(priceRenewal(star, 2030, testWindow, squad).salary).toBe(21);
+  });
+
+  it('renews_at_the_floor_through_the_reducer', () => {
+    // am1 (AM 78, salary 5) renewed with cm1 (CM 80) paid 20: the floor of
+    // 14 is far above the normal uplift on 5, so it must come from the
+    // squad the reducer passes in.
+    const config = makeTestConfig();
+    const state = createGame({
+      ...config,
+      initialSquad: config.initialSquad.map((p) =>
+        p.id === 'cm1' ? { ...p, contract: { ...p.contract, salary: 20 } } : p,
+      ),
+    });
+    const renewed = applyAction(state, { type: 'RENEW', playerId: 'am1', newExpiryYear: 2031 });
+    expect(renewed.squad.find((p) => p.id === 'am1')?.contract.salary).toBe(14);
   });
 });

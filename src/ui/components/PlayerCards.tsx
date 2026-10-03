@@ -403,7 +403,7 @@ export function LoanedOutCard({
 export function RenewalCard({ player }: { player: SquadPlayer }): React.JSX.Element {
   const { state, dispatch } = useGame();
   const window = currentWindow(state);
-  const options = renewalOptions(player, window);
+  const options = renewalOptions(player, window, state.squad);
   const renewedThisWindow = player.renewal?.windowIndex === state.windowIndex;
   const renewedEarlier =
     player.renewal !== undefined && !renewedThisWindow;

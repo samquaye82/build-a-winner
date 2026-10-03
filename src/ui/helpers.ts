@@ -125,12 +125,14 @@ export interface RenewalOption {
  *
  * @param player - The squad player.
  * @param window - The current window.
+ * @param squad - The squad as it stands, which sets the wage structure.
  * @returns Options in ascending expiry order; empty if the player has
  *   already renewed or no legal extension exists.
  */
 export function renewalOptions(
   player: SquadPlayer,
   window: WindowConfig,
+  squad: readonly SquadPlayer[],
 ): RenewalOption[] {
   // A loanee's deal belongs to his parent club, so there is nothing here
   // for the player to extend; the engine rejects the action outright.
@@ -142,7 +144,7 @@ export function renewalOptions(
   for (let year = player.contract.expiryYear + 1; year <= maxExpiry; year += 1) {
     options.push({
       newExpiryYear: year,
-      contract: priceRenewal(player, year, window),
+      contract: priceRenewal(player, year, window, squad),
     });
   }
   return options;

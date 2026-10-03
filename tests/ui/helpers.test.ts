@@ -54,7 +54,7 @@ describe('groupByPosition', () => {
 describe('renewalOptions', () => {
   it('prices_every_legal_extension_year', () => {
     const player = { ...makeSquadPlayer({ id: 'p', quality: 80, contract: { expiryYear: 2027, salary: 8 } }), saleValue: 0 };
-    const options = renewalOptions(player, testWindow);
+    const options = renewalOptions(player, testWindow, []);
     expect(options.map((o) => o.newExpiryYear)).toEqual([2028, 2029, 2030, 2031]);
     // Matches the engine's pricing (see actions.test): 2030 costs 11.7.
     expect(options.find((o) => o.newExpiryYear === 2030)?.contract.salary).toBe(11.7);
@@ -66,7 +66,7 @@ describe('renewalOptions', () => {
       saleValue: 0,
       renewal: { previousContract: { expiryYear: 2028, salary: 4 }, windowIndex: 0 },
     };
-    expect(renewalOptions(player, testWindow)).toEqual([]);
+    expect(renewalOptions(player, testWindow, [])).toEqual([]);
   });
 });
 

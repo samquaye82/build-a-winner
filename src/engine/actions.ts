@@ -459,7 +459,7 @@ function renew(
   }
 
   const window = currentWindow(state);
-  const newContract = priceRenewal(player, newExpiryYear, window);
+  const newContract = priceRenewal(player, newExpiryYear, window, state.squad);
 
   const renewed: SquadPlayer = {
     ...player,

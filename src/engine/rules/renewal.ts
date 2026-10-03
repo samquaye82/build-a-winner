@@ -5,7 +5,9 @@
  * burdens the wage bill (and, from M2, the squad cost ratio) for the rest of
  * the game. The uplift scales with the player's leverage (how close the
  * contract is to expiry), the number of years added, and player quality.
- * Curve constants live in constants.ts and are M6 tuning candidates.
+ * Curve constants live in constants.ts and are M6 tuning candidates. The
+ * result is then lifted to the club's wage structure where it falls short
+ * (rules/wageStructure.ts): a renewal is a new contract like any other.
  */
 import {
   MAX_CONTRACT_YEARS,
@@ -18,9 +20,9 @@ import {
   STAR_WAGE_MULTIPLIER,
 } from '../constants';
 import { EngineError } from '../errors';
-import { roundMoney } from '../money';
 import type { Contract, SquadPlayer, WindowConfig } from '../types';
 import { isStarWageCase } from './wage';
+import { applyWageFloor } from './wageStructure';
 
 /**
  * Computes the contract a player will accept for a renewal to the given
@@ -29,6 +31,7 @@ import { isStarWageCase } from './wage';
  * @param player - The squad player being renewed.
  * @param newExpiryYear - The proposed new season-end expiry year.
  * @param window - The window in which the renewal is agreed.
+ * @param squad - The squad as it stands, which sets the wage structure.
  * @returns The renewed contract (new expiry, increased salary).
  * @throws {EngineError} INVALID_EXPIRY_YEAR if the new expiry does not
  *   extend the current deal, or extends it beyond MAX_CONTRACT_YEARS from
@@ -38,6 +41,7 @@ export function priceRenewal(
   player: SquadPlayer,
   newExpiryYear: number,
   window: WindowConfig,
+  squad: readonly SquadPlayer[],
 ): Contract {
   const maxExpiryYear = window.seasonStartYear + MAX_CONTRACT_YEARS;
 
@@ -82,6 +86,6 @@ export function priceRenewal(
 
   return {
     expiryYear: newExpiryYear,
-    salary: roundMoney(salary),
+    salary: applyWageFloor(salary, squad, player),
   };
 }

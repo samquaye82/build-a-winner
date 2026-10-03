@@ -55,8 +55,8 @@ describe('priceRenewal star-player rule', () => {
   it('doubles_the_wage_of_an_underpaid_star_regardless_of_years_added', () => {
     // Quality 90 on 5m a year: the star rule pins every extension at 10m.
     const star = squadPlayer({ quality: 90, contract: { expiryYear: 2027, salary: 5 } });
-    expect(priceRenewal(star, 2030, window).salary).toBe(10);
-    expect(priceRenewal(star, 2031, window).salary).toBe(10);
+    expect(priceRenewal(star, 2030, window, []).salary).toBe(10);
+    expect(priceRenewal(star, 2031, window, []).salary).toBe(10);
   });
 
   it('overrides_a_normal_uplift_that_would_be_lower', () => {
@@ -67,8 +67,9 @@ describe('priceRenewal star-player rule', () => {
       squadPlayer({ quality: 90, contract: { expiryYear: 2027, salary: 12 } }),
       2030,
       window,
+      [],
     ).salary;
-    expect(priceRenewal(star, 2030, window).salary).toBeGreaterThan(
+    expect(priceRenewal(star, 2030, window, []).salary).toBeGreaterThan(
       (normalTopUplift / 12) * 5,
     );
   });
@@ -77,13 +78,13 @@ describe('priceRenewal star-player rule', () => {
     // Quality 90 on 12m a year (> 10.4m): normal final-year uplift applies.
     // uplift = (0.35 + 0.02*3) * (0.8 + 90/250) = 0.4756; 12 * 1.4756 = 17.7.
     const player = squadPlayer({ quality: 90, contract: { expiryYear: 2027, salary: 12 } });
-    expect(priceRenewal(player, 2030, window).salary).toBe(17.7);
+    expect(priceRenewal(player, 2030, window, []).salary).toBe(17.7);
   });
 
   it('leaves_a_non_star_on_a_low_wage_on_the_normal_curve', () => {
     // Quality 80 on 5m a year: below the elite threshold, so no doubling.
     // uplift = (0.35 + 0.06) * (0.8 + 80/250) = 0.4592; 5 * 1.4592 = 7.3.
     const player = squadPlayer({ quality: 80, contract: { expiryYear: 2027, salary: 5 } });
-    expect(priceRenewal(player, 2030, window).salary).toBe(7.3);
+    expect(priceRenewal(player, 2030, window, []).salary).toBe(7.3);
   });
 });
