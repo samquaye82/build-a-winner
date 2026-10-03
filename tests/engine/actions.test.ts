@@ -251,13 +251,34 @@ describe('SELL', () => {
     );
   });
 
-  it('allows_selling_a_player_bought_this_window', () => {
+  it('rejects_selling_a_player_bought_this_window', () => {
+    // Where book value runs ahead of the fee (a fire sale), an instant
+    // resale would print money; undoing the buy is the only way back.
+    const bought = play({ type: 'BUY', playerId: 'buy-st' });
+    expect(() =>
+      applyAction(bought, { type: 'SELL', playerId: 'buy-st' }),
+    ).toThrowError(
+      expect.objectContaining({ code: 'PLAYER_SIGNED_THIS_WINDOW' }),
+    );
+  });
+
+  it('still_allows_undoing_a_buy_made_this_window', () => {
     const state = play(
       { type: 'BUY', playerId: 'buy-st' },
-      { type: 'SELL', playerId: 'buy-st' },
+      { type: 'UNDO_BUY', playerId: 'buy-st' },
     );
-    // Bought for 60, sold for 60: back to the full budget.
+    // Bought for 60, refunded 60: back to the full budget.
     expect(state.funds).toBe(100);
+  });
+
+  it('allows_selling_a_signing_in_a_later_window', () => {
+    const bought = applyAction(createGame(makeThreeWindowConfig()), {
+      type: 'BUY',
+      playerId: 'buy-st',
+    });
+    const next = applyAction(bought, { type: 'ADVANCE_WINDOW' });
+    const sold = applyAction(next, { type: 'SELL', playerId: 'buy-st' });
+    expect(sold.squad.find((p) => p.id === 'buy-st')).toBeUndefined();
   });
 });
 

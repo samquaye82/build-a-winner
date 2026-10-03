@@ -362,7 +362,11 @@ function undoBuy(state: GameState, playerId: string): GameState {
 
 /**
  * Sells a squad player: they leave the club and the pre-agreed fee is added
- * to the funds. The board blocks sales of locked players.
+ * to the funds. The board blocks sales of locked players, and of anyone
+ * signed in the current window.
+ *
+ * @throws {EngineError} PLAYER_LOCKED, PLAYER_ON_LOAN, or
+ *   PLAYER_SIGNED_THIS_WINDOW for a player bought in this window.
  */
 function sell(state: GameState, playerId: string): GameState {
   const player = requireSquadPlayer(state, playerId);
@@ -376,6 +380,16 @@ function sell(state: GameState, playerId: string): GameState {
     throw new EngineError(
       'PLAYER_ON_LOAN',
       `${player.name} is on loan and is not the club's to sell`,
+    );
+  }
+  // A signing cannot be sold on in the window he joined (Sam, 03/10/2026).
+  // Where a listing's book value runs ahead of its fee (the Manchester City
+  // fire sale), buying and selling straight back would print money. UNDO_BUY
+  // still reverses a mistaken signing, at the fee actually paid.
+  if (player.acquisition?.windowIndex === state.windowIndex) {
+    throw new EngineError(
+      'PLAYER_SIGNED_THIS_WINDOW',
+      `${player.name} was signed this window and cannot be sold until the next`,
     );
   }
 

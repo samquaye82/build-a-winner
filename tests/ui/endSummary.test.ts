@@ -48,12 +48,15 @@ describe('endSummary', () => {
   it('counts_a_sold_signing_on_both_sides_of_the_ledger', () => {
     const state = [
       { type: 'BUY', playerId: 'buy-st' } as const,
+      // A signing can only be sold on from the next window.
+      { type: 'ADVANCE_WINDOW' } as const,
       { type: 'SELL', playerId: 'buy-st' } as const,
     ].reduce(applyAction, createGame(makeThreeWindowConfig()));
     const summary = endSummary(state);
     expect(summary.signings).toBe(1);
     expect(summary.sales).toBe(1);
-    expect(summary.netSpend).toBe(0);
+    expect(summary.spent).toBe(60);
+    expect(summary.netSpend).toBeCloseTo(summary.spent - summary.raised, 5);
   });
 });
 

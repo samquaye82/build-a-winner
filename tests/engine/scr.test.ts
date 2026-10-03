@@ -14,7 +14,7 @@ import {
   type Action,
   type GameState,
 } from '../../src/engine';
-import { makeTestConfig } from './fixtures';
+import { makeTestConfig, makeThreeWindowConfig } from './fixtures';
 
 /** Applies actions to a fresh single-window game. */
 function play(...actions: Action[]): GameState {
@@ -42,13 +42,20 @@ describe('computeSquadCost', () => {
   });
 
   it('removes_both_again_when_the_signing_is_sold_on', () => {
-    const cost = computeSquadCost(
-      play(
+    // A signing can only be sold from the window after he joined, so
+    // compare against the same next window without him.
+    const advance: Action = { type: 'ADVANCE_WINDOW' };
+    const fromThreeWindows = (...actions: Action[]): GameState =>
+      actions.reduce(applyAction, createGame(makeThreeWindowConfig()));
+    const without = computeSquadCost(fromThreeWindows(advance));
+    const soldOn = computeSquadCost(
+      fromThreeWindows(
         { type: 'BUY', playerId: 'buy-st' },
+        advance,
         { type: 'SELL', playerId: 'buy-st' },
       ),
     );
-    expect(cost.total).toBe(123);
+    expect(soldOn).toEqual(without);
   });
 
   it('drops_a_starting_players_wage_but_never_the_baseline', () => {
