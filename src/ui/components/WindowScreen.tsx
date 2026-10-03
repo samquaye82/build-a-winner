@@ -71,7 +71,7 @@ export function WindowScreen({
       <div className="window-footer">
         {isFinalWindow ? (
           <button type="button" className="btn-primary" disabled={!submittable} onClick={onEnterXI}>
-            Submit squad → pick your XI ▸
+            Submit final squad ▸
           </button>
         ) : (
           <button
@@ -93,7 +93,7 @@ export function WindowScreen({
               }
             }}
           >
-            Submit window → {nextWindow?.label ?? ''} ▸
+            Submit {window.label} ▸
           </button>
         )}
       </div>
