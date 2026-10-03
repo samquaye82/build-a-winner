@@ -334,8 +334,9 @@ button {
 
 .player-card .action-link:hover { border-color: var(--red); }
 
-/* Loan sits at the right-hand edge of the card (Sam, 04/10/2026). */
-.player-card .action-loan { margin-left: auto; }
+/* Two columns of actions (Sam, 04/10/2026): Sell and Deregister PL on
+   the left edge, Loan and Deregister UCL on the right. */
+.player-card .action-right { margin-left: auto; }
 
 .player-card.selected-sale { outline-color: var(--red); }
 .player-card.selected-buy { outline-color: var(--green); }

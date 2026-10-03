@@ -149,7 +149,7 @@ function LoanButton({ player }: { player: SquadPlayer }): React.JSX.Element {
   return (
     <button
       type="button"
-      className="action-link action-loan"
+      className="action-link action-right"
       title="Off every list and off the wage bill until the end of the season; his fee keeps amortising."
       onClick={() => dispatch({ type: 'LOAN_OUT', playerId: player.id })}
     >
@@ -187,7 +187,8 @@ function RegistrationToggles({
           <button
             key={competition}
             type="button"
-            className="action-link"
+            // PL lines up under Sell on the left, UCL under Loan on the right.
+            className={competition === 'UCL' ? 'action-link action-right' : 'action-link'}
             title={
               registered
                 ? 'Still under contract. If the window closes with him off the list, he loses 20% of his value and costs 10 points of value created.'
