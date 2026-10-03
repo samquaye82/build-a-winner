@@ -17,9 +17,12 @@ RedmenTV transfer game.
 - **Buy, sell, renew.** Sign players from across Europe's top leagues, sell
   those you can spare, and renew expiring contracts before your best players
   walk away for free.
-- **Real squad rules.** Stay inside the 25-man registration limit (at most 17
-  non-home-grown, under-21s exempt) and the squad cost ratio (wages plus fee
-  amortisation against 70% of revenue).
+- **Real squad rules.** Stay inside the Premier League's 25-man registration
+  limit (at most 17 non-home-grown, under-21s exempt), UEFA's Champions League
+  lists (List A of 25 with eight places for locally trained players, at most
+  four of them trained at other English clubs; List B for under-21s with two
+  years at the club; three goalkeepers) and the squad cost ratio (wages plus
+  fee amortisation against 70% of revenue).
 - **A living market.** Between windows, players age, values drift and contracts
   wind down, all fully deterministic. Rivals (Manchester United, Everton) and
   the odd untouchable superstar are out of reach.
@@ -67,7 +70,7 @@ scores incomparable with earlier versions.
 ```
 src/
   engine/      Pure deterministic rules engine (state machine, no React)
-    rules/     Registration, budgets, squad cost ratio, renewals, values
+    rules/     PL and UEFA registration, budgets, squad cost ratio, renewals, values
     scoring.ts Final squad rating
     progression.ts  Between-window ageing, value drift, market evolution
   ui/          React components; dispatches actions, renders state
