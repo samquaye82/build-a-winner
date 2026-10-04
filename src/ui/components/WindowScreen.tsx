@@ -7,10 +7,11 @@ import { useState } from 'react';
 import { currentWindow, isSubmittable, type Position } from '../../engine';
 import { CITY_SANCTION } from '../../data/citySanction';
 import { useGame } from '../GameContext';
-import { groupByPosition, POSITION_LABELS, POSITION_ORDER } from '../helpers';
+import { POSITION_ORDER } from '../helpers';
 import { Dashboard } from './Dashboard';
 import { MarketBrowser } from './MarketBrowser';
-import { AcademyCard, RenewalCard } from './PlayerCards';
+import { AcademyList } from './AcademyList';
+import { RenewalsList } from './RenewalsList';
 import { SquadList } from './SquadList';
 
 type Tab = 'squad' | 'market' | 'academy' | 'renewals';
@@ -39,9 +40,6 @@ export function WindowScreen({
   const isFinalWindow = state.windowIndex === state.config.windows.length - 1;
   const submittable = isSubmittable(state);
   const nextWindow = state.config.windows[state.windowIndex + 1];
-
-  const byFilter = <T extends { position: Position }>(players: readonly T[]): T[] =>
-    filter === 'ALL' ? [...players] : players.filter((p) => p.position === filter);
 
   return (
     <main className="page game-page window-page">
@@ -141,33 +139,9 @@ export function WindowScreen({
 
       {tab === 'market' && <MarketBrowser />}
 
-      {tab === 'academy' &&
-        (state.academy.length === 0 ? (
-          <p className="intro">No academy players left to promote.</p>
-        ) : (
-          groupByPosition(byFilter(state.academy)).map(([position, group]) => (
-            <section key={position}>
-              <span className="pill">{POSITION_LABELS[position]}</span>
-              <div className="card-grid">
-                {group.map((player) => (
-                  <AcademyCard key={player.id} player={player} />
-                ))}
-              </div>
-            </section>
-          ))
-        ))}
+      {tab === 'academy' && <AcademyList filter={filter} />}
 
-      {tab === 'renewals' &&
-        groupByPosition(byFilter(state.squad)).map(([position, group]) => (
-          <section key={position}>
-            <span className="pill">{POSITION_LABELS[position]}</span>
-            <div className="card-grid">
-              {group.map((player) => (
-                <RenewalCard key={player.id} player={player} />
-              ))}
-            </div>
-          </section>
-        ))}
+      {tab === 'renewals' && <RenewalsList filter={filter} />}
     </main>
   );
 }
