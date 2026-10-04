@@ -424,6 +424,26 @@ button {
   border-radius: var(--radius-full);
 }
 
+/* The explainer spans the full content width (Sam, 04/10/2026). */
+.window-page .intro {
+  max-width: none;
+}
+
+/* Dashboard tiles: an even 4 x 2 grid across the full width, raised. */
+.window-page .dashboard {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.window-page .tile {
+  box-shadow: var(--shadow-raised);
+}
+
+@media (max-width: 760px) {
+  .window-page .dashboard {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 /* ---- Pitch (pick-your-XI) --------------------------------------------- */
 
 .formation-chips {
