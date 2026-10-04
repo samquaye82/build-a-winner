@@ -884,7 +884,8 @@ button {
   margin: 10px 0 6px;
 }
 
-.market-results {
+/* Player rows: the transfer market and squad tab lists (Sam, 04/10/2026). */
+.player-rows {
   border-top: 1px solid var(--ink-17);
 }
 
@@ -908,7 +909,7 @@ button {
   cursor: not-allowed;
 }
 
-.market-row {
+.player-row {
   display: grid;
   grid-template-columns: 44px 1fr auto auto;
   gap: 12px;
@@ -924,41 +925,61 @@ button {
   transition: background var(--speed) ease-out;
 }
 
-.market-row:hover,
-.market-row.active {
+.player-row:hover,
+.player-row.active {
   background: var(--surface-muted);
 }
 
-.market-row .q {
+.player-row .q {
   font-family: var(--font-display);
   font-size: 16px;
 }
 
-.market-row-name {
+.player-row-name {
   font-weight: 600;
 }
 
-.market-row-meta {
+/* Labels (HG, U21, Expiring...) sit just after the name. */
+.player-row-name .badge {
+  margin-left: 6px;
+  vertical-align: 1px;
+}
+
+.player-row-meta {
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   color: var(--ink-70);
 }
 
-.market-row-fee {
+.player-row-price {
   font-family: var(--font-display);
   font-size: 14px;
   min-width: 64px;
   text-align: right;
 }
 
-.market-row.row-locked {
+/* Money the club would receive, as on the squad card. */
+.player-row-price.in { color: var(--green); }
+
+/* Words rather than money ("Not for sale", "Back Summer 2027"). */
+.player-row-price.note {
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--ink-70);
+}
+
+.player-row.row-locked {
   opacity: 0.55;
 }
 
-.market-detail {
+/* The card opens directly beneath its row, lined up with the name: 8px
+   row padding + 44px rating column + 12px gap. */
+.player-row-detail {
   max-width: 420px;
-  margin: 16px 0;
+  margin: 12px 0 16px 64px;
 }
 
 .badge.free {
@@ -967,11 +988,14 @@ button {
 }
 
 @media (max-width: 640px) {
-  .market-row {
+  .player-row {
     grid-template-columns: 36px 1fr auto;
   }
-  .market-row-meta {
+  .player-row-meta {
     display: none;
+  }
+  .player-row-detail {
+    margin-left: 0;
   }
 }
 

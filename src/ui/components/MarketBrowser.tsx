@@ -3,10 +3,10 @@
  * filters and search over the full market, a compact ranked result list in
  * pages of MARKET_PAGE_SIZE, and a detail card revealed on click where the
  * buy decision happens. Age and maximum-fee filters and the pages added
- * 03/10/2026.
+ * 03/10/2026; since 04/10/2026 the card opens directly beneath its row.
  */
-import { useEffect, useRef, useState } from 'react';
-import { type MarketPlayer, type Position } from '../../engine';
+import { useState } from 'react';
+import { type Position } from '../../engine';
 import { useGame } from '../GameContext';
 import {
   clubsIn,
@@ -22,37 +22,7 @@ import {
   type MarketFilters,
 } from '../helpers';
 import { MarketCard } from './PlayerCards';
-
-/** One compact result row. */
-function ResultRow({
-  player,
-  selected,
-  onSelect,
-}: {
-  player: MarketPlayer;
-  selected: boolean;
-  onSelect: () => void;
-}): React.JSX.Element {
-  return (
-    <button
-      type="button"
-      className={`market-row${selected ? ' active' : ''}${player.locked === true ? ' row-locked' : ''}`}
-      onClick={onSelect}
-    >
-      <span className="q">{player.quality}</span>
-      <span className="market-row-name">
-        {player.name}
-        {player.locked === true ? ' 🔒' : ''}
-      </span>
-      <span className="market-row-meta">
-        {player.position} · {player.age} · {player.club ?? ''}
-      </span>
-      <span className="market-row-fee">
-        {player.fee === 0 ? 'Free' : formatMoney(player.fee)}
-      </span>
-    </button>
-  );
-}
+import { PlayerRow } from './PlayerRow';
 
 /**
  * Renders the market browser.
@@ -64,7 +34,6 @@ export function MarketBrowser(): React.JSX.Element {
   const [filters, setFilters] = useState<MarketFilters>(EMPTY_FILTERS);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [page, setPage] = useState(0);
-  const detailRef = useRef<HTMLDivElement>(null);
 
   const { results, total, page: shownPage, pageCount } = filterMarket(
     state.market,
@@ -72,18 +41,6 @@ export function MarketBrowser(): React.JSX.Element {
     MARKET_PAGE_SIZE,
     page,
   );
-  const selected =
-    selectedId === null
-      ? undefined
-      : state.market.find((p) => p.id === selectedId);
-
-  // The revealed card must actually be seen (Sam's below-the-fold note).
-  useEffect(() => {
-    if (selected !== undefined) {
-      detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-  }, [selected]);
-
   function update(partial: Partial<MarketFilters>): void {
     setFilters((current) => ({ ...current, ...partial }));
     // New filters mean a new list: start it from the top.
@@ -181,28 +138,33 @@ export function MarketBrowser(): React.JSX.Element {
         </select>
       </div>
 
-      {selected !== undefined && (
-        <div className="market-detail" ref={detailRef}>
-          <MarketCard player={selected} onBought={() => { setSelectedId(null); }} />
-        </div>
-      )}
-
       <p className="market-count">
         {total === 0
           ? 'No players match. Loosen the filters.'
           : `${total.toLocaleString('en-GB')} match${total === 1 ? '' : 'es'}, best rated first.`}
       </p>
 
-      <div className="market-results">
+      <div className="player-rows">
         {results.map((player) => (
-          <ResultRow
+          <PlayerRow
             key={player.id}
-            player={player}
-            selected={player.id === selectedId}
-            onSelect={() => {
+            quality={player.quality}
+            name={player.name}
+            locked={player.locked === true}
+            meta={`${player.position} · ${String(player.age)} · ${player.club ?? ''}`}
+            price={player.fee === 0 ? 'Free' : formatMoney(player.fee)}
+            open={player.id === selectedId}
+            onToggle={() => {
               setSelectedId(player.id === selectedId ? null : player.id);
             }}
-          />
+          >
+            <MarketCard
+              player={player}
+              onBought={() => {
+                setSelectedId(null);
+              }}
+            />
+          </PlayerRow>
         ))}
       </div>
 
