@@ -154,6 +154,9 @@ button {
   font-weight: 700;
   padding: 12px 16px;
   margin: 12px 0;
+  /* Rounded and raised like the tiles above it (Sam, 04/10/2026). */
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-raised);
 }
 
 .violations ul {
@@ -167,6 +170,9 @@ button {
   font-weight: 700;
   padding: 12px 16px;
   margin: 12px 0;
+  /* Same panel as .violations once the squad is legal: same shape. */
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-raised);
 }
 
 /* ---- Tabs & filters --------------------------------------------------- */
