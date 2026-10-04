@@ -32,7 +32,8 @@
   --font-display: 'Archivo Black', var(--font-ui);
   /* Landing page redesign (Sam, 03/10/2026) */
   --font-headline: 'Anton', 'Impact', var(--font-ui);
-  --font-body: 'Roboto', system-ui, -apple-system, 'Segoe UI', 'Helvetica Neue', sans-serif;
+  /* Poppins, chosen over Roboto and Open Sans (Sam, 04/10/2026). */
+  --font-body: 'Poppins', system-ui, -apple-system, 'Segoe UI', 'Helvetica Neue', sans-serif;
 
   /* Rhythm */
   --radius-button: 4px;

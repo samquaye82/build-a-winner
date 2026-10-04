@@ -419,9 +419,9 @@ button {
 
 /* ---- In-game pages on the new design (Sam, 04/10/2026) ----------------- */
 
-/* Roboto for the text; numbers keep Archivo Black, which their own rules
-   set explicitly (tile values, ratings, fees, the 114). Shared by the
-   transfer window page, the City news page and the XI picker. */
+/* The body font for the text; numbers keep Archivo Black, which their
+   own rules set explicitly (tile values, ratings, fees, the 114). Shared
+   by the transfer window page, the City news page and the XI picker. */
 .game-page {
   font-family: var(--font-body);
 }
@@ -1119,7 +1119,7 @@ button {
 .landing {
   min-height: 100vh;
   background: var(--surface);
-  /* Everything on the landing page but the title is Roboto (Sam). */
+  /* Everything on the landing page but the title is the body font (Sam). */
   font-family: var(--font-body);
 }
 
