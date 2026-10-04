@@ -417,18 +417,21 @@ button {
   padding: 10px 20px;
 }
 
-/* ---- Transfer window page (Sam, 04/10/2026) ---------------------------- */
+/* ---- In-game pages on the new design (Sam, 04/10/2026) ----------------- */
 
 /* Roboto for the text; numbers keep Archivo Black, which their own rules
-   set explicitly (tile values, ratings, fees). */
-.window-page {
+   set explicitly (tile values, ratings, fees, the 114). Shared by the
+   transfer window page and the City news page. */
+.game-page {
   font-family: var(--font-body);
 }
 
-.window-page .btn-primary,
-.window-page .btn-secondary {
+.game-page .btn-primary,
+.game-page .btn-secondary {
   border-radius: var(--radius-full);
 }
+
+/* ---- Transfer window page (Sam, 04/10/2026) ---------------------------- */
 
 /* The explainer spans the full content width (Sam, 04/10/2026). */
 .window-page .intro {
@@ -591,6 +594,8 @@ button {
 .sanction-copy {
   max-width: 560px;
   margin: 32px auto 0;
+  /* Left-aligned within its centred column (Sam, 04/10/2026). */
+  text-align: left;
   font-size: 20px;
   line-height: 1.5;
 }

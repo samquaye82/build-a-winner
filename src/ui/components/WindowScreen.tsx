@@ -58,7 +58,7 @@ export function WindowScreen({
     filter === 'ALL' ? [...players] : players.filter((p) => p.position === filter);
 
   return (
-    <main className="page window-page">
+    <main className="page game-page window-page">
       <p className="intro">
         You are the Sporting Director. Plan all three windows in one sitting:
         buy, sell and renew under the registration rules and the squad cost

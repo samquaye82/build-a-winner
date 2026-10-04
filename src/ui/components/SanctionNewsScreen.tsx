@@ -31,7 +31,7 @@ export function SanctionNewsScreen({
   const window = currentWindow(state);
 
   return (
-    <main className="page sanction-screen">
+    <main className="page game-page sanction-screen">
       <div className="sanction-number">{CITY_SANCTION.charges}</div>
       <p className="sanction-copy">
         Manchester City have been found guilty of breaking the Premier
