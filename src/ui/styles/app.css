@@ -614,11 +614,13 @@ button {
 
 .sanction-screen .btn-primary:hover { background: var(--city-sky); }
 
-/* ---- End screen (design.md §7: the one dark screen) -------------------- */
+/* ---- End screen ---------------------------------------------------------
+ * Once design.md §7's one dark screen; white like the rest of the game
+ * since 04/10/2026 (Sam), with brand red where it had gold. */
 
 .end-screen {
-  background: var(--red-deep);
-  color: var(--white-88);
+  background: var(--surface);
+  color: var(--ink);
   min-height: 100vh;
 }
 
@@ -632,20 +634,20 @@ button {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--white-40);
+  color: var(--ink-70);
 }
 
 .end-rating {
   font-family: var(--font-display);
   font-size: clamp(96px, 18vw, 160px);
   line-height: 1;
-  color: var(--gold);
+  color: var(--red);
 }
 
 .end-outof {
   font-size: 18px;
   font-weight: 700;
-  color: var(--white-40);
+  color: var(--ink-70);
 }
 
 .end-bars {
@@ -666,7 +668,7 @@ button {
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
-  color: var(--white-88);
+  color: var(--ink);
   /* Left-aligned so every label starts at the same point (the .end-overall
    * column is centre-aligned, which would otherwise centre these). */
   text-align: left;
@@ -674,14 +676,14 @@ button {
 
 .end-bar-track {
   height: 8px;
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--ink-17);
   position: relative;
 }
 
 .end-bar-track > span {
   position: absolute;
   inset: 0 auto 0 0;
-  background: var(--gold);
+  background: var(--red);
   transition: width 600ms ease-out;
 }
 
@@ -689,20 +691,21 @@ button {
   font-family: var(--font-display);
   font-size: 14px;
   text-align: right;
-  color: #fff;
+  color: var(--ink);
 }
 
 .end-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 12px;
-  max-width: 760px;
   margin: 0 auto 26px;
 }
 
+/* Raised like the window page's dashboard tiles. */
 .end-stat {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--surface-muted);
   border-radius: var(--radius-card);
+  box-shadow: var(--shadow-raised);
   padding: 14px 16px;
   display: flex;
   flex-direction: column;
@@ -713,18 +716,18 @@ button {
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
-  color: var(--white-40);
+  color: var(--ink-70);
 }
 
 .end-stat .value {
   font-family: var(--font-display);
   font-size: 24px;
-  color: #fff;
+  color: var(--ink);
 }
 
 .end-stat .sub {
   font-size: 12px;
-  color: var(--white-40);
+  color: var(--ink-70);
 }
 
 /* ---- Overall rating + summary (two columns) --------------------------- */
@@ -732,7 +735,7 @@ button {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
   gap: 24px;
-  max-width: 900px;
+  /* Full page width, as on the XI picker (Sam, 04/10/2026). */
   margin: 0 auto 40px;
   padding-top: 28px;
   align-items: stretch;
@@ -773,7 +776,7 @@ button {
   margin: 8px auto 20px;
   font-size: 15px;
   line-height: 1.45;
-  color: var(--white-88);
+  color: var(--ink-70);
 }
 
 .invincible-badge {
@@ -797,7 +800,7 @@ button {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin-bottom: 12px;
-  color: var(--white-88);
+  color: var(--ink);
 }
 
 .pitch-mini {
@@ -816,8 +819,12 @@ button {
 .end-footnote {
   text-align: center;
   font-size: 12px;
-  color: var(--white-40);
+  color: var(--ink-70);
   margin-bottom: 24px;
+}
+
+.end-footnote a {
+  color: var(--red);
 }
 
 /* ---- Responsive -------------------------------------------------------- */
@@ -1082,7 +1089,7 @@ button {
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  color: var(--white-40);
+  color: var(--ink-70);
 }
 
 /* The players sit in their own column so wrapped lines stay left-aligned
@@ -1097,14 +1104,14 @@ button {
 }
 
 .end-squad-player {
-  color: var(--white-88);
+  color: var(--ink);
 }
 
 .end-squad-player b {
   font-family: var(--font-display);
   font-weight: 400;
   font-size: 12px;
-  color: var(--gold);
+  color: var(--ink);
 }
 
 /* ---- Landing / start screen (13/07/2026; redesigned 03/10/2026) -------- */
@@ -1221,16 +1228,15 @@ button {
   font-size: 17px;
   font-weight: 700;
   line-height: 1.4;
-  color: #fff;
+  color: var(--ink);
 }
 
 .end-team {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
   gap: 24px;
-  /* Matches the projected-season stats width and centring, so the pitch's
-   * left edge lines up with the left edge of the Record tile above it. */
-  max-width: 760px;
+  /* Full page width like the projected-season stats above it, so the
+   * pitch's left edge still lines up with the Record tile. */
   margin: 0 auto 8px;
   align-items: start;
 }
@@ -1274,7 +1280,7 @@ button {
   margin: 10px auto 0;
   font-size: 13px;
   font-weight: 700;
-  color: var(--gold);
+  color: var(--red);
 }
 
 /* ---- Narrow phones (<= 520px) ------------------------------------------ */

@@ -42,7 +42,7 @@ export function EndScreen(): React.JSX.Element {
 
   return (
     <div className="end-screen">
-      <main className="page">
+      <main className="page game-page">
         <div className="end-top">
           <div className="end-overall">
             <span className="end-label">Overall Rating</span>
