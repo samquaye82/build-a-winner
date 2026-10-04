@@ -5,18 +5,11 @@
  * away on loan come first, then the squad under its position headings,
  * each group by rating and then sale value.
  */
-import { useState } from 'react';
 import { isLocked, type Position } from '../../engine';
 import { useGame } from '../GameContext';
-import {
-  formatMoney,
-  groupByPosition,
-  loanReturnLabel,
-  POSITION_LABELS,
-  sortSquadList,
-} from '../helpers';
+import { formatMoney, loanReturnLabel } from '../helpers';
 import { Badges, LoanedOutCard, SoldCard, SquadCard } from './PlayerCards';
-import { PlayerRow } from './PlayerRow';
+import { PlayerRow, PositionSections, useOpenRow } from './PlayerRow';
 
 /**
  * Renders the squad tab's list.
@@ -33,17 +26,10 @@ export function SquadList({
 }): React.JSX.Element {
   const { state } = useGame();
   // One card open at a time, across every section of the tab.
-  const [openId, setOpenId] = useState<string | null>(null);
-
-  const toggle = (id: string): void => {
-    setOpenId((current) => (current === id ? null : id));
-  };
+  const [openId, toggle] = useOpenRow();
 
   const soldThisWindow = state.departed.filter(
     (d) => d.reason === 'sold' && d.windowIndex === state.windowIndex,
-  );
-  const shown = sortSquadList(
-    filter === 'ALL' ? state.squad : state.squad.filter((p) => p.position === filter),
   );
 
   return (
@@ -103,37 +89,34 @@ export function SquadList({
         </section>
       )}
 
-      {groupByPosition(shown).map(([position, group]) => (
-        <section key={position}>
-          <span className="pill">{POSITION_LABELS[position]}</span>
-          <div className="player-rows">
-            {group.map((player) => {
-              const locked = isLocked(player, state.windowIndex);
-              // Only a player the club can sell has a price to show, as on
-              // his card.
-              const sellable = !locked && player.onLoan !== true;
-              return (
-                <PlayerRow
-                  key={player.id}
-                  quality={player.quality}
-                  name={player.name}
-                  labels={<Badges player={player} />}
-                  locked={locked}
-                  meta={`${player.position} · ${String(player.age)}`}
-                  price={sellable ? `+${formatMoney(player.saleValue)}` : 'Not for sale'}
-                  priceClass={sellable ? 'in' : 'note'}
-                  open={openId === player.id}
-                  onToggle={() => {
-                    toggle(player.id);
-                  }}
-                >
-                  <SquadCard player={player} />
-                </PlayerRow>
-              );
-            })}
-          </div>
-        </section>
-      ))}
+      <PositionSections
+        players={state.squad}
+        filter={filter}
+        renderRow={(player) => {
+          const locked = isLocked(player, state.windowIndex);
+          // Only a player the club can sell has a price to show, as on his
+          // card.
+          const sellable = !locked && player.onLoan !== true;
+          return (
+            <PlayerRow
+              key={player.id}
+              quality={player.quality}
+              name={player.name}
+              labels={<Badges player={player} />}
+              locked={locked}
+              meta={`${player.position} · ${String(player.age)}`}
+              price={sellable ? `+${formatMoney(player.saleValue)}` : 'Not for sale'}
+              priceClass={sellable ? 'in' : 'note'}
+              open={openId === player.id}
+              onToggle={() => {
+                toggle(player.id);
+              }}
+            >
+              <SquadCard player={player} />
+            </PlayerRow>
+          );
+        }}
+      />
     </>
   );
 }
