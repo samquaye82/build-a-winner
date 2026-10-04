@@ -810,8 +810,9 @@ button {
   color: var(--ink);
   background: var(--surface);
   border: 1px solid var(--ink-17);
-  border-radius: var(--radius-button);
-  padding: 8px 12px;
+  /* Fully rounded (Sam, 04/10/2026), with wider sides to clear the curve. */
+  border-radius: var(--radius-full);
+  padding: 8px 16px;
 }
 
 .market-controls input[type='search'] {
@@ -822,7 +823,8 @@ button {
 }
 
 .market-controls select {
-  max-width: 220px;
+  /* Narrow enough for all six filters on one row at desktop width. */
+  max-width: 190px;
 }
 
 .market-count {
