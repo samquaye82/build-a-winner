@@ -35,6 +35,7 @@ import type {
 import {
   LIVERPOOL_LOCKED_ALWAYS,
   LIVERPOOL_LOCKED_UNTIL_JANUARY,
+  LIVERPOOL_LOCKED_UNTIL_SUMMER_2027,
   LOANED_IN,
   MARKET_LOCKED_CLUBS,
   MARKET_LOCKED_EXTRA,
@@ -206,6 +207,43 @@ const LOAN_EXPIRY_YEAR = 2027;
 const JANUARY_WINDOW_INDEX = 0;
 
 /**
+ * Index of Summer 2027, from which the board listens to offers for the
+ * players on LIVERPOOL_LOCKED_UNTIL_SUMMER_2027. A missing window would
+ * quietly lock them for the whole game, so fail loudly.
+ */
+const SUMMER_2027_WINDOW_INDEX = windows.findIndex(
+  (window) => window.id === 'summer-2027',
+);
+if (SUMMER_2027_WINDOW_INDEX === -1) {
+  throw new Error('Summer 2027 is not one of the game\'s windows');
+}
+
+/**
+ * A Liverpool player's lock, from the lists in lockedLists.ts. The
+ * always-locked list wins; otherwise the board listens from Summer 2027 or
+ * (in effect from the start) January 2027.
+ *
+ * @param id - The player's id.
+ * @param name - The player's display name.
+ * @returns The lock fields to spread into his seed.
+ */
+function liverpoolLock(
+  id: string,
+  name: string,
+): Pick<SquadPlayerSeed, 'locked' | 'unlocksInWindow'> {
+  if (namedIn(LIVERPOOL_LOCKED_ALWAYS, id, name)) {
+    return { locked: true };
+  }
+  if (namedIn(LIVERPOOL_LOCKED_UNTIL_SUMMER_2027, id, name)) {
+    return { locked: true, unlocksInWindow: SUMMER_2027_WINDOW_INDEX };
+  }
+  if (namedIn(LIVERPOOL_LOCKED_UNTIL_JANUARY, id, name)) {
+    return { locked: true, unlocksInWindow: JANUARY_WINDOW_INDEX };
+  }
+  return { locked: false };
+}
+
+/**
  * A Liverpool player's UEFA registration facts, looked up by slug or
  * display name in uefaRegistration.ts.
  *
@@ -230,12 +268,6 @@ function uefaFor(
 const ownedSquad: SquadPlayerSeed[] = (
   gameData.squad as GeneratedSquadPlayer[]
 ).map((player) => {
-  const lockedAlways = namedIn(LIVERPOOL_LOCKED_ALWAYS, player.id, player.name);
-  const lockedUntilJanuary = namedIn(
-    LIVERPOOL_LOCKED_UNTIL_JANUARY,
-    player.id,
-    player.name,
-  );
   return {
     id: player.id,
     name: player.name,
@@ -245,10 +277,7 @@ const ownedSquad: SquadPlayerSeed[] = (
     homegrown: player.homegrown,
     quality: player.quality,
     baseValue: player.baseValue,
-    locked: lockedAlways || lockedUntilJanuary,
-    ...(lockedUntilJanuary
-      ? { unlocksInWindow: JANUARY_WINDOW_INDEX }
-      : {}),
+    ...liverpoolLock(player.id, player.name),
     ...uefaFor(player.id, player.name),
     contract: player.contract,
   };
@@ -363,7 +392,8 @@ function priorSigningSeed(
     homegrown: listing.homegrown,
     quality: listing.quality,
     baseValue: terms.baseValue,
-    locked: false,
+    // Away on loan he cannot be traded anyway; the lock is for his return.
+    ...liverpoolLock(listing.id, listing.name),
     ...uefaFor(listing.id, listing.name),
     priorSigning: { fee: terms.fee, contractYears: terms.contractYears },
     contract: { expiryYear: terms.expiryYear, salary: terms.salary },
@@ -394,7 +424,12 @@ const loanedOut: LoanedOutSeed[] = LIVERPOOL_OUT_ON_LOAN.flatMap((entry) => {
   }
   const youth = (academyData.players as AcademyDataPlayer[]).find(named);
   if (youth !== undefined) {
-    return [{ ...loan, player: { ...academySeed(youth), locked: false } }];
+    return [
+      {
+        ...loan,
+        player: { ...academySeed(youth), ...liverpoolLock(youth.id, youth.name) },
+      },
+    ];
   }
   const listing = generatedMarket.find(named);
   if (listing === undefined) {

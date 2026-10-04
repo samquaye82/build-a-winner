@@ -18,6 +18,7 @@ import { realConfig } from '../../src/data/realConfig';
 import {
   LIVERPOOL_LOCKED_ALWAYS,
   LIVERPOOL_LOCKED_UNTIL_JANUARY,
+  LIVERPOOL_LOCKED_UNTIL_SUMMER_2027,
   LOANED_IN,
 } from '../../src/data/lockedLists';
 
@@ -131,15 +132,58 @@ describe('realConfig', () => {
     // and a supposedly protected star is quietly on sale. Szoboszlai was
     // added under a guessed slug and slipped through exactly this way.
     const state = createGame(realConfig);
-    const squad = state.squad;
+    // Players away on loan count too: Brughmans is locked for his return.
+    const liverpool = [...state.squad, ...state.loanedOut.map((l) => l.player)];
     for (const entry of [
       ...LIVERPOOL_LOCKED_ALWAYS,
+      ...LIVERPOOL_LOCKED_UNTIL_SUMMER_2027,
       ...LIVERPOOL_LOCKED_UNTIL_JANUARY,
     ]) {
-      const player = squad.find((p) => p.id === entry || p.name === entry);
-      expect(player, `no squad player matches "${entry}"`).toBeDefined();
+      const player = liverpool.find((p) => p.id === entry || p.name === entry);
+      expect(player, `no Liverpool player matches "${entry}"`).toBeDefined();
       expect(player?.locked).toBe(true);
     }
+  });
+
+  it('locks_barcola_and_munoz_until_summer_2027', () => {
+    const state = createGame(realConfig);
+    for (const name of ['Bradley Barcola', 'Victor Muñoz']) {
+      const player = state.squad.find((p) => p.name === name);
+      expect(player, name).toBeDefined();
+      if (player === undefined) continue;
+      // Window 0 is January 2027, window 1 Summer 2027.
+      expect(isLocked(player, 0), `${name} in January 2027`).toBe(true);
+      expect(isLocked(player, 1), `${name} in Summer 2027`).toBe(false);
+      expect(isLocked(player, 2), `${name} in January 2028`).toBe(false);
+    }
+  });
+
+  it('keeps_the_young_core_locked_for_the_whole_game', () => {
+    const state = createGame(realConfig);
+    const liverpool = [...state.squad, ...state.loanedOut.map((l) => l.player)];
+    for (const name of [
+      'Jérémy Jacquet',
+      'Giovanni Leoni',
+      'Rio Ngumoha',
+      'Trey Nyoni',
+      'Lucca Brughmans',
+    ]) {
+      const player = liverpool.find((p) => p.name === name);
+      expect(player, name).toBeDefined();
+      if (player === undefined) continue;
+      for (const window of [0, 1, 2]) {
+        expect(isLocked(player, window), `${name} in window ${String(window)}`).toBe(true);
+      }
+    }
+  });
+
+  it('brings_brughmans_back_from_loan_still_locked', () => {
+    // Away until Summer 2027; the lock rides on his seed into the squad.
+    const state = createGame(realConfig);
+    const loan = state.loanedOut.find((l) => l.player.name === 'Lucca Brughmans');
+    expect(loan?.returnsInWindow).toBe(1);
+    expect(loan?.player.locked).toBe(true);
+    expect(loan?.player.unlocksInWindow).toBeUndefined();
   });
 
   it('lists_semenyo_as_home_grown_and_association_trained', () => {

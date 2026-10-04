@@ -32,8 +32,19 @@ export const LIVERPOOL_LOCKED_UNTIL_JANUARY: readonly string[] = [
 ];
 
 /**
+ * Liverpool players the board will not sell in January 2027, but will
+ * listen to offers for from Summer 2027 (Sam, 04/10/2026): the newest
+ * signings get half a season before they become a real decision.
+ */
+export const LIVERPOOL_LOCKED_UNTIL_SUMMER_2027: readonly string[] = [
+  'bradley-barcola-37501', // Bradley Barcola
+  'victor-munoz-osasuna', // Victor Muñoz
+];
+
+/**
  * Liverpool players who are not for sale at any point in the game: the
- * academy jewels and the summer's signings (Sam, 13/08/2026). Ronald
+ * young core (Sam, 04/10/2026; first listed 13/08/2026). Brughmans is
+ * away on loan until Summer 2027 and stays locked when he returns. Ronald
  * Araujo is unsellable too, but by a different route: he is on loan (see
  * LOANED_IN) and was never Liverpool's to sell.
  */
@@ -42,7 +53,7 @@ export const LIVERPOOL_LOCKED_ALWAYS: readonly string[] = [
   'trey-nyoni-39263', // Trey Nyoni
   'rio-ngumoha-39689', // Rio Ngumoha
   'jeremy-jacquet-38546', // Jérémy Jacquet
-  'victor-munoz-osasuna', // Victor Muñoz
+  'lucca-brughmans-39626', // Lucca Brughmans
 ];
 
 /** A player borrowed for the 2026/27 season. */
