@@ -23,6 +23,8 @@
   --glass-fill: rgba(255, 255, 255, 0.55);
   --glass-edge: rgba(255, 255, 255, 0.75);
   --shadow-raised: 0 8px 24px rgba(12, 12, 12, 0.12), 0 2px 6px rgba(12, 12, 12, 0.08);
+  /* Smaller lift for the pill buttons on a card (Sam, 04/10/2026). */
+  --shadow-button: 0 2px 4px rgba(12, 12, 12, 0.12), 0 1px 2px rgba(12, 12, 12, 0.08);
   /* Manchester City, for the sanction news page only (Sam, 03/10/2026) */
   --city-sky: #6cabdd;
   --city-navy: #1c2c5b;

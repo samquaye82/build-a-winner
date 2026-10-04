@@ -291,6 +291,9 @@ button {
 
 .player-card .contract strong {
   color: var(--ink);
+  /* Regular weight (Sam, 04/10/2026): the wage reads as detail, leaving
+     the rating, name and price as the card's bold points. */
+  font-weight: 400;
   font-variant-numeric: tabular-nums;
 }
 
@@ -335,6 +338,9 @@ button {
   border-radius: var(--radius-full);
   background: var(--surface);
   padding: 5px 12px;
+  /* Regular weight and a small lift (Sam, 04/10/2026). */
+  font-weight: 400;
+  box-shadow: var(--shadow-button);
   transition: border-color var(--speed) ease-out;
 }
 
