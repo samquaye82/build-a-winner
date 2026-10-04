@@ -421,22 +421,29 @@ button {
 
 /* Roboto for the text; numbers keep Archivo Black, which their own rules
    set explicitly (tile values, ratings, fees, the 114). Shared by the
-   transfer window page and the City news page. */
+   transfer window page, the City news page and the XI picker. */
 .game-page {
   font-family: var(--font-body);
 }
 
 .game-page .btn-primary,
-.game-page .btn-secondary {
+.game-page .btn-secondary,
+.game-page .slot-picker button {
   border-radius: var(--radius-full);
 }
 
-/* ---- Transfer window page (Sam, 04/10/2026) ---------------------------- */
-
 /* The explainer spans the full content width (Sam, 04/10/2026). */
-.window-page .intro {
+.game-page .intro {
   max-width: none;
 }
+
+/* The XI picker's full-squad panel is raised like the window page's
+   tiles and cards. */
+.game-page .xi-squad {
+  box-shadow: var(--shadow-raised);
+}
+
+/* ---- Transfer window page (Sam, 04/10/2026) ---------------------------- */
 
 /* Dashboard tiles: an even 4 x 2 grid across the full width, raised. */
 .window-page .dashboard {

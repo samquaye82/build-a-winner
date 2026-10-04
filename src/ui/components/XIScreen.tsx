@@ -95,7 +95,7 @@ export function XIScreen({
   }
 
   return (
-    <main className="page">
+    <main className="page game-page">
       <p className="intro">
         The windows are shut. Choose a shape and pick the eleven you will be
         judged on: tap a spot, then tap a player.
