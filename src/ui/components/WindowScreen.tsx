@@ -7,21 +7,11 @@ import { useState } from 'react';
 import { currentWindow, isSubmittable, type Position } from '../../engine';
 import { CITY_SANCTION } from '../../data/citySanction';
 import { useGame } from '../GameContext';
-import {
-  groupByPosition,
-  loanReturnLabel,
-  POSITION_LABELS,
-  POSITION_ORDER,
-} from '../helpers';
+import { groupByPosition, POSITION_LABELS, POSITION_ORDER } from '../helpers';
 import { Dashboard } from './Dashboard';
 import { MarketBrowser } from './MarketBrowser';
-import {
-  AcademyCard,
-  LoanedOutCard,
-  RenewalCard,
-  SoldCard,
-  SquadCard,
-} from './PlayerCards';
+import { AcademyCard, RenewalCard } from './PlayerCards';
+import { SquadList } from './SquadList';
 
 type Tab = 'squad' | 'market' | 'academy' | 'renewals';
 
@@ -49,10 +39,6 @@ export function WindowScreen({
   const isFinalWindow = state.windowIndex === state.config.windows.length - 1;
   const submittable = isSubmittable(state);
   const nextWindow = state.config.windows[state.windowIndex + 1];
-
-  const soldThisWindow = state.departed.filter(
-    (d) => d.reason === 'sold' && d.windowIndex === state.windowIndex,
-  );
 
   const byFilter = <T extends { position: Position }>(players: readonly T[]): T[] =>
     filter === 'ALL' ? [...players] : players.filter((p) => p.position === filter);
@@ -151,47 +137,7 @@ export function WindowScreen({
         </div>
       )}
 
-      {tab === 'squad' && (
-        <>
-          {/* Sales sit above the squad so they are never below the fold. */}
-          {soldThisWindow.length > 0 && (
-            <section>
-              <span className="pill">Sold this window</span>
-              <div className="card-grid">
-                {soldThisWindow.map((d) => (
-                  <SoldCard key={d.player.id} player={d.player} />
-                ))}
-              </div>
-            </section>
-          )}
-          {/* Players away on loan come back on their own, so January can
-              plan around them; read-only until they return. */}
-          {state.loanedOut.length > 0 && (
-            <section>
-              <span className="pill">Out on loan</span>
-              <div className="card-grid">
-                {state.loanedOut.map((loan) => (
-                  <LoanedOutCard
-                    key={loan.player.id}
-                    loan={loan}
-                    returnsIn={loanReturnLabel(state.config.windows, loan)}
-                  />
-                ))}
-              </div>
-            </section>
-          )}
-          {groupByPosition(byFilter(state.squad)).map(([position, group]) => (
-            <section key={position}>
-              <span className="pill">{POSITION_LABELS[position]}</span>
-              <div className="card-grid">
-                {group.map((player) => (
-                  <SquadCard key={player.id} player={player} />
-                ))}
-              </div>
-            </section>
-          ))}
-        </>
-      )}
+      {tab === 'squad' && <SquadList filter={filter} />}
 
       {tab === 'market' && <MarketBrowser />}
 

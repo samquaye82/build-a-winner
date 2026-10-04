@@ -13,6 +13,7 @@ import {
   loanReturnLabel,
   playerBadges,
   renewalOptions,
+  sortSquadList,
   scoreComponentRows,
 } from '../../src/ui/helpers';
 import { makeSquadPlayer, testWindow, threeTestWindows } from '../engine/fixtures';
@@ -215,5 +216,40 @@ describe('loanReturnLabel', () => {
     expect(loanReturnLabel(threeTestWindows, { returnsInWindow: 3 })).toBe(
       'Summer 2028',
     );
+  });
+});
+
+describe('sortSquadList', () => {
+  /** A squad-list entry with just the fields the sort reads. */
+  const row = (
+    name: string,
+    position: 'GK' | 'CB' | 'CM' | 'ST',
+    quality: number,
+    saleValue: number,
+  ) => ({ name, position, quality, saleValue });
+
+  it('orders_by_position_then_rating_then_sale_value', () => {
+    const sorted = sortSquadList([
+      row('Striker', 'ST', 90, 100),
+      row('Cheap midfielder', 'CM', 84, 20),
+      row('Keeper', 'GK', 80, 10),
+      row('Dear midfielder', 'CM', 84, 60),
+      row('Better midfielder', 'CM', 86, 5),
+      row('Centre back', 'CB', 70, 1),
+    ]);
+    expect(sorted.map((p) => p.name)).toEqual([
+      'Keeper',
+      'Centre back',
+      'Better midfielder',
+      'Dear midfielder',
+      'Cheap midfielder',
+      'Striker',
+    ]);
+  });
+
+  it('breaks_a_full_tie_by_name_and_leaves_the_input_untouched', () => {
+    const input = [row('Zed', 'CB', 75, 10), row('Abe', 'CB', 75, 10)];
+    expect(sortSquadList(input).map((p) => p.name)).toEqual(['Abe', 'Zed']);
+    expect(input.map((p) => p.name)).toEqual(['Zed', 'Abe']);
   });
 });

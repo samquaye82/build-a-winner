@@ -23,8 +23,14 @@ import {
   renewalOptions,
 } from '../helpers';
 
-/** Shared badge row for a squad player. */
-function Badges({ player }: { player: SquadPlayer }): React.JSX.Element {
+/**
+ * The badge row for a squad player (U21 or HG, Expiring, Off PL / Off
+ * UCL, On loan), shared by the cards and the squad tab's list rows.
+ *
+ * @param props.player - The squad player.
+ * @returns The badges, as a fragment.
+ */
+export function Badges({ player }: { player: SquadPlayer }): React.JSX.Element {
   const { state } = useGame();
   const window = currentWindow(state);
   return (

@@ -111,6 +111,27 @@ export function groupByPosition<T extends { position: Position }>(
   ).filter(([, group]) => group.length > 0);
 }
 
+/**
+ * Orders squad players for the squad tab's list (Sam, 04/10/2026): by
+ * position (POSITION_ORDER, goalkeeper to striker), then rating, then sale
+ * value, both highest first. Name breaks any remaining tie, so the order
+ * never depends on the order players happened to join the squad.
+ *
+ * @param players - The players to order.
+ * @returns A new, sorted array.
+ */
+export function sortSquadList<
+  T extends { position: Position; quality: number; saleValue: number; name: string },
+>(players: readonly T[]): T[] {
+  return [...players].sort(
+    (a, b) =>
+      POSITION_ORDER.indexOf(a.position) - POSITION_ORDER.indexOf(b.position) ||
+      b.quality - a.quality ||
+      b.saleValue - a.saleValue ||
+      a.name.localeCompare(b.name),
+  );
+}
+
 /** One selectable renewal deal, priced by the engine. */
 export interface RenewalOption {
   newExpiryYear: number;
