@@ -238,25 +238,11 @@ function main(): void {
     };
   });
 
-  // Dates of birth ride alongside rather than on the player records: they
-  // are presentation data for the age profile chart, with no bearing on any
-  // rule, so the engine's player types stay as they are. Keyed by player id,
-  // and only players who have a trustworthy one appear.
-  //
-  // Only trusted dates are published (see trustedBirthDate above); the
-  // squad-health chart falls back to whole years for anyone without one.
-
-  // Contract expiry rides alongside the player records for the same reason
-  // dates of birth do: the squad-health chart reads it, no rule does, so
-  // the engine's player types stay as they are. Liverpool's own expiries
-  // live on their contracts already; this covers every other club, whose
-  // market entries carry demands rather than a current deal.
-  const expiryYears: Record<string, number> = {};
-  for (const row of rows) {
-    if (Number.isFinite(row.expiryYear)) {
-      expiryYears[row.slug] = row.expiryYear;
-    }
-  }
+  // Dates of birth ride alongside rather than on the player records, keyed
+  // by player id: realConfig reads them so the engine can age each player
+  // on his real birthday (rules/age.ts). Only trusted dates are published
+  // (see trustedBirthDate above); realConfig estimates a 1 July birthday
+  // for anyone without one.
 
   const birthDates: Record<string, string> = {};
   let contradictory = 0;
@@ -284,14 +270,10 @@ function main(): void {
     squad: squadOut,
     market: marketOut,
     birthDates,
-    expiryYears,
   };
   writeFileSync(join(OUT_DIR, 'gameData.json'), JSON.stringify(payload));
 
-  console.log(
-    `Squad: ${squadOut.length} | Market: ${marketOut.length} | ` +
-      `Expiry years: ${String(Object.keys(expiryYears).length)}`,
-  );
+  console.log(`Squad: ${squadOut.length} | Market: ${marketOut.length}`);
   for (const [index, window] of WINDOWS.entries()) {
     const free = marketOut.filter((m) => m.windows[index]?.freeAgent).length;
     console.log(`${window.label} free agents (released on expiry): ${free}`);

@@ -76,9 +76,9 @@ def attach_ids(review: pd.DataFrame, enriched: pd.DataFrame) -> pd.DataFrame:
 
     The date of birth rides along on the same lookup as the slug: it is the
     only place exact ages can come from, review.csv carrying whole years
-    only, and the squad age profile chart needs them (Sam, 20/08/2026). A
-    row with no enriched match has no date of birth, and the chart falls
-    back to the whole-year age for those players.
+    only, and the game ages players on their real birthdays (Sam,
+    20/08/2026). A row with no enriched match has no date of birth, and the
+    game estimates one from the whole-year age for those players.
 
     Args:
         review: The hand-edited table.

@@ -94,8 +94,8 @@ def apply_corrections(players: pd.DataFrame) -> pd.DataFrame:
 #: Dates of birth for players no source carries one for, found by hand
 #: (Sam, 20/08/2026). Keyed by player_slug, as ISO YYYY-MM-DD.
 #:
-#: The age profile chart needs a date of birth to place a player exactly;
-#: without one it falls back to his whole-year age and draws him hollow.
+#: The game ages a player on his real birthday; without a date of birth it
+#: has to estimate one from his whole-year age.
 #: These fill the gaps at the clubs Sam follows most closely. The generator
 #: cross-checks every date against the recorded age and drops any that
 #: disagree by more than eighteen months, so a typo here shows up as a

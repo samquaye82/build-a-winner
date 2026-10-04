@@ -1,8 +1,8 @@
 /**
  * Tests for the dates of birth carried alongside the generated data.
  *
- * They exist so the age profile chart can show exact ages; review.csv
- * carries whole years only. Coverage is partial by nature, so these guard
+ * They exist so the game can age players on their real birthdays;
+ * review.csv carries whole years only. Coverage is partial by nature, so these guard
  * the shape and the join rather than demanding every player have one.
  */
 import { describe, expect, it } from 'vitest';
