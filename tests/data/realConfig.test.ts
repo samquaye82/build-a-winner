@@ -142,6 +142,15 @@ describe('realConfig', () => {
     }
   });
 
+  it('lists_semenyo_as_home_grown_and_association_trained', () => {
+    // Came through English football at Bristol City (Sam, 04/10/2026).
+    for (const pool of realConfig.marketByWindow) {
+      const semenyo = pool.find((p) => p.name === 'Antoine Semenyo');
+      expect(semenyo?.homegrown).toBe(true);
+      expect(semenyo?.uefaTraining).toBe('association');
+    }
+  });
+
   it('matches_every_loaned_in_player_to_a_real_market_entry', () => {
     const state = createGame(realConfig);
     for (const loan of LOANED_IN) {
